@@ -1,0 +1,21 @@
+# 生产环境（所有敏感项仅从环境变量注入，无默认值）
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${ZHAO_DB_HOST}:${ZHAO_DB_PORT:3306}/${ZHAO_DB_NAME}?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+    username: ${ZHAO_DB_USER}
+    password: ${ZHAO_DB_PASSWORD}
+  data:
+    redis:
+      host: ${ZHAO_REDIS_HOST}
+      port: ${ZHAO_REDIS_PORT:6379}
+      database: ${ZHAO_REDIS_DB:0}
+      password: ${ZHAO_REDIS_PASSWORD:}
+
+zhao-waimai:
+  jwt:
+    secret: ${ZHAO_JWT_SECRET}
+
+logging:
+  level:
+    root: info

@@ -1,0 +1,13 @@
+# 测试环境
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${ZHAO_DB_HOST}:${ZHAO_DB_PORT:3306}/${ZHAO_DB_NAME:zhao_waimai_test}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${ZHAO_DB_USER}
+    password: ${ZHAO_DB_PASSWORD}
+  data:
+    redis:
+      host: ${ZHAO_REDIS_HOST}
+      port: ${ZHAO_REDIS_PORT:6379}
+      database: ${ZHAO_REDIS_DB:0}
+      password: ${ZHAO_REDIS_PASSWORD:}

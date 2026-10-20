@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: zhao_waimai
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# MyBatis-Plus 公共配置（各环境共用）
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 业务自定义配置（密钥/密码只在 local 或环境变量，禁止明文提交）
+zhao-waimai:
+  jwt:
+    secret: ${ZHAO_JWT_SECRET:CHANGE_ME_AT_LEAST_32_BYTES_PLACEHOLDER_SECRET}
+    expire-seconds: 7200
