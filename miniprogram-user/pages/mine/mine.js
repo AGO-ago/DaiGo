@@ -1,5 +1,4 @@
 const app = getApp()
-const { post } = require('../../utils/request')
 
 Page({
   data: {
@@ -12,17 +11,9 @@ Page({
   },
 
   onLogin() {
-    const that = this
-    wx.login({
-      success(res) {
-        post('/auth/login', { code: res.code }, false)
-          .then((data) => {
-            app.globalData.token = data.token
-            wx.setStorageSync('token', data.token)
-            wx.setStorageSync('user', data.user)
-            that.setData({ user: data.user })
-          })
-          .catch(() => {})
+    app.ensureLogin().then((ok) => {
+      if (ok) {
+        this.setData({ user: wx.getStorageSync('user') })
       }
     })
   },

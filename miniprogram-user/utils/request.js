@@ -7,7 +7,12 @@ const app = getApp()
  */
 function request(options) {
   const { url, method = 'GET', data = {}, auth = true } = options
-  return new Promise((resolve, reject) => {
+  // 需要鉴权但还没有 token 时，先静默登录
+  const prepare = (auth && !app.globalData.token && !wx.getStorageSync('token'))
+    ? app.ensureLogin()
+    : Promise.resolve()
+
+  return prepare.then(() => new Promise((resolve, reject) => {
     const header = { 'Content-Type': 'application/json' }
     const token = app.globalData.token || wx.getStorageSync('token')
     if (auth && token) {
@@ -36,7 +41,7 @@ function request(options) {
         reject(err)
       }
     })
-  })
+  }))
 }
 
 module.exports = {
