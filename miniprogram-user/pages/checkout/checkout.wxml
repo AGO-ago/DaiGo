@@ -17,6 +17,25 @@
     </view>
   </view>
 
+  <!-- 优惠券 -->
+  <view class="card coupon-card" bindtap="openCoupon">
+    <view class="coupon-row">
+      <view class="coupon-label">
+        <image class="coupon-icon" src="{{icons.coupon}}" />
+        <text>优惠券</text>
+      </view>
+      <view class="coupon-value">
+        <text class="coupon-on" wx:if="{{selectedCouponId}}">
+          -¥{{preview.discountAmount}}
+          <text class="coupon-tag">{{selectedCouponName}}</text>
+        </text>
+        <text class="coupon-count" wx:elif="{{couponUsableCount > 0}}">{{couponUsableCount}} 张可用</text>
+        <text class="coupon-none" wx:else>暂无可用</text>
+        <image class="arrow" src="{{icons.chevron}}" />
+      </view>
+    </view>
+  </view>
+
   <!-- 拆单预览 -->
   <view class="card" wx:for="{{preview.groups}}" wx:key="shopId">
     <view class="group-head">
@@ -39,6 +58,10 @@
       <text>配送费</text>
       <text>¥{{item.deliveryFee}}</text>
     </view>
+    <view class="row discount" wx:if="{{item.discountAmount > 0}}">
+      <text>优惠</text>
+      <text>-¥{{item.discountAmount}}</text>
+    </view>
     <view class="row strong">
       <text>本单实付</text>
       <text class="pay">¥{{item.payAmount}}</text>
@@ -59,9 +82,37 @@
   <!-- 底部提交 -->
   <view class="footer">
     <view class="total">
+      <view class="total-line" wx:if="{{preview && preview.discountAmount > 0}}">
+        <text class="discount-tip">已优惠 ¥{{preview.discountAmount}}</text>
+      </view>
       <text class="label">合计</text>
       <text class="amount">¥{{preview ? preview.totalAmount : '0.00'}}</text>
     </view>
     <view class="submit {{submitting ? 'disabled' : ''}}" bindtap="submit">提交订单</view>
+  </view>
+
+  <!-- 优惠券选择弹层 -->
+  <view class="mask" wx:if="{{couponVisible}}" bindtap="closeCoupon"></view>
+  <view class="coupon-panel" wx:if="{{couponVisible}}" catchtap="noop">
+    <view class="panel-head">
+      <text class="panel-title">选择优惠券</text>
+      <text class="panel-close" bindtap="closeCoupon">✕</text>
+    </view>
+    <scroll-view class="panel-list" scroll-y>
+      <view class="pick-item {{item.usable ? '' : 'off'}} {{item.selected ? 'on' : ''}}"
+            wx:for="{{coupons}}" wx:key="id" data-id="{{item.id}}" bindtap="pickCoupon">
+        <view class="pick-left">
+          <view class="pick-amount">{{item.amountText}}</view>
+          <view class="pick-threshold">满{{item.threshold}}元可用</view>
+        </view>
+        <view class="pick-right">
+          <view class="pick-name">{{item.name}}</view>
+          <view class="pick-scope">{{item.shopName}}</view>
+          <view class="pick-reason" wx:if="{{!item.usable}}">{{item.reason}}</view>
+        </view>
+        <view class="pick-check" wx:if="{{item.selected}}">✓</view>
+      </view>
+      <view class="pick-none" bindtap="clearCoupon">不使用优惠券</view>
+    </scroll-view>
   </view>
 </view>

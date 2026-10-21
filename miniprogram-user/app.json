@@ -10,6 +10,8 @@
     "pages/order/detail/detail",
     "pages/comment/comment",
     "pages/favorite/list/list",
+    "pages/coupon/list/list",
+    "pages/coupon/mine/mine",
     "pages/address/list/list",
     "pages/address/edit/edit",
     "pages/mine/mine"

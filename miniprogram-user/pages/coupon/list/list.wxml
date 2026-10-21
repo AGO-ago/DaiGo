@@ -1,0 +1,26 @@
+<view class="page">
+  <view class="banner">
+    <view class="banner-title">领券中心</view>
+    <view class="banner-sub">领券下单更划算，先领后用</view>
+    <view class="mine-entry" bindtap="goMine">我的优惠券 ›</view>
+  </view>
+
+  <view class="list">
+    <view class="coupon {{item.received ? 'received' : ''}}" wx:for="{{list}}" wx:key="id">
+      <view class="left">
+        <view class="amount">{{item.type === 2 ? '' : '¥'}}<text class="num">{{item.amountText}}</text></view>
+        <view class="threshold">{{item.thresholdText}}</view>
+      </view>
+      <view class="split"></view>
+      <view class="right">
+        <view class="name">{{item.name}}</view>
+        <view class="scope">{{item.shopName}} · {{item.endText}} 前有效</view>
+      </view>
+      <view class="btn {{item.received ? 'done' : ''}}" data-id="{{item.id}}" catchtap="receive">
+        {{item.received ? '已领取' : '领取'}}
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !list.length}}">暂无可领取的优惠券</view>
+</view>

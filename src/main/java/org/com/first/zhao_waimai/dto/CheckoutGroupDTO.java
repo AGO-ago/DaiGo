@@ -26,7 +26,10 @@ public class CheckoutGroupDTO {
     /** 配送费 */
     private BigDecimal deliveryFee;
 
-    /** 实付 = 商品总额 + 配送费 */
+    /** 本单分摊的优惠金额 */
+    private BigDecimal discountAmount;
+
+    /** 实付 = 商品总额 + 配送费 - 优惠 */
     private BigDecimal payAmount;
 
     /** 预计送达分钟数 */

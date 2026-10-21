@@ -22,6 +22,9 @@ public class CheckoutRequestDTO {
     @Size(max = 200, message = "备注最长 200 字")
     private String remark;
 
+    /** 使用的用户优惠券 id（不使用时为空） */
+    private Long userCouponId;
+
     /** 购物车条目 */
     @NotEmpty(message = "购物车为空")
     @Valid

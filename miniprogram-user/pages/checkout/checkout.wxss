@@ -204,3 +204,199 @@ page {
 .submit.disabled {
   opacity: 0.6;
 }
+
+/* 优惠券入口 */
+.coupon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.coupon-label {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.coupon-icon {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 12rpx;
+}
+
+.coupon-value {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+}
+
+.coupon-on {
+  color: #ff2d3c;
+  font-weight: 600;
+}
+
+.coupon-tag {
+  margin-left: 8rpx;
+  padding: 2rpx 10rpx;
+  font-size: 20rpx;
+  font-weight: 400;
+  color: #ff5722;
+  background: #fff3ee;
+  border-radius: 6rpx;
+}
+
+.coupon-count {
+  color: #ff5722;
+}
+
+.coupon-none {
+  color: #999;
+}
+
+.row.discount {
+  color: #ff2d3c;
+}
+
+.total-line {
+  margin-bottom: 4rpx;
+}
+
+.discount-tip {
+  font-size: 22rpx;
+  color: #ff5722;
+}
+
+/* 优惠券选择弹层 */
+.mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.coupon-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #f6f6f6;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.panel-head {
+  position: relative;
+  padding: 30rpx 0;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.panel-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.panel-close {
+  position: absolute;
+  top: 24rpx;
+  right: 28rpx;
+  font-size: 30rpx;
+  color: #999;
+}
+
+.panel-list {
+  height: 50vh;
+  padding: 20rpx 24rpx 24rpx;
+  box-sizing: border-box;
+}
+
+.pick-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 24rpx 20rpx;
+  background: #ffffff;
+  border: 1rpx solid transparent;
+  border-radius: 14rpx;
+}
+
+.pick-item.on {
+  border-color: #ff5722;
+  background: #fff8f5;
+}
+
+.pick-item.off .pick-amount,
+.pick-item.off .pick-name {
+  color: #bbb;
+}
+
+.pick-left {
+  width: 160rpx;
+  text-align: center;
+  flex-shrink: 0;
+  border-right: 1rpx dashed #eee;
+}
+
+.pick-amount {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ff2d3c;
+}
+
+.pick-threshold {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #999;
+}
+
+.pick-right {
+  flex: 1;
+  padding-left: 20rpx;
+  min-width: 0;
+}
+
+.pick-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.pick-scope {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.pick-reason {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #ff9800;
+}
+
+.pick-check {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  font-size: 30rpx;
+  color: #ff5722;
+}
+
+.pick-none {
+  padding: 26rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #666;
+  background: #ffffff;
+  border-radius: 14rpx;
+}
+

@@ -14,25 +14,32 @@ import org.com.first.zhao_waimai.dto.OrderDetailVO;
 import org.com.first.zhao_waimai.dto.OrderItemVO;
 import org.com.first.zhao_waimai.dto.OrderListVO;
 import org.com.first.zhao_waimai.dto.PageDTO;
+import org.com.first.zhao_waimai.entity.Coupon;
 import org.com.first.zhao_waimai.entity.Dish;
 import org.com.first.zhao_waimai.entity.Orders;
+import org.com.first.zhao_waimai.entity.OrderCoupon;
 import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.OrderComment;
 import org.com.first.zhao_waimai.entity.Payment;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.entity.UserAddress;
+import org.com.first.zhao_waimai.entity.UserCoupon;
+import org.com.first.zhao_waimai.mapper.CouponMapper;
 import org.com.first.zhao_waimai.mapper.DishMapper;
 import org.com.first.zhao_waimai.mapper.OrderCommentMapper;
+import org.com.first.zhao_waimai.mapper.OrderCouponMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.mapper.UserAddressMapper;
+import org.com.first.zhao_waimai.mapper.UserCouponMapper;
 import org.com.first.zhao_waimai.service.OrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,12 +67,16 @@ public class OrderServiceImpl implements OrderService {
     private final OrdersMapper ordersMapper;
     private final OrderItemMapper orderItemMapper;
     private final OrderCommentMapper orderCommentMapper;
+    private final CouponMapper couponMapper;
+    private final UserCouponMapper userCouponMapper;
+    private final OrderCouponMapper orderCouponMapper;
 
     @Override
     public CheckoutResultDTO checkout(Long userId, CheckoutRequestDTO request) {
         UserAddress address = loadAddress(userId, request.getAddressId());
         List<CheckoutGroupDTO> groups = buildGroups(request.getItems());
-        return assemble(null, null, address, groups);
+        AppliedCoupon applied = applyCoupon(userId, request.getUserCouponId(), groups);
+        return assemble(null, null, address, groups, applied);
     }
 
     @Override
@@ -73,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
     public CheckoutResultDTO submit(Long userId, CheckoutRequestDTO request) {
         UserAddress address = loadAddress(userId, request.getAddressId());
         List<CheckoutGroupDTO> groups = buildGroups(request.getItems());
+        AppliedCoupon applied = applyCoupon(userId, request.getUserCouponId(), groups);
         String snapshot = buildAddressSnapshot(address);
 
         // 1. 支付单：一次结算一个
@@ -95,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(0); // 待支付
             order.setTotalAmount(group.getTotalAmount());
             order.setDeliveryFee(group.getDeliveryFee());
-            order.setDiscountAmount(BigDecimal.ZERO);
+            order.setDiscountAmount(group.getDiscountAmount());
             order.setPayAmount(group.getPayAmount());
             order.setAddressSnapshot(snapshot);
             order.setRemark(request.getRemark());
@@ -114,13 +126,34 @@ public class OrderServiceImpl implements OrderService {
             }
             group.setOrderId(order.getId());
             totalAmount = totalAmount.add(group.getPayAmount());
+
+            // 用券分摊记录（每个子单一行，便于整单取消时退券）
+            if (applied != null && group.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+                OrderCoupon orderCoupon = new OrderCoupon();
+                orderCoupon.setOrderId(order.getId());
+                orderCoupon.setUserCouponId(applied.userCouponId());
+                orderCoupon.setAmount(group.getDiscountAmount());
+                orderCouponMapper.insert(orderCoupon);
+            }
         }
 
-        // 3. 回填支付单总额
+        // 3. 核销用户券（条件更新，防并发重复使用）
+        if (applied != null) {
+            int used = userCouponMapper.update(null, Wrappers.<UserCoupon>lambdaUpdate()
+                    .eq(UserCoupon::getId, applied.userCouponId())
+                    .eq(UserCoupon::getStatus, UserCoupon.STATUS_UNUSED)
+                    .set(UserCoupon::getStatus, UserCoupon.STATUS_USED)
+                    .set(UserCoupon::getUseTime, LocalDateTime.now()));
+            if (used == 0) {
+                throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券已被使用，请重新选择");
+            }
+        }
+
+        // 4. 回填支付单总额
         payment.setTotalAmount(totalAmount);
         paymentMapper.updateById(payment);
 
-        return assemble(payment.getId(), totalAmount, address, groups);
+        return assemble(payment.getId(), totalAmount, address, groups, applied);
     }
 
     @Override
@@ -221,6 +254,30 @@ public class OrderServiceImpl implements OrderService {
                     .eq(Payment::getId, order.getPaymentId())
                     .eq(Payment::getStatus, 0)
                     .set(Payment::getStatus, 2));
+            // 整单全部取消：退回已用的优惠券（券在待支付阶段核销）
+            restoreCoupon(order.getPaymentId());
+        }
+    }
+
+    /**
+     * 支付单下子单全部取消后，退回本单使用的优惠券
+     */
+    private void restoreCoupon(Long paymentId) {
+        List<Long> orderIds = ordersMapper.selectList(Wrappers.<Orders>lambdaQuery()
+                        .eq(Orders::getPaymentId, paymentId))
+                .stream().map(Orders::getId).toList();
+        if (orderIds.isEmpty()) {
+            return;
+        }
+        List<OrderCoupon> records = orderCouponMapper.selectList(Wrappers.<OrderCoupon>lambdaQuery()
+                .in(OrderCoupon::getOrderId, orderIds));
+        for (OrderCoupon record : records) {
+            userCouponMapper.update(null, Wrappers.<UserCoupon>lambdaUpdate()
+                    .eq(UserCoupon::getId, record.getUserCouponId())
+                    .eq(UserCoupon::getStatus, UserCoupon.STATUS_USED)
+                    .set(UserCoupon::getStatus, UserCoupon.STATUS_UNUSED)
+                    .set(UserCoupon::getUseTime, null));
+            orderCouponMapper.deleteById(record.getId());
         }
     }
 
@@ -314,6 +371,7 @@ public class OrderServiceImpl implements OrderService {
                 g.setDeliveryFee(shop.getDeliveryFee());
                 g.setAverageDeliveryTime(shop.getAverageDeliveryTime());
                 g.setTotalAmount(BigDecimal.ZERO);
+                g.setDiscountAmount(BigDecimal.ZERO);
                 g.setItems(new ArrayList<>());
                 return g;
             });
@@ -329,9 +387,93 @@ public class OrderServiceImpl implements OrderService {
                 throw new BusinessException(ErrorCode.BUSINESS_ERROR,
                         "档口「" + shop.getName() + "」满 " + shop.getMinOrderAmount() + " 元起送，还差 " + gap + " 元");
             }
-            group.setPayAmount(group.getTotalAmount().add(group.getDeliveryFee()));
+            group.setPayAmount(group.getTotalAmount().add(group.getDeliveryFee())
+                    .subtract(group.getDiscountAmount()));
         }
         return new ArrayList<>(groupMap.values());
+    }
+
+    /**
+     * 优惠券校验与分摊：
+     * 平台券按各档口商品金额比例分摊，档口券仅抵扣该档口；抵扣额不超过商品总额
+     */
+    private AppliedCoupon applyCoupon(Long userId, Long userCouponId, List<CheckoutGroupDTO> groups) {
+        for (CheckoutGroupDTO group : groups) {
+            group.setDiscountAmount(BigDecimal.ZERO);
+            group.setPayAmount(group.getTotalAmount().add(group.getDeliveryFee()));
+        }
+        if (userCouponId == null) {
+            return null;
+        }
+        UserCoupon userCoupon = userCouponMapper.selectById(userCouponId);
+        if (userCoupon == null || !userId.equals(userCoupon.getUserId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券不存在");
+        }
+        if (userCoupon.getStatus() == null || userCoupon.getStatus() != UserCoupon.STATUS_UNUSED) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券已使用或已失效");
+        }
+        Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
+        if (coupon == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券模板不存在");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(coupon.getStartTime()) || now.isAfter(coupon.getEndTime())) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券不在有效期内");
+        }
+
+        List<CheckoutGroupDTO> applicable = coupon.getShopId() == null
+                ? groups
+                : groups.stream().filter(g -> coupon.getShopId().equals(g.getShopId())).toList();
+        if (applicable.isEmpty()) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "该优惠券仅限指定档口使用");
+        }
+        BigDecimal subtotal = applicable.stream()
+                .map(CheckoutGroupDTO::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (subtotal.compareTo(coupon.getThreshold()) < 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR,
+                    "订单满 " + coupon.getThreshold() + " 元才能使用该优惠券");
+        }
+
+        BigDecimal discount;
+        if (coupon.getType() != null && coupon.getType() == Coupon.TYPE_DISCOUNT) {
+            // 折扣券：amount 为折扣率（如 0.85 表示 85 折）
+            discount = subtotal.multiply(BigDecimal.ONE.subtract(coupon.getAmount()))
+                    .setScale(2, RoundingMode.HALF_UP);
+        } else {
+            discount = coupon.getAmount();
+        }
+        if (discount.compareTo(subtotal) > 0) {
+            discount = subtotal;
+        }
+        if (discount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券不可用");
+        }
+
+        // 按商品金额比例分摊，尾差归入最后一组
+        BigDecimal allocated = BigDecimal.ZERO;
+        for (int i = 0; i < applicable.size(); i++) {
+            CheckoutGroupDTO group = applicable.get(i);
+            BigDecimal share = i == applicable.size() - 1
+                    ? discount.subtract(allocated)
+                    : discount.multiply(group.getTotalAmount()).divide(subtotal, 2, RoundingMode.DOWN);
+            if (share.compareTo(group.getTotalAmount()) > 0) {
+                share = group.getTotalAmount();
+            }
+            group.setDiscountAmount(share);
+            allocated = allocated.add(share);
+        }
+        for (CheckoutGroupDTO group : groups) {
+            group.setPayAmount(group.getTotalAmount().add(group.getDeliveryFee())
+                    .subtract(group.getDiscountAmount()));
+        }
+        return new AppliedCoupon(userCouponId, coupon.getName(), discount);
+    }
+
+    /**
+     * 已应用优惠券的上下文（提交时用于核销与记录分摊）
+     */
+    private record AppliedCoupon(Long userCouponId, String couponName, BigDecimal discount) {
     }
 
     private CheckoutItemVO toItemVO(Dish dish, int quantity, BigDecimal amount) {
@@ -345,7 +487,8 @@ public class OrderServiceImpl implements OrderService {
         return vo;
     }
 
-    private CheckoutResultDTO assemble(Long paymentId, BigDecimal totalAmount, UserAddress address, List<CheckoutGroupDTO> groups) {
+    private CheckoutResultDTO assemble(Long paymentId, BigDecimal totalAmount, UserAddress address,
+                                       List<CheckoutGroupDTO> groups, AppliedCoupon applied) {
         CheckoutResultDTO result = new CheckoutResultDTO();
         result.setPaymentId(paymentId);
         if (totalAmount == null) {
@@ -355,6 +498,9 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         result.setTotalAmount(totalAmount);
+        result.setDiscountAmount(applied == null ? BigDecimal.ZERO : applied.discount());
+        result.setUserCouponId(applied == null ? null : applied.userCouponId());
+        result.setCouponName(applied == null ? null : applied.couponName());
         result.setAddressSnapshot(buildAddressSnapshot(address));
         result.setGroups(groups);
         return result;

@@ -56,6 +56,14 @@ Page({
     wx.navigateTo({ url: '/pages/favorite/list/list' })
   },
 
+  goCoupon() {
+    wx.navigateTo({ url: '/pages/coupon/mine/mine' })
+  },
+
+  goCouponCenter() {
+    wx.navigateTo({ url: '/pages/coupon/list/list' })
+  },
+
   contactService() {
     wx.makePhoneCall({ phoneNumber: '4000000000' }).catch(() => {})
   }

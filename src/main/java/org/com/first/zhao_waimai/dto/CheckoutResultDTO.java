@@ -17,6 +17,15 @@ public class CheckoutResultDTO {
     /** 应付总额（所有子单实付之和） */
     private BigDecimal totalAmount;
 
+    /** 优惠总额 */
+    private BigDecimal discountAmount;
+
+    /** 使用的用户券 id */
+    private Long userCouponId;
+
+    /** 使用的优惠券名称 */
+    private String couponName;
+
     /** 收货信息快照 */
     private String addressSnapshot;
 

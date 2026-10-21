@@ -9,6 +9,19 @@ TRUNCATE TABLE `shop`;
 TRUNCATE TABLE `dish_category`;
 TRUNCATE TABLE `dish`;
 
+TRUNCATE TABLE `coupon`;
+TRUNCATE TABLE `user_coupon`;
+TRUNCATE TABLE `order_coupon`;
+
+-- -------------------------------------------------------------
+-- 优惠券模板（有效期取当前时间，便于本地长期联调）
+-- -------------------------------------------------------------
+INSERT INTO `coupon` (`id`, `name`, `type`, `threshold`, `amount`, `total_count`, `remain_count`, `start_time`, `end_time`, `shop_id`) VALUES
+(1, '新人专享 满20减5', 1, 20.00, 5.00, 1000, 1000, DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), NULL),
+(2, '午市满减 满30减8', 1, 30.00, 8.00, 500, 500, DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), NULL),
+(3, '川香快餐 满25减6', 1, 25.00, 6.00, 200, 200, DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), 1),
+(4, '周末8.5折券（满40可用）', 2, 40.00, 0.85, 300, 300, DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY), NULL);
+
 -- -------------------------------------------------------------
 -- 美食城（青岛黄岛区，带经纬度用于距离计算）
 -- -------------------------------------------------------------

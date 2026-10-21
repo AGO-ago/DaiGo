@@ -1,0 +1,28 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{active === item.key ? 'on' : ''}}" wx:for="{{tabs}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="switchTab">{{item.label}}</view>
+  </view>
+
+  <view class="list">
+    <view class="coupon {{active === 1 ? 'used' : ''}}" wx:for="{{list}}" wx:key="id">
+      <view class="left">
+        <view class="amount">{{item.type === 2 ? '' : '¥'}}<text class="num">{{item.amountText}}</text></view>
+        <view class="threshold">{{item.thresholdText}}</view>
+      </view>
+      <view class="split"></view>
+      <view class="right">
+        <view class="name">{{item.name}}</view>
+        <view class="scope">{{item.shopName}}</view>
+        <view class="scope">{{item.endText}} 前有效</view>
+      </view>
+      <view class="btn {{active === 1 ? 'done' : ''}}" wx:if="{{active === 0}}" bindtap="use">去使用</view>
+      <view class="btn done" wx:else>已使用</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !list.length}}">
+    <view>暂无优惠券</view>
+    <view class="empty-btn" bindtap="goCenter">去领券中心</view>
+  </view>
+</view>
