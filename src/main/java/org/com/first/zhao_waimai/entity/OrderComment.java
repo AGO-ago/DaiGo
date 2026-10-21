@@ -1,0 +1,53 @@
+package org.com.first.zhao_waimai.entity;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+/**
+ * 订单评价
+ */
+@Data
+@TableName("order_comment")
+public class OrderComment {
+
+    /** 主键 */
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /** 子订单 id */
+    private Long orderId;
+
+    /** 评价用户 id */
+    private Long userId;
+
+    /** 档口 id */
+    private Long shopId;
+
+    /** 评分 1-5 */
+    private Integer score;
+
+    /** 评价内容 */
+    private String content;
+
+    /** 评价图，逗号分隔 URL */
+    private String images;
+
+    /** 创建时间（自动填充） */
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    /** 更新时间（自动填充） */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+
+    /** 逻辑删除：0 未删 1 已删 */
+    @TableLogic
+    private Integer deleted;
+}

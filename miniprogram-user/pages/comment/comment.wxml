@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="card">
+    <view class="shop">{{shopName || '本次订单'}}</view>
+    <view class="tip">亲，您对本次用餐满意吗？</view>
+    <view class="stars">
+      <text class="star {{score >= item ? 'on' : ''}}" wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+            data-score="{{item}}" bindtap="setScore">★</text>
+    </view>
+    <view class="score-text">{{scoreText}}</view>
+  </view>
+
+  <view class="card">
+    <textarea class="textarea" value="{{content}}" maxlength="500"
+              placeholder="说说菜品口味、配送速度等，帮助其他同事参考"
+              placeholder-class="placeholder" bindinput="onInput" />
+    <view class="counter">{{contentLength}}/500</view>
+  </view>
+
+  <view class="submit {{submitting ? 'disabled' : ''}}" bindtap="submit">提交评价</view>
+</view>

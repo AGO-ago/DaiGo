@@ -35,6 +35,11 @@
 
   <!-- 功能列表 -->
   <view class="card">
+    <view class="menu-row" bindtap="goFavorite">
+      <image class="menu-icon" src="{{icons.star}}" />
+      <text class="menu-label">我的收藏</text>
+      <image class="menu-arrow" src="{{icons.chevron}}" />
+    </view>
     <view class="menu-row" bindtap="goAddress">
       <image class="menu-icon" src="{{icons.address}}" />
       <text class="menu-label">收货地址</text>

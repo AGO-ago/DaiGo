@@ -24,6 +24,9 @@ public class OrderListVO {
     /** 档口名 */
     private String shopName;
 
+    /** 所属美食城 id（用于再来一单跳转） */
+    private Long mallId;
+
     /** 状态：0 待支付 1 待接单 2 备餐中 3 配送中 4 已完成 5 已取消 */
     private Integer status;
 

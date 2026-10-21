@@ -17,10 +17,12 @@ import org.com.first.zhao_waimai.dto.PageDTO;
 import org.com.first.zhao_waimai.entity.Dish;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.OrderItem;
+import org.com.first.zhao_waimai.entity.OrderComment;
 import org.com.first.zhao_waimai.entity.Payment;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.entity.UserAddress;
 import org.com.first.zhao_waimai.mapper.DishMapper;
+import org.com.first.zhao_waimai.mapper.OrderCommentMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
@@ -57,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentMapper paymentMapper;
     private final OrdersMapper ordersMapper;
     private final OrderItemMapper orderItemMapper;
+    private final OrderCommentMapper orderCommentMapper;
 
     @Override
     public CheckoutResultDTO checkout(Long userId, CheckoutRequestDTO request) {
@@ -190,6 +193,8 @@ public class OrderServiceImpl implements OrderService {
         vo.setAddressSnapshot(order.getAddressSnapshot());
         vo.setRemark(order.getRemark());
         vo.setPaymentId(order.getPaymentId());
+        vo.setCommented(orderCommentMapper.selectCount(Wrappers.<OrderComment>lambdaQuery()
+                .eq(OrderComment::getOrderId, orderId)) > 0);
         return vo;
     }
 
@@ -263,6 +268,7 @@ public class OrderServiceImpl implements OrderService {
         vo.setOrderNo(o.getOrderNo());
         vo.setShopId(o.getShopId());
         vo.setShopName(shop == null ? "" : shop.getName());
+        vo.setMallId(shop == null ? null : shop.getMallId());
         vo.setStatus(o.getStatus());
         vo.setPayAmount(o.getPayAmount());
         vo.setCreateTime(o.getCreateTime());

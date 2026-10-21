@@ -52,6 +52,10 @@ Page({
     wx.navigateTo({ url: '/pages/address/list' })
   },
 
+  goFavorite() {
+    wx.navigateTo({ url: '/pages/favorite/list/list' })
+  },
+
   contactService() {
     wx.makePhoneCall({ phoneNumber: '4000000000' }).catch(() => {})
   }

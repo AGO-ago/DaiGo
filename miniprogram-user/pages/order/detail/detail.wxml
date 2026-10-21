@@ -44,5 +44,11 @@
     <view class="btn primary" bindtap="pay">立即支付</view>
   </view>
 
+  <view class="actions" wx:elif="{{order.status === 4}}">
+    <view class="btn ghost" bindtap="repeatOrder">再来一单</view>
+    <view class="btn primary" wx:if="{{!order.commented}}" bindtap="goComment">去评价</view>
+    <view class="btn ghost" wx:else>已评价</view>
+  </view>
+
   <view class="bottom-space"></view>
 </view>

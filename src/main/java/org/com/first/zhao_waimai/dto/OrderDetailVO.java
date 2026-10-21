@@ -29,4 +29,7 @@ public class OrderDetailVO extends OrderListVO {
 
     /** 所属支付单 id */
     private Long paymentId;
+
+    /** 是否已评价 */
+    private Boolean commented;
 }

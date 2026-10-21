@@ -34,7 +34,13 @@
 
   <!-- 当前档口信息 -->
   <view class="shop-head" wx:if="{{shop}}">
-    <view class="shop-title">{{shop.name}}</view>
+    <view class="shop-head-top">
+      <view class="shop-title">{{shop.name}}</view>
+      <view class="fav {{favorited ? 'on' : ''}}" bindtap="toggleFavorite">
+        <text class="fav-icon">{{favorited ? '♥' : '♡'}}</text>
+        <text class="fav-text">{{favorited ? '已收藏' : '收藏'}}</text>
+      </view>
+    </view>
     <view class="shop-badges">
       <text class="badge-star">★ 5.0</text>
       <text class="badge-shop">食堂店</text>

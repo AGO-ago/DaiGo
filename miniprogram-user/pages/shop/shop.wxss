@@ -169,10 +169,44 @@ page {
   border-radius: 16rpx;
 }
 
+.shop-head-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .shop-title {
+  flex: 1;
   font-size: 32rpx;
   font-weight: 700;
   color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  padding: 6rpx 18rpx;
+  font-size: 22rpx;
+  color: #888;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 24rpx;
+}
+
+.fav.on {
+  color: #ff5a3c;
+  border-color: #ffd0c6;
+  background: #fff5f2;
+}
+
+.fav-icon {
+  margin-right: 6rpx;
+  font-size: 26rpx;
+  line-height: 1;
 }
 
 .shop-badges {

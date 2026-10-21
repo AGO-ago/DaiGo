@@ -1,4 +1,4 @@
-const { get } = require('../../utils/request')
+const { get, post, del } = require('../../utils/request')
 
 Page({
   data: {
@@ -14,7 +14,8 @@ Page({
     loading: true,
     cartCount: 0,
     cartTotal: '0.00',
-    cartVisible: false
+    cartVisible: false,
+    favorited: false
   },
 
   onLoad(options) {
@@ -75,6 +76,27 @@ Page({
       activeCategoryIndex: 0
     })
     this.loadDishes(shop.id)
+    this.loadFavorite(shop.id)
+  },
+
+  /** 收藏状态回显（未登录时静默失败，不影响菜单浏览） */
+  loadFavorite(shopId) {
+    get('/favorite/ids')
+      .then((ids) => this.setData({ favorited: (ids || []).includes(shopId) }))
+      .catch(() => this.setData({ favorited: false }))
+  },
+
+  toggleFavorite() {
+    const shop = this.data.shop
+    if (!shop) return
+    const request = this.data.favorited ? del(`/favorite/${shop.id}`) : post(`/favorite/${shop.id}`)
+    request
+      .then(() => {
+        const favorited = !this.data.favorited
+        this.setData({ favorited })
+        wx.showToast({ title: favorited ? '已收藏' : '已取消收藏', icon: 'none' })
+      })
+      .catch(() => {})
   },
 
   loadDishes(shopId) {

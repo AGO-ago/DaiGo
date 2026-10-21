@@ -8,6 +8,8 @@
     "pages/checkout/checkout",
     "pages/order/list/list",
     "pages/order/detail/detail",
+    "pages/comment/comment",
+    "pages/favorite/list/list",
     "pages/address/list/list",
     "pages/address/edit/edit",
     "pages/mine/mine"

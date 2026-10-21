@@ -60,5 +60,35 @@ Page({
 
   goDetail(e) {
     wx.navigateTo({ url: `/pages/order/detail/detail?id=${e.currentTarget.dataset.id}` })
+  },
+
+  /** 再来一单：按订单快照加购并进入档口菜单 */
+  repeatOrder(e) {
+    const order = this.data.orders[e.currentTarget.dataset.index]
+    if (!order || !order.items || !order.items.length) return
+    const cart = wx.getStorageSync('cart') || []
+    order.items.forEach((item) => {
+      const idx = cart.findIndex((i) => i.dishId === item.dishId)
+      if (idx > -1) {
+        cart[idx].count += item.count
+      } else {
+        cart.push({
+          dishId: item.dishId,
+          name: item.dishName,
+          image: item.dishImage,
+          price: item.price,
+          shopId: order.shopId,
+          shopName: order.shopName,
+          count: item.count
+        })
+      }
+    })
+    wx.setStorageSync('cart', cart)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+    setTimeout(() => {
+      wx.navigateTo({
+        url: `/pages/shop/shop?mallId=${order.mallId}&shopId=${order.shopId}&shopName=${encodeURIComponent(order.shopName || '')}`
+      })
+    }, 500)
   }
 })

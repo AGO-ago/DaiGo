@@ -78,6 +78,20 @@ page {
   color: #333;
 }
 
+.foot-right {
+  display: flex;
+  align-items: center;
+}
+
+.again {
+  margin-left: 20rpx;
+  padding: 6rpx 20rpx;
+  font-size: 22rpx;
+  color: #ff5a3c;
+  border: 1rpx solid #ff5a3c;
+  border-radius: 26rpx;
+}
+
 .empty {
   margin: 120rpx 40rpx;
   text-align: center;

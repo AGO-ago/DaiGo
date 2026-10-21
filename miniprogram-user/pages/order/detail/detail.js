@@ -18,6 +18,9 @@ Page({
 
   onLoad(options) {
     this.orderId = options.id
+  },
+
+  onShow() {
     this.loadDetail()
   },
 
@@ -59,5 +62,40 @@ Page({
           .catch(() => {})
       }
     })
+  },
+
+  /** 再来一单：按下单快照重新加购，进入档口菜单（价格/上架状态由结算接口再次校验） */
+  repeatOrder() {
+    const order = this.data.order
+    if (!order || !order.items || !order.items.length) return
+    const cart = wx.getStorageSync('cart') || []
+    order.items.forEach((item) => {
+      const idx = cart.findIndex((i) => i.dishId === item.dishId)
+      if (idx > -1) {
+        cart[idx].count += item.count
+      } else {
+        cart.push({
+          dishId: item.dishId,
+          name: item.dishName,
+          image: item.dishImage,
+          price: item.price,
+          shopId: order.shopId,
+          shopName: order.shopName,
+          count: item.count
+        })
+      }
+    })
+    wx.setStorageSync('cart', cart)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+    setTimeout(() => {
+      wx.navigateTo({
+        url: `/pages/shop/shop?mallId=${order.mallId}&shopId=${order.shopId}&shopName=${encodeURIComponent(order.shopName || '')}`
+      })
+    }, 500)
+  },
+
+  /** 评价已完成订单 */
+  goComment() {
+    wx.navigateTo({ url: `/pages/comment/comment?orderId=${this.orderId}&shopName=${encodeURIComponent(this.data.order.shopName || '')}` })
   }
 })
