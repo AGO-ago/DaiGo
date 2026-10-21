@@ -15,6 +15,7 @@ page {
 .mall-head {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   padding: 20rpx 24rpx;
   background: #ffffff;
 }
@@ -69,24 +70,29 @@ page {
 /* 店家并排 */
 .shops-wrap {
   position: relative;
+  flex-shrink: 0;
   background: #ffffff;
   padding: 0 0 16rpx;
 }
 
 .shops-scroll {
+  height: 180rpx;
   white-space: nowrap;
   display: flex;
   padding: 0 20rpx;
+  box-sizing: border-box;
 }
 
 .shop-chip {
   flex: 0 0 auto;
   width: 132rpx;
+  height: 164rpx;
   margin-right: 14rpx;
   padding: 8rpx;
   border-radius: 14rpx;
   border: 2rpx solid transparent;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .shop-chip.active {
@@ -124,6 +130,7 @@ page {
 /* 外送/自取 */
 .mode-bar {
   display: flex;
+  flex-shrink: 0;
   margin: 16rpx 20rpx 0;
   background: #ffffff;
   border-radius: 30rpx;
@@ -155,6 +162,7 @@ page {
 
 /* 当前档口信息 */
 .shop-head {
+  flex-shrink: 0;
   padding: 20rpx 24rpx 16rpx;
   background: #ffffff;
   margin: 16rpx 20rpx 0;
@@ -212,7 +220,6 @@ page {
   overflow: hidden;
   min-height: 0;
 }
-
 .cate-list {
   width: 180rpx;
   flex-shrink: 0;
