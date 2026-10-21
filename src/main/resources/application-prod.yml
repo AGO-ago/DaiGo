@@ -15,6 +15,10 @@ spring:
 zhao-waimai:
   jwt:
     secret: ${ZHAO_JWT_SECRET}
+  wx:
+    appid: ${ZHAO_WX_APPID}
+    secret: ${ZHAO_WX_APP_SECRET}
+    mock-enabled: false
 
 logging:
   level:

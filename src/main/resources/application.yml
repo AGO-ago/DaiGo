@@ -25,3 +25,7 @@ zhao-waimai:
   jwt:
     secret: ${ZHAO_JWT_SECRET:CHANGE_ME_AT_LEAST_32_BYTES_PLACEHOLDER_SECRET}
     expire-seconds: 7200
+  wx:
+    appid: ${ZHAO_WX_APPID:}
+    secret: ${ZHAO_WX_APP_SECRET:}
+    mock-enabled: false

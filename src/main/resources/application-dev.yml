@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${ZHAO_DB_HOST:localhost}:${ZHAO_DB_PORT:3306}/${ZHAO_DB_NAME:zhao_waimai_dev}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${ZHAO_DB_HOST:localhost}:${ZHAO_DB_PORT:3306}/${ZHAO_DB_NAME:zhao_waimai}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: ${ZHAO_DB_USER:root}
     password: ${ZHAO_DB_PASSWORD:}
     hikari:
@@ -19,3 +19,8 @@ spring:
 logging:
   level:
     org.com.first.zhao_waimai: debug
+
+# 本地开发：测试号无真实 code2session，开启模拟登录（按 code 哈希出稳定 openid）
+zhao-waimai:
+  wx:
+    mock-enabled: true
