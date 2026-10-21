@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "限时秒杀"
+  "navigationBarTitleText": "限时秒杀",
+  "usingComponents": {
+    "cart-popup": "/components/cart-popup/cart-popup"
+  }
 }

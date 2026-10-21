@@ -6,7 +6,9 @@ Page({
     icons,
     dishes: [],
     loading: true,
-    countdown: '00:00:00'
+    countdown: '00:00:00',
+    cartCount: 0,
+    cartVisible: false
   },
 
   onLoad() {
@@ -14,6 +16,10 @@ Page({
       .then((list) => this.setData({ dishes: list || [], loading: false }))
       .catch(() => this.setData({ loading: false }))
     this.startCountdown()
+  },
+
+  onShow() {
+    this.refreshCart()
   },
 
   onUnload() {
@@ -54,6 +60,7 @@ Page({
       })
     }
     wx.setStorageSync('cart', cart)
+    this.refreshCart()
     wx.showToast({ title: '已加入购物车', icon: 'success' })
   },
 
@@ -64,7 +71,22 @@ Page({
     })
   },
 
-  goCart() {
-    wx.navigateTo({ url: '/pages/cart/cart' })
+  refreshCart() {
+    const cart = wx.getStorageSync('cart') || []
+    this.setData({ cartCount: cart.reduce((s, i) => s + i.count, 0) })
+  },
+
+  /** 点击悬浮购物车，从底部上划查看已选餐品 */
+  openCart() {
+    this.setData({ cartVisible: true })
+  },
+
+  closeCart() {
+    this.setData({ cartVisible: false })
+    this.refreshCart()
+  },
+
+  onCartChange() {
+    this.refreshCart()
   }
 })

@@ -34,6 +34,13 @@ page {
   text-overflow: ellipsis;
 }
 
+.loc-chevron {
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 2rpx;
+  flex-shrink: 0;
+}
+
 .search-box {
   flex: 1;
   display: flex;
@@ -56,10 +63,32 @@ page {
   color: #9a9a9a;
 }
 
+.cart-wrap {
+  position: relative;
+  flex-shrink: 0;
+  padding-left: 16rpx;
+}
+
 .cart-entry {
   width: 44rpx;
   height: 44rpx;
-  margin-left: 16rpx;
+  display: block;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -10rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+  font-size: 20rpx;
+  line-height: 28rpx;
+  text-align: center;
+  color: #ffffff;
+  background: #ff2d2d;
+  border-radius: 14rpx;
 }
 
 /* 通知条 */

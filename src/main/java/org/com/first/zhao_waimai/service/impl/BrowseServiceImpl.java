@@ -8,6 +8,7 @@ import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.DishVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
+import org.com.first.zhao_waimai.dto.SearchResultVO;
 import org.com.first.zhao_waimai.dto.ShopBriefVO;
 import org.com.first.zhao_waimai.dto.ShopVO;
 import org.com.first.zhao_waimai.entity.Dish;
@@ -142,12 +143,57 @@ public class BrowseServiceImpl implements BrowseService {
     }
 
     @Override
-    public List<HotDishVO> listHotDishes(int limit, Double lat, Double lng) {
-        int size = Math.max(1, Math.min(limit, 20));
+    public SearchResultVO search(String keyword, Double lat, Double lng) {
+        String kw = keyword == null ? "" : keyword.trim();
+        if (kw.isEmpty()) {
+            return SearchResultVO.builder().shops(List.of()).dishes(List.of()).build();
+        }
+
+        List<Shop> shops = shopMapper.selectList(Wrappers.<Shop>lambdaQuery()
+                .eq(Shop::getStatus, 1)
+                .like(Shop::getName, kw)
+                .orderByAsc(Shop::getId)
+                .last("LIMIT 10"));
+        Map<Long, Mall> mallMap = new HashMap<>();
+        List<Long> mallIds = shops.stream().map(Shop::getMallId).distinct().toList();
+        if (!mallIds.isEmpty()) {
+            for (Mall mall : mallMapper.selectList(Wrappers.<Mall>lambdaQuery().in(Mall::getId, mallIds))) {
+                mallMap.put(mall.getId(), mall);
+            }
+        }
+        List<ShopVO> shopVOS = shops.stream().map(s -> {
+            Mall mall = mallMap.get(s.getMallId());
+            return ShopVO.builder()
+                    .id(s.getId())
+                    .name(s.getName())
+                    .logo(s.getLogo())
+                    .deliveryFee(s.getDeliveryFee())
+                    .minOrderAmount(s.getMinOrderAmount())
+                    .averageDeliveryTime(s.getAverageDeliveryTime())
+                    .businessHours(s.getBusinessHours())
+                    .status(s.getStatus())
+                    .mallId(s.getMallId())
+                    .mallName(mall == null ? "" : mall.getName())
+                    .distance(mall == null ? null : distanceKm(lat, lng, mall.getLatitude(), mall.getLongitude()))
+                    .build();
+        }).toList();
+
         List<Dish> dishes = dishMapper.selectList(Wrappers.<Dish>lambdaQuery()
                 .eq(Dish::getStatus, 1)
+                .like(Dish::getName, kw)
                 .orderByDesc(Dish::getSoldCount)
-                .last("LIMIT " + size));
+                .last("LIMIT 20"));
+
+        return SearchResultVO.builder()
+                .shops(shopVOS)
+                .dishes(buildHotDishVOs(dishes, lat, lng))
+                .build();
+    }
+
+    /**
+     * 菜品列表转展示 VO（补充档口名、美食城与距离）
+     */
+    private List<HotDishVO> buildHotDishVOs(List<Dish> dishes, Double lat, Double lng) {
         if (dishes.isEmpty()) {
             return List.of();
         }
@@ -156,7 +202,6 @@ public class BrowseServiceImpl implements BrowseService {
         for (Shop shop : shopMapper.selectList(Wrappers.<Shop>lambdaQuery().in(Shop::getId, shopIds))) {
             shopMap.put(shop.getId(), shop);
         }
-        // 档口所属美食城坐标，用于计算距离
         List<Long> mallIds = shopMap.values().stream().map(Shop::getMallId).distinct().toList();
         Map<Long, Mall> mallMap = new HashMap<>();
         if (!mallIds.isEmpty()) {
@@ -167,7 +212,6 @@ public class BrowseServiceImpl implements BrowseService {
         return dishes.stream().map(d -> {
             Shop shop = shopMap.get(d.getShopId());
             Mall mall = shop == null ? null : mallMap.get(shop.getMallId());
-            Double distance = mall == null ? null : distanceKm(lat, lng, mall.getLatitude(), mall.getLongitude());
             return HotDishVO.builder()
                     .id(d.getId())
                     .shopId(d.getShopId())
@@ -178,9 +222,19 @@ public class BrowseServiceImpl implements BrowseService {
                     .price(d.getPrice())
                     .originalPrice(d.getOriginalPrice())
                     .soldCount(d.getSoldCount())
-                    .distance(distance)
+                    .distance(mall == null ? null : distanceKm(lat, lng, mall.getLatitude(), mall.getLongitude()))
                     .build();
         }).toList();
+    }
+
+    @Override
+    public List<HotDishVO> listHotDishes(int limit, Double lat, Double lng) {
+        int size = Math.max(1, Math.min(limit, 20));
+        List<Dish> dishes = dishMapper.selectList(Wrappers.<Dish>lambdaQuery()
+                .eq(Dish::getStatus, 1)
+                .orderByDesc(Dish::getSoldCount)
+                .last("LIMIT " + size));
+        return buildHotDishVOs(dishes, lat, lng);
     }
 
     private DishVO toDishVO(Dish d) {

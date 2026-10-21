@@ -27,7 +27,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/uploads/**",
             "/mall/**",
             "/shop/**",
-            "/dish/**"
+            "/dish/**",
+            "/search"
     };
 
     private final AuthInterceptor authInterceptor;

@@ -17,7 +17,17 @@ Page({
 
   loadList() {
     get('/user/address')
-      .then((list) => this.setData({ list: list || [], loading: false }))
+      .then((list) => {
+        const data = list || []
+        this.setData({ list: data, loading: false })
+        // 同步默认地址到本地，首页定位栏直接展示
+        const def = data.find((a) => a.isDefault === 1)
+        if (def) {
+          wx.setStorageSync('defaultAddress', def)
+        } else {
+          wx.removeStorageSync('defaultAddress')
+        }
+      })
       .catch(() => this.setData({ list: [], loading: false }))
   },
 
@@ -35,7 +45,13 @@ Page({
   setDefault(e) {
     const id = e.currentTarget.dataset.id
     put(`/user/address/${id}/default`)
-      .then(() => this.loadList())
+      .then(() => {
+        const address = this.data.list.find((a) => a.id === id)
+        if (address) {
+          wx.setStorageSync('defaultAddress', { ...address, isDefault: 1 })
+        }
+        this.loadList()
+      })
       .catch(() => {})
   },
 

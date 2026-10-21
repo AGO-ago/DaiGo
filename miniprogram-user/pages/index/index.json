@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "美食城点餐",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "cart-popup": "/components/cart-popup/cart-popup"
+  }
 }

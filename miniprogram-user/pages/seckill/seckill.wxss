@@ -230,6 +230,22 @@ page {
   z-index: 20;
 }
 
+.cart-fab-badge {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  min-width: 34rpx;
+  height: 34rpx;
+  padding: 0 8rpx;
+  box-sizing: border-box;
+  font-size: 20rpx;
+  line-height: 34rpx;
+  text-align: center;
+  color: #ffffff;
+  background: #ff2d2d;
+  border-radius: 17rpx;
+}
+
 .cart-fab-icon {
   width: 48rpx;
   height: 48rpx;

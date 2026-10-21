@@ -4,20 +4,25 @@ const icons = require('../../utils/icons')
 Page({
   data: {
     icons,
-    // 收货位置（首版固定为写字楼/校区，后续接入定位选择）
-    location: '青岛理工大学(黄岛校区)',
+    // 收货位置（可在地址列表中选择）
+    location: '选择收货地址',
     hotDishes: [],
     malls: [],
     loading: true,
-    countdown: '00:00:00'
+    countdown: '00:00:00',
+    cartCount: 0,
+    cartVisible: false
   },
 
   onLoad() {
+    this.loadLocation()
     this.loadAll()
     this.startCountdown()
   },
 
   onShow() {
+    this.loadLocation()
+    this.refreshCart()
     if (this.data.malls.length) {
       this.loadAll()
     }
@@ -26,6 +31,13 @@ Page({
   onUnload() {
     if (this.timer) {
       clearInterval(this.timer)
+    }
+  },
+
+  loadLocation() {
+    const address = wx.getStorageSync('selectedAddress') || wx.getStorageSync('defaultAddress')
+    if (address) {
+      this.setData({ location: address.company || '选择收货地址' })
     }
   },
 
@@ -44,6 +56,11 @@ Page({
     })
   },
 
+  refreshCart() {
+    const cart = wx.getStorageSync('cart') || []
+    this.setData({ cartCount: cart.reduce((s, i) => s + i.count, 0) })
+  },
+
   /** 今日抢购倒计时（每天 24:00 结束） */
   startCountdown() {
     const tick = () => {
@@ -57,6 +74,15 @@ Page({
     }
     tick()
     this.timer = setInterval(tick, 1000)
+  },
+
+  /** 选择收货地址（写字楼/公司） */
+  chooseLocation() {
+    wx.navigateTo({ url: '/pages/address/list?select=1' })
+  },
+
+  goSearch() {
+    wx.navigateTo({ url: '/pages/search/search' })
   },
 
   /** 进入美食城：查看该美食城全部档口 */
@@ -80,7 +106,16 @@ Page({
     wx.navigateTo({ url: '/pages/seckill/seckill' })
   },
 
-  goCart() {
-    wx.navigateTo({ url: '/pages/cart/cart' })
+  openCart() {
+    this.setData({ cartVisible: true })
+  },
+
+  closeCart() {
+    this.setData({ cartVisible: false })
+    this.refreshCart()
+  },
+
+  onCartChange() {
+    this.refreshCart()
   }
 })

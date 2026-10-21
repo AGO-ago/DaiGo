@@ -12,10 +12,9 @@ Page({
   },
 
   onShow() {
-    // 从地址列表选择返回时优先使用已选地址
+    // 全局选中的收货地址（首页定位栏/地址列表选择）优先，其次取默认地址
     const picked = wx.getStorageSync('selectedAddress')
     if (picked) {
-      wx.removeStorageSync('selectedAddress')
       this.setData({ address: picked })
       this.loadPreview()
       return

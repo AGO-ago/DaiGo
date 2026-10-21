@@ -76,13 +76,15 @@
     </scroll-view>
   </view>
 
-  <!-- 购物车悬浮条 -->
+  <!-- 购物车悬浮条（点击上划查看已选餐品） -->
   <view class="cart-bar">
-    <view class="cart-left" bindtap="goCart">
+    <view class="cart-left" bindtap="openCart">
       <view class="cart-icon">🛒<text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text></view>
       <view class="cart-amount" wx:if="{{cartCount}}">¥{{cartTotal}}</view>
       <view class="cart-empty-tip" wx:else>购物车是空的</view>
     </view>
-    <view class="cart-submit {{cartCount ? '' : 'disabled'}}" bindtap="goCart">去结算</view>
+    <view class="cart-submit {{cartCount ? '' : 'disabled'}}" bindtap="goCheckout">去结算</view>
   </view>
+
+  <cart-popup id="cartPopup" visible="{{cartVisible}}" bind:close="closeCart" bind:change="onCartChange" />
 </view>

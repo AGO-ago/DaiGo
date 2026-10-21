@@ -1,0 +1,35 @@
+<view class="mask {{visible ? 'show' : ''}}" bindtap="close" catchtouchmove="noop"></view>
+
+<view class="panel {{visible ? 'show' : ''}}" catchtouchmove="noop">
+  <view class="panel-head">
+    <text class="title">已选商品</text>
+    <text class="clear" bindtap="clear">清空</text>
+  </view>
+
+  <scroll-view scroll-y class="list" wx:if="{{count}}">
+    <view class="group" wx:for="{{groups}}" wx:key="shopId">
+      <view class="group-name">{{item.shopName}}</view>
+      <view class="row" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+        <image class="thumb" src="{{dish.image}}" mode="aspectFill" />
+        <view class="info">
+          <view class="name">{{dish.name}}</view>
+          <view class="price">¥{{dish.price}}</view>
+        </view>
+        <view class="ops">
+          <view class="op" data-index="{{dish.index}}" data-delta="-1" catchtap="changeCount">−</view>
+          <text class="num">{{dish.count}}</text>
+          <view class="op plus" data-index="{{dish.index}}" data-delta="1" catchtap="changeCount">+</view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  <view class="empty" wx:else>购物车是空的</view>
+
+  <view class="panel-foot">
+    <view class="total">
+      <text class="label">合计</text>
+      <text class="amount">¥{{total}}</text>
+    </view>
+    <view class="checkout {{count ? '' : 'disabled'}}" wx:if="{{showCheckout}}" bindtap="goCheckout">去结算</view>
+  </view>
+</view>

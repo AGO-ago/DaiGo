@@ -3,6 +3,7 @@ package org.com.first.zhao_waimai.service;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
+import org.com.first.zhao_waimai.dto.SearchResultVO;
 import org.com.first.zhao_waimai.dto.ShopVO;
 
 import java.util.List;
@@ -36,4 +37,9 @@ public interface BrowseService {
      * 热销菜品（首页今日抢购，按销量倒序）
      */
     List<HotDishVO> listHotDishes(int limit, Double lat, Double lng);
+
+    /**
+     * 搜索档口与菜品
+     */
+    SearchResultVO search(String keyword, Double lat, Double lng);
 }

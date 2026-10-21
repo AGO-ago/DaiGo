@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "美食城档口"
+  "navigationBarTitleText": "美食城档口",
+  "usingComponents": {
+    "cart-popup": "/components/cart-popup/cart-popup"
+  }
 }

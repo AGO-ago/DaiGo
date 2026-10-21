@@ -13,7 +13,8 @@ Page({
     dishes: [],
     loading: true,
     cartCount: 0,
-    cartTotal: '0.00'
+    cartTotal: '0.00',
+    cartVisible: false
   },
 
   onLoad(options) {
@@ -146,7 +147,22 @@ Page({
     this.setData({ cartCount: count, cartTotal: total.toFixed(2) })
   },
 
-  goCart() {
-    wx.navigateTo({ url: '/pages/cart/cart' })
+  /** 点击购物车条，从底部上划展示已选餐品（美团交互） */
+  openCart() {
+    this.setData({ cartVisible: true })
+  },
+
+  closeCart() {
+    this.setData({ cartVisible: false })
+    this.refreshCart()
+  },
+
+  onCartChange() {
+    this.refreshCart()
+  },
+
+  goCheckout() {
+    if (!this.data.cartCount) return
+    wx.navigateTo({ url: '/pages/checkout/checkout' })
   }
 })

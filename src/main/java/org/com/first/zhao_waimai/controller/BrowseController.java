@@ -5,6 +5,7 @@ import org.com.first.zhao_waimai.common.Result;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
+import org.com.first.zhao_waimai.dto.SearchResultVO;
 import org.com.first.zhao_waimai.dto.ShopVO;
 import org.com.first.zhao_waimai.service.BrowseService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,5 +67,15 @@ public class BrowseController {
                                                  @RequestParam(required = false) Double lat,
                                                  @RequestParam(required = false) Double lng) {
         return Result.ok(browseService.listHotDishes(limit, lat, lng));
+    }
+
+    /**
+     * 搜索档口与菜品
+     */
+    @GetMapping("/search")
+    public Result<SearchResultVO> search(@RequestParam String keyword,
+                                         @RequestParam(required = false) Double lat,
+                                         @RequestParam(required = false) Double lng) {
+        return Result.ok(browseService.search(keyword, lat, lng));
     }
 }

@@ -35,4 +35,13 @@ public class ShopVO {
 
     /** 状态：0 休息 1 营业 */
     private Integer status;
+
+    /** 所属美食城 id */
+    private Long mallId;
+
+    /** 所属美食城名称 */
+    private String mallName;
+
+    /** 距离（公里） */
+    private Double distance;
 }

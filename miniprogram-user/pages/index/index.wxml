@@ -1,15 +1,19 @@
 <view class="page">
   <!-- 顶部定位 + 搜索 -->
   <view class="topbar">
-    <view class="loc">
+    <view class="loc" bindtap="chooseLocation">
       <image class="loc-icon" src="{{icons.location}}" />
       <text class="loc-text">{{location}}</text>
+      <image class="loc-chevron" src="{{icons.chevron}}" />
     </view>
-    <view class="search-box">
+    <view class="search-box" bindtap="goSearch">
       <image class="search-icon" src="{{icons.search}}" />
       <text class="search-placeholder">搜索店铺、美食</text>
     </view>
-    <image class="cart-entry" src="{{icons.cart}}" bindtap="goCart" />
+    <view class="cart-wrap" bindtap="openCart">
+      <image class="cart-entry" src="{{icons.cart}}" />
+      <text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text>
+    </view>
   </view>
 
   <!-- 通知条 -->
@@ -74,4 +78,6 @@
 
   <view class="empty" wx:if="{{!loading && !malls.length}}">暂无美食城，请先在后台维护数据</view>
   <view class="bottom-space"></view>
+
+  <cart-popup visible="{{cartVisible}}" bind:close="closeCart" bind:change="onCartChange" />
 </view>

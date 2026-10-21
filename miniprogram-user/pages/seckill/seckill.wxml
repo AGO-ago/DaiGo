@@ -51,8 +51,11 @@
     <view class="empty" wx:if="{{!loading && !dishes.length}}">暂无秒杀商品</view>
   </view>
 
-  <view class="cart-fab" bindtap="goCart">
+  <view class="cart-fab" bindtap="openCart">
     <image class="cart-fab-icon" src="{{icons.cartWhite}}" />
+    <text class="cart-fab-badge" wx:if="{{cartCount}}">{{cartCount}}</text>
   </view>
   <view class="bottom-space"></view>
+
+  <cart-popup visible="{{cartVisible}}" bind:close="closeCart" bind:change="onCartChange" />
 </view>
