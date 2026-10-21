@@ -1,42 +1,88 @@
 <view class="page">
   <!-- 美食城头部 -->
-  <view class="mall-banner" wx:if="{{mall}}">
-    <image class="banner-img" src="{{mall.coverImg}}" mode="aspectFill" />
-    <view class="banner-mask"></view>
-    <view class="banner-info">
-      <view class="banner-name">{{mall.name}}</view>
-      <view class="banner-meta">
-        <text class="banner-count">{{mall.shopCount}}个档口</text>
-        <text class="banner-distance" wx:if="{{mall.distance !== null}}">| {{mall.distance}}km</text>
+  <view class="mall-head" wx:if="{{mall}}">
+    <image class="mall-logo" src="{{mall.coverImg}}" mode="aspectFill" />
+    <view class="mall-info">
+      <view class="mall-name">{{mall.name}}</view>
+      <view class="mall-tags">
+        <text class="tag">{{mall.shopCount}}个档口</text>
+        <text class="tag" wx:if="{{mall.distance !== null}}">{{mall.distance}}km</text>
+        <text class="tag">营业资质 ›</text>
       </view>
-      <view class="banner-addr">{{mall.address}}</view>
-      <view class="banner-hours">营业时间 {{mall.businessHours}}</view>
+      <view class="mall-addr">{{mall.address}}</view>
     </view>
   </view>
 
-  <!-- 档口列表 -->
-  <view class="list-head">
-    <text class="list-title">全部档口</text>
-    <text class="list-count">{{shops.length}} 家</text>
+  <!-- 所有店家并排（横滑可查看全部） -->
+  <view class="shops-wrap">
+    <scroll-view class="shops-scroll" scroll-x enable-flex scroll-into-view="shop-{{activeShopIndex}}">
+      <view class="shop-chip {{activeShopIndex === index ? 'active' : ''}}"
+            wx:for="{{shops}}" wx:key="id" id="shop-{{index}}"
+            data-index="{{index}}" bindtap="onSelectShop">
+        <image class="chip-img" src="{{item.logo}}" mode="aspectFill" />
+        <view class="chip-name">{{item.name}}</view>
+      </view>
+    </scroll-view>
+    <view class="shops-all" wx:if="{{shops.length > 5}}">查看全部 ›</view>
   </view>
 
-  <view class="shop-list">
-    <view class="shop-card" wx:for="{{shops}}" wx:key="id"
-          data-shop-id="{{item.id}}" data-shop-name="{{item.name}}" bindtap="goMenu">
-      <image class="shop-logo" src="{{item.logo}}" mode="aspectFill" />
-      <view class="shop-info">
-        <view class="shop-name-row">
-          <text class="shop-name">{{item.name}}</text>
-          <text class="shop-status {{item.status === 1 ? 'open' : 'rest'}}">{{item.status === 1 ? '营业中' : '休息中'}}</text>
+  <!-- 外送 / 自取 -->
+  <view class="mode-bar">
+    <view class="mode-item active">外送</view>
+    <view class="mode-item">自取<span class="mode-sub">距您 {{mall.distance}}km</span></view>
+  </view>
+
+  <!-- 当前档口信息 -->
+  <view class="shop-head" wx:if="{{shop}}">
+    <view class="shop-title">{{shop.name}}</view>
+    <view class="shop-badges">
+      <text class="badge-star">★ 5.0</text>
+      <text class="badge-shop">食堂店</text>
+      <text class="badge-free">免配送费</text>
+    </view>
+    <view class="shop-meta">起送 ¥{{shop.minOrderAmount}} · 配送 ¥{{shop.deliveryFee}} · 约 {{shop.averageDeliveryTime}} 分钟</view>
+  </view>
+
+  <!-- 商品区：左分类 + 右菜品 -->
+  <view class="menu">
+    <scroll-view class="cate-list" scroll-y>
+      <view class="cate-item {{activeCategoryIndex === index ? 'active' : ''}}"
+            wx:for="{{categories}}" wx:key="categoryId"
+            data-index="{{index}}" bindtap="switchCategory">
+        <text class="cate-name">{{item.categoryName}}</text>
+      </view>
+    </scroll-view>
+
+    <scroll-view class="dish-list" scroll-y>
+      <view class="dish-item" wx:for="{{dishes}}" wx:key="id">
+        <image class="dish-img" src="{{item.image}}" mode="aspectFill" />
+        <view class="dish-info">
+          <view class="dish-name">{{item.name}}</view>
+          <view class="dish-hot" wx:if="{{item.hotLabel}}">{{item.hotLabel}}</view>
+          <view class="dish-desc" wx:if="{{item.description}}">{{item.description}}</view>
+          <view class="dish-bottom">
+            <view class="dish-price">
+              <text class="price-sign">¥</text>
+              <text class="price-num">{{item.price}}</text>
+              <text class="price-origin" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+            </view>
+            <view class="add-btn" data-dish-id="{{item.id}}" bindtap="addToCart">+</view>
+          </view>
         </view>
-        <view class="shop-desc">起送 ¥{{item.minOrderAmount}} · 配送 ¥{{item.deliveryFee}}</view>
-        <view class="shop-desc">约 {{item.averageDeliveryTime}} 分钟送达</view>
-        <view class="shop-hours">{{item.businessHours}}</view>
       </view>
-      <view class="shop-enter">进店 ›</view>
-    </view>
+
+      <view class="empty" wx:if="{{!dishes.length}}">该档口暂无在售菜品</view>
+      <view class="dish-bottom-space"></view>
+    </scroll-view>
   </view>
 
-  <view class="empty" wx:if="{{!loading && !shops.length}}">该美食城暂未入驻档口</view>
-  <view class="bottom-space"></view>
+  <!-- 购物车悬浮条 -->
+  <view class="cart-bar">
+    <view class="cart-left" bindtap="goCart">
+      <view class="cart-icon">🛒<text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text></view>
+      <view class="cart-amount" wx:if="{{cartCount}}">¥{{cartTotal}}</view>
+      <view class="cart-empty-tip" wx:else>购物车是空的</view>
+    </view>
+    <view class="cart-submit {{cartCount ? '' : 'disabled'}}" bindtap="goCart">去结算</view>
+  </view>
 </view>

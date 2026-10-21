@@ -20,8 +20,8 @@ Page({
     get(`/shop/${this.data.shopId}/dishes`, {}, false)
       .then((res) => {
         const tree = res || []
-        const categories = tree.map((c) => c.category)
-        this.allDishes = tree.flatMap((c) => (c.dishes || []).map((d) => ({ ...d, category: c.category })))
+        const categories = tree.map((c) => c.categoryName)
+        this.allDishes = tree.flatMap((c) => (c.dishes || []).map((d) => ({ ...d, category: c.categoryName })))
         this.setData({ categories, loading: false })
         this.applyCategory(0)
       })
