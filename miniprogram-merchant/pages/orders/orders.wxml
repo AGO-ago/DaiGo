@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{currentStatus === item.key ? 'active' : ''}}" wx:for="{{statusTabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchStatus">{{item.label}}</view>
+  </view>
+
+  <view class="order" wx:for="{{orders}}" wx:key="id">
+    <view class="row">订单号 {{item.orderNo}}</view>
+    <view class="row">{{item.addressSnapshot}}</view>
+    <view class="row">实付 ¥{{item.payAmount}} · {{item.statusText}}</view>
+    <button wx:if="{{STATUS_ACTION[item.status].next}}" size="mini" type="primary" data-id="{{item.id}}" data-action="{{STATUS_ACTION[item.status].action}}" bindtap="onAction">{{STATUS_ACTION[item.status].text}}</button>
+  </view>
+
+  <view class="empty" wx:if="{{!orders.length}}">暂无订单</view>
+</view>

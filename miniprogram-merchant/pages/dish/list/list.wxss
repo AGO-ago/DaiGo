@@ -1,0 +1,39 @@
+.dish {
+  display: flex;
+  background: #fff;
+  margin: 16rpx 24rpx;
+  padding: 20rpx;
+  border-radius: 16rpx;
+}
+
+.img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: #f0f0f0;
+}
+
+.info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.price {
+  color: #ff5722;
+  margin-top: 8rpx;
+}
+
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 60rpx;
+  width: 100rpx;
+  height: 100rpx;
+  line-height: 96rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #ff5722;
+  color: #fff;
+  font-size: 48rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 87, 34, 0.4);
+}

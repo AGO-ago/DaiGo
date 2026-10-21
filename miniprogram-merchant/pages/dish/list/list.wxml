@@ -1,0 +1,13 @@
+<view class="page">
+  <view class="dish" wx:for="{{dishes}}" wx:key="id" data-id="{{item.id}}" bindtap="onEdit">
+    <image class="img" src="{{item.image}}" mode="aspectFill" />
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="price">¥{{item.price}}</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!dishes.length}}">还没有菜品，点右下角新增</view>
+
+  <view class="fab" bindtap="onAdd">＋</view>
+</view>

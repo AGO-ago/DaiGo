@@ -1,0 +1,32 @@
+.tabs {
+  display: flex;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.tab.active {
+  color: #ff5722;
+  font-weight: 600;
+}
+
+.order {
+  background: #fff;
+  margin: 20rpx 24rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+}
+
+.row {
+  font-size: 26rpx;
+  margin-bottom: 8rpx;
+}

@@ -1,0 +1,13 @@
+<view class="mine">
+  <view class="header">
+    <block wx:if="{{user}}">
+      <image class="avatar" src="{{user.avatar}}" mode="aspectFill" />
+      <view class="name">{{user.nickname || '微信用户'}}</view>
+      <view class="logout" bindtap="onLogout">退出登录</view>
+    </block>
+    <block wx:else>
+      <view class="login-btn" bindtap="onLogin">微信一键登录</view>
+      <view class="tip">登录后可下单、查看订单</view>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,18 @@
+<view class="cart">
+  <view class="item" wx:for="{{items}}" wx:key="index">
+    <view class="name">{{item.name}}</view>
+    <view class="price">¥{{item.price}}</view>
+    <view class="ops">
+      <text class="op" data-index="{{index}}" data-delta="-1" bindtap="changeCount">-</text>
+      <text class="count">{{item.count}}</text>
+      <text class="op" data-index="{{index}}" data-delta="1" bindtap="changeCount">+</text>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!items.length}}">购物车是空的，去档口点几道菜吧</view>
+
+  <view class="footer" wx:if="{{items.length}}">
+    <text>合计 ¥{{total}}</text>
+    <button size="mini" type="primary" bindtap="goCheckout">去结算</button>
+  </view>
+</view>

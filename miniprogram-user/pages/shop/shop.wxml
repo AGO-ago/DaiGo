@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="shop-item" wx:for="{{shops}}" wx:key="id" data-shop-id="{{item.id}}" data-shop-name="{{item.name}}" bindtap="goMenu">
+    <image class="logo" src="{{item.logo}}" mode="aspectFill" />
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="desc">起送价 ¥{{item.minOrderAmount}} · 配送费 ¥{{item.deliveryFee}}</view>
+      <view class="desc">预计 {{item.averageDeliveryTime}} 分钟送达</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !shops.length}}">该美食城暂未入驻档口</view>
+</view>

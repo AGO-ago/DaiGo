@@ -1,0 +1,49 @@
+.item {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  margin: 16rpx 24rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+}
+
+.name {
+  flex: 1;
+}
+
+.price {
+  color: #ff5722;
+  margin-right: 20rpx;
+}
+
+.ops {
+  display: flex;
+  align-items: center;
+}
+
+.op {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+}
+
+.count {
+  width: 64rpx;
+  text-align: center;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  background: #fff;
+  border-top: 1rpx solid #eee;
+}

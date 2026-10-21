@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="mall-list">
+    <view class="mall-item" wx:for="{{malls}}" wx:key="id" data-mall-id="{{item.id}}" data-mall-name="{{item.name}}" bindtap="goShop">
+      <image class="cover" src="{{item.coverImg}}" mode="aspectFill" />
+      <view class="info">
+        <view class="name">{{item.name}}</view>
+        <view class="addr">{{item.address}}</view>
+        <view class="hours">营业时间 {{item.businessHours}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !malls.length}}">暂无美食城，请先在后台维护数据</view>
+</view>
