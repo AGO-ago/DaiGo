@@ -1,0 +1,149 @@
+page {
+  background: #f6f6f6;
+}
+
+.page {
+  padding: 20rpx 24rpx calc(140rpx + env(safe-area-inset-bottom));
+}
+
+.status-card {
+  padding: 30rpx 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.status-text {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #222;
+}
+
+.status-tip {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.shop-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 16rpx;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+}
+
+.item-img {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 10rpx;
+  background: #f2f2f2;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  margin-left: 16rpx;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 26rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-price {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.item-amount {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.total-row.strong {
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f2f2f2;
+  font-size: 28rpx;
+  color: #222;
+  font-weight: 600;
+}
+
+.pay {
+  color: #ff2d3c;
+}
+
+.label {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.label:first-child {
+  margin-top: 0;
+}
+
+.value {
+  margin-top: 6rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+}
+
+.btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+}
+
+.btn.ghost {
+  margin-right: 20rpx;
+  color: #666;
+  border: 1rpx solid #ddd;
+}
+
+.btn.primary {
+  color: #ffffff;
+  background: #ff5a3c;
+}
+
+.bottom-space {
+  height: 40rpx;
+}

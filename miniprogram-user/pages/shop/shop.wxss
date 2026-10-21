@@ -7,7 +7,7 @@ page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding-bottom: 110rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
@@ -352,7 +352,7 @@ page {
   position: fixed;
   left: 20rpx;
   right: 20rpx;
-  bottom: 20rpx;
+  bottom: calc(20rpx + env(safe-area-inset-bottom));
   height: 90rpx;
   display: flex;
   align-items: center;

@@ -101,3 +101,49 @@ INSERT INTO `dish` (`id`, `shop_id`, `category_id`, `name`, `image`, `price`, `o
 (9, 2, 4, '葱油拌面',
  'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=scallion%20oil%20noodles%20bowl&image_size=square',
  12.00, 13.00, '葱香浓郁', 1, 1, 189);
+
+-- -------------------------------------------------------------
+-- 其余档口分类与菜品（保证每家店点进去都有菜）
+-- -------------------------------------------------------------
+INSERT INTO `dish_category` (`id`, `shop_id`, `name`, `sort`) VALUES
+(5, 3, '招牌饭', 0),
+(6, 3, '小菜', 1),
+(7, 4, '卤味饭', 0),
+(8, 5, '汉堡', 0),
+(9, 6, '意面', 0),
+(10, 7, '卷饼', 0);
+
+INSERT INTO `dish` (`id`, `shop_id`, `category_id`, `name`, `image`, `price`, `original_price`, `description`, `status`, `sort`, `sold_count`) VALUES
+(10, 3, 5, '红烧牛肉饭',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=braised%20beef%20rice%20bowl%20chinese%20food%20photography&image_size=square',
+ 22.00, 25.00, '牛腩软烂，汤汁拌饭', 1, 0, 268),
+(11, 3, 5, '番茄牛腩饭',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=tomato%20beef%20brisket%20rice%20bowl&image_size=square',
+ 21.00, NULL, '酸甜开胃', 1, 1, 176),
+(12, 3, 6, '凉拌黄瓜',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=cucumber%20salad%20chinese%20side%20dish&image_size=square',
+ 6.00, NULL, '清爽解腻', 1, 0, 88),
+(13, 4, 7, '招牌卤肉饭',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=braised%20pork%20rice%20bowl%20taiwanese%20style&image_size=square',
+ 18.00, 20.00, '肥瘦相间，卤汁浓香', 1, 0, 342),
+(14, 4, 7, '卤蛋拼盘',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=braised%20eggs%20chinese%20side%20dish&image_size=square',
+ 5.00, NULL, '两颗入味卤蛋', 1, 1, 120),
+(15, 5, 8, '经典牛肉堡',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=classic%20beef%20burger%20realistic%20food%20photo&image_size=square',
+ 24.00, 28.00, '厚切牛肉饼', 1, 0, 231),
+(16, 5, 8, '芝士鸡腿堡',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=cheese%20chicken%20burger%20realistic%20food%20photo&image_size=square',
+ 22.00, NULL, '外脆里嫩', 1, 1, 198),
+(17, 6, 9, '番茄肉酱意面',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=spaghetti%20bolognese%20realistic%20food%20photo&image_size=square',
+ 26.00, 30.00, '慢熬肉酱', 1, 0, 143),
+(18, 6, 9, '奶油培根意面',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=creamy%20carbonara%20pasta%20realistic%20food%20photo&image_size=square',
+ 28.00, NULL, '浓郁奶香', 1, 1, 121),
+(19, 7, 10, '鸡肉卷饼',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=chicken%20wrap%20burrito%20realistic%20food%20photo&image_size=square',
+ 16.00, 18.00, '现做现卷', 1, 0, 187),
+(20, 7, 10, '牛肉卷饼',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=beef%20wrap%20burrito%20realistic%20food%20photo&image_size=square',
+ 19.00, NULL, '牛肉加倍', 1, 1, 164);

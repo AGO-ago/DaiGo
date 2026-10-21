@@ -1,5 +1,14 @@
 const { get } = require('../../../utils/request')
 
+const STATUS_TEXT = {
+  0: '待支付',
+  1: '待接单',
+  2: '备餐中',
+  3: '配送中',
+  4: '已完成',
+  5: '已取消'
+}
+
 Page({
   data: {
     orders: [],
@@ -10,7 +19,8 @@ Page({
       { key: '3', label: '配送中' },
       { key: '4', label: '已完成' }
     ],
-    currentStatus: ''
+    currentStatus: '',
+    loading: true
   },
 
   onLoad() {
@@ -22,15 +32,25 @@ Page({
   },
 
   switchStatus(e) {
-    const key = e.currentTarget.dataset.key
-    this.setData({ currentStatus: key })
+    this.setData({ currentStatus: e.currentTarget.dataset.key })
     this.loadOrders()
   },
 
   loadOrders() {
-    get(`/order/list?status=${this.data.currentStatus}`)
-      .then((res) => this.setData({ orders: res || [] }))
-      .catch(() => this.setData({ orders: [] }))
+    // 空状态不传 status，避免后端把空串解析为数字时报错
+    const query = this.data.currentStatus ? { status: this.data.currentStatus } : {}
+    get('/order/list', query)
+      .then((res) => {
+        const orders = ((res && res.list) || []).map((o) => ({
+          ...o,
+          id: o.orderId,
+          statusText: STATUS_TEXT[o.status] || '',
+          summary: (o.items || []).map((i) => i.dishName).join('、'),
+          createTime: (o.createTime || '').replace('T', ' ').slice(0, 16)
+        }))
+        this.setData({ orders, loading: false })
+      })
+      .catch(() => this.setData({ orders: [], loading: false }))
   },
 
   goDetail(e) {

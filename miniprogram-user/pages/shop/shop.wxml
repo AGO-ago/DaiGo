@@ -29,7 +29,7 @@
   <!-- 外送 / 自取 -->
   <view class="mode-bar">
     <view class="mode-item active">外送</view>
-    <view class="mode-item">自取<span class="mode-sub">距您 {{mall.distance}}km</span></view>
+    <view class="mode-item">自取<text class="mode-sub" wx:if="{{mall.distance !== null}}">距您 {{mall.distance}}km</text></view>
   </view>
 
   <!-- 当前档口信息 -->

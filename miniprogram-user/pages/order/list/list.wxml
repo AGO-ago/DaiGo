@@ -4,9 +4,16 @@
   </view>
 
   <view class="order" wx:for="{{orders}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
-    <view class="row">{{item.shopName}} · {{item.statusText}}</view>
-    <view class="row">实付 ¥{{item.payAmount}}</view>
+    <view class="order-head">
+      <text class="shop-name">{{item.shopName}}</text>
+      <text class="status">{{item.statusText}}</text>
+    </view>
+    <view class="summary">{{item.summary}}</view>
+    <view class="order-foot">
+      <text class="time">{{item.createTime}}</text>
+      <text class="amount">实付 ¥{{item.payAmount}}</text>
+    </view>
   </view>
 
-  <view class="empty" wx:if="{{!orders.length}}">暂无订单</view>
+  <view class="empty" wx:if="{{!loading && !orders.length}}">暂无订单</view>
 </view>
