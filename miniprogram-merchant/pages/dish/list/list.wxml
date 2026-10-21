@@ -1,13 +1,60 @@
 <view class="page">
-  <view class="dish" wx:for="{{dishes}}" wx:key="id" data-id="{{item.id}}" bindtap="onEdit">
-    <image class="img" src="{{item.image}}" mode="aspectFill" />
-    <view class="info">
-      <view class="name">{{item.name}}</view>
-      <view class="price">¥{{item.price}}</view>
-    </view>
+  <view class="unbound" wx:if="{{!bound && !loading}}">
+    <view class="unbound-text">请先登录并绑定档口</view>
+    <view class="unbound-tip">登录后在小程序「我的」页进入档口设置完成绑定</view>
   </view>
 
-  <view class="empty" wx:if="{{!dishes.length}}">还没有菜品，点右下角新增</view>
+  <block wx:if="{{bound}}">
+    <!-- 分类管理 -->
+    <view class="toolbar">
+      <view class="tool-btn" bindtap="toggleManage">{{manage ? '完成' : '分类管理'}}</view>
+      <view class="tool-btn" bindtap="addCategory">＋ 新增分类</view>
+    </view>
 
-  <view class="fab" bindtap="onAdd">＋</view>
+    <view class="category-manage" wx:if="{{manage}}">
+      <view class="cat-chip" wx:for="{{categories}}" wx:key="id"
+            data-id="{{item.id}}" data-name="{{item.name}}" data-sort="{{item.sort}}"
+            bindtap="renameCategory">
+        <text>{{item.name}}</text>
+        <text class="cat-del" data-id="{{item.id}}" data-name="{{item.name}}" catchtap="deleteCategory">✕</text>
+      </view>
+      <view class="empty-chip" wx:if="{{!categories.length}}">还没有分类，点击上方新增</view>
+    </view>
+
+    <!-- 按分类分组展示 -->
+    <view class="group" wx:for="{{grouped}}" wx:key="id" wx:for-item="group">
+      <view class="group-head">
+        <text class="group-name">{{group.name}}</text>
+        <text class="group-count">{{group.dishes.length}} 个菜品</text>
+      </view>
+
+      <view class="dish {{item.status === 0 ? 'off' : ''}}" wx:for="{{group.dishes}}" wx:key="id">
+        <image class="img" src="{{item.image}}" mode="aspectFill" />
+        <view class="info">
+          <view class="name">{{item.name}}</view>
+          <view class="meta">销量 {{item.soldCount}} · 排序 {{item.sort}}</view>
+          <view class="price">
+            <text class="now">¥{{item.price}}</text>
+            <text class="origin" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+          </view>
+        </view>
+        <view class="ops">
+          <view class="status-btn {{item.status === 1 ? 'on' : ''}}"
+                data-id="{{item.id}}" data-status="{{item.status}}" bindtap="toggleStatus">
+            {{item.status === 1 ? '已上架' : '已下架'}}
+          </view>
+          <view class="op-row">
+            <text class="op" data-id="{{item.id}}" bindtap="editDish">编辑</text>
+            <text class="op danger" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="deleteDish">删除</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="group-empty" wx:if="{{!group.dishes.length}}">该分类下暂无菜品</view>
+    </view>
+
+    <view class="empty" wx:if="{{!loading && !grouped.length}}">还没有菜品，点右下角新增</view>
+
+    <view class="fab" bindtap="addDish">＋</view>
+  </block>
 </view>

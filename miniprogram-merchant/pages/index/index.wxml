@@ -1,18 +1,73 @@
 <view class="page">
-  <view class="stat card">
-    <view class="stat-item">
-      <view class="num">{{stat.todayAmount || 0}}</view>
-      <view class="label">今日营收(元)</view>
-    </view>
-    <view class="stat-item">
-      <view class="num">{{stat.todayOrderCount || 0}}</view>
-      <view class="label">今日订单</view>
-    </view>
-    <view class="stat-item" bindtap="goOrders">
-      <view class="num">{{pendingCount}}</view>
-      <view class="label">待接单</view>
-    </view>
+  <!-- 未登录 -->
+  <view class="login-card" wx:if="{{!user}}">
+    <view class="login-title">商家工作台</view>
+    <view class="login-sub">登录后接单、管理菜品与营业数据</view>
+    <view class="login-btn" bindtap="onLogin">微信一键登录</view>
   </view>
 
-  <view class="empty" wx:if="{{!stat}}">登录商家账号后展示经营数据</view>
+  <block wx:else>
+    <!-- 未绑定档口 -->
+    <view class="login-card" wx:if="{{!shop && !loading}}">
+      <view class="login-title">账号未绑定档口</view>
+      <view class="login-sub">绑定后即可接单与上架菜品</view>
+      <view class="login-btn" bindtap="goShop">去绑定档口</view>
+    </view>
+
+    <block wx:if="{{shop}}">
+      <!-- 档口头部 -->
+      <view class="shop-head">
+        <view class="shop-head-main">
+          <view class="shop-name">{{shop.name}}</view>
+          <view class="shop-hours">{{shop.businessHours}} · 起送 ¥{{shop.minOrderAmount}} · 配送 ¥{{shop.deliveryFee}}</view>
+        </view>
+        <view class="biz-toggle {{shop.status === 1 ? 'on' : ''}}" bindtap="toggleBusiness">
+          {{shop.status === 1 ? '营业中' : '已休息'}}
+        </view>
+      </view>
+
+      <!-- 今日数据 -->
+      <view class="stat">
+        <view class="stat-item">
+          <view class="num">¥{{stat.todayAmount || '0.00'}}</view>
+          <view class="label">今日营收</view>
+        </view>
+        <view class="stat-item" data-status="" bindtap="goOrders">
+          <view class="num">{{stat.todayOrderCount || 0}}</view>
+          <view class="label">今日订单</view>
+        </view>
+        <view class="stat-item" data-status="1" bindtap="goOrders">
+          <view class="num highlight">{{stat.pendingCount || 0}}</view>
+          <view class="label">待接单</view>
+        </view>
+        <view class="stat-item" data-status="4" bindtap="goOrders">
+          <view class="num">{{stat.finishedCount || 0}}</view>
+          <view class="label">已完成</view>
+        </view>
+      </view>
+
+      <!-- 待接单 -->
+      <view class="section">
+        <view class="section-head">
+          <text class="section-title">待接单</text>
+          <view class="section-more" data-status="1" bindtap="goOrders">全部订单 ›</view>
+        </view>
+        <view class="order" wx:for="{{pendingOrders}}" wx:key="orderId">
+          <view class="order-head">
+            <text class="order-no">#{{item.orderNo}}</text>
+            <text class="order-amount">¥{{item.payAmount}}</text>
+          </view>
+          <view class="order-dishes">
+            <text class="dish-line" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">{{dish.dishName}}×{{dish.count}}</text>
+          </view>
+          <view class="order-addr">{{item.addressSnapshot}}</view>
+          <view class="order-foot">
+            <text class="order-remark" wx:if="{{item.remark}}">备注：{{item.remark}}</text>
+            <view class="accept-btn" data-id="{{item.orderId}}" catchtap="accept">接单</view>
+          </view>
+        </view>
+        <view class="empty" wx:if="{{!pendingOrders.length}}">暂无待接单订单</view>
+      </view>
+    </block>
+  </block>
 </view>

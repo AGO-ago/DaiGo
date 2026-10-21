@@ -1,14 +1,41 @@
 <view class="page">
   <view class="tabs">
-    <view class="tab {{currentStatus === item.key ? 'active' : ''}}" wx:for="{{statusTabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchStatus">{{item.label}}</view>
+    <view class="tab {{currentStatus === item.key ? 'active' : ''}}" wx:for="{{statusTabs}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="switchStatus">{{item.label}}</view>
   </view>
 
-  <view class="order" wx:for="{{orders}}" wx:key="id">
-    <view class="row">订单号 {{item.orderNo}}</view>
-    <view class="row">{{item.addressSnapshot}}</view>
-    <view class="row">实付 ¥{{item.payAmount}} · {{item.statusText}}</view>
-    <button wx:if="{{STATUS_ACTION[item.status].next}}" size="mini" type="primary" data-id="{{item.id}}" data-action="{{STATUS_ACTION[item.status].action}}" bindtap="onAction">{{STATUS_ACTION[item.status].text}}</button>
+  <view class="list">
+    <view class="order" wx:for="{{orders}}" wx:key="orderId">
+      <view class="order-head">
+        <text class="order-no">#{{item.orderNo}}</text>
+        <text class="status status-{{item.status}}">{{item.statusText}}</text>
+      </view>
+
+      <view class="dish" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+        <image class="thumb" src="{{dish.dishImage}}" mode="aspectFill" />
+        <view class="dish-info">
+          <view class="dish-name">{{dish.dishName}}</view>
+          <view class="dish-count">× {{dish.count}}</view>
+        </view>
+        <text class="dish-amount">¥{{dish.amount}}</text>
+      </view>
+
+      <view class="addr">{{item.addressSnapshot}}</view>
+      <view class="remark" wx:if="{{item.remark}}">备注：{{item.remark}}</view>
+
+      <view class="summary">
+        <text class="summary-time">{{item.createTime}}</text>
+        <view class="summary-amount">
+          <text class="label" wx:if="{{item.discountAmount > 0}}">已优惠 ¥{{item.discountAmount}}</text>
+          <text class="pay">实付 ¥{{item.payAmount}}</text>
+        </view>
+      </view>
+
+      <view class="actions" wx:if="{{item.action}}">
+        <view class="btn primary" data-id="{{item.orderId}}" data-action="{{item.action}}" data-text="{{item.btnText}}" bindtap="onAction">{{item.btnText}}</view>
+      </view>
+    </view>
   </view>
 
-  <view class="empty" wx:if="{{!orders.length}}">暂无订单</view>
+  <view class="empty" wx:if="{{!loading && !orders.length}}">暂无订单</view>
 </view>

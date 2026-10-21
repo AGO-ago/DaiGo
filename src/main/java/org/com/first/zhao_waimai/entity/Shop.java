@@ -49,6 +49,9 @@ public class Shop {
     /** 状态：0 休息 1 营业 */
     private Integer status;
 
+    /** 绑定商家账号 id（平台开通后写入，空表示未绑定） */
+    private Long merchantUserId;
+
     /** 创建时间（自动填充） */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

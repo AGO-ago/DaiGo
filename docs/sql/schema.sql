@@ -45,11 +45,13 @@ CREATE TABLE `shop` (
   `average_delivery_time` INT                    DEFAULT 30 COMMENT '预计送达分钟数',
   `business_hours`        VARCHAR(64)            DEFAULT NULL COMMENT '营业时间',
   `status`                TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 休息 1 营业',
+  `merchant_user_id`      BIGINT                 DEFAULT NULL COMMENT '绑定商家账号 id（平台开通后写入）',
   `create_time`           DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`           DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`               TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
   PRIMARY KEY (`id`),
-  KEY `idx_mall_id` (`mall_id`)
+  KEY `idx_mall_id` (`mall_id`),
+  KEY `idx_merchant_user_id` (`merchant_user_id`)
 ) ENGINE = InnoDB COMMENT = '档口/商家';
 
 -- -------------------------------------------------------------

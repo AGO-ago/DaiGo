@@ -1,0 +1,69 @@
+<view class="page">
+  <block wx:if="{{loading}}">
+    <view class="empty">加载中…</view>
+  </block>
+
+  <!-- 未绑定：选择档口 -->
+  <block wx:elif="{{!bound}}">
+    <view class="tip">当前账号未绑定档口，请选择要经营的档口（演示环境仅展示未绑定档口）</view>
+    <view class="bind-item" wx:for="{{bindable}}" wx:key="id">
+      <view class="bind-info">
+        <view class="bind-name">{{item.name}}</view>
+        <view class="bind-sub">起送 ¥{{item.minOrderAmount}} · 配送 ¥{{item.deliveryFee}} · {{item.businessHours}}</view>
+      </view>
+      <view class="bind-btn" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="bind">绑定</view>
+    </view>
+    <view class="empty" wx:if="{{!bindable.length}}">没有可绑定的档口</view>
+  </block>
+
+  <!-- 已绑定：编辑档口信息 -->
+  <block wx:else>
+    <view class="card">
+      <view class="field">
+        <text class="label">档口 Logo</text>
+        <view class="logo-box" bindtap="chooseLogo">
+          <image class="logo" wx:if="{{form.logo}}" src="{{form.logo}}" mode="aspectFill" />
+          <view class="logo-placeholder" wx:else>{{uploading ? '上传中…' : '＋ 上传'}}</view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">档口名称</text>
+        <input class="input" maxlength="64" data-field="name" value="{{form.name}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">联系电话</text>
+        <input class="input" type="number" maxlength="20" data-field="phone" value="{{form.phone}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">营业时间</text>
+        <input class="input" placeholder="如 10:00-20:00" maxlength="64"
+               data-field="businessHours" value="{{form.businessHours}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">起送价（元）</text>
+        <input class="input" type="digit" data-field="minOrderAmount" value="{{form.minOrderAmount}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">配送费（元）</text>
+        <input class="input" type="digit" data-field="deliveryFee" value="{{form.deliveryFee}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">预计送达（分钟）</text>
+        <input class="input" type="number" data-field="averageDeliveryTime" value="{{form.averageDeliveryTime}}" bindinput="onInput" />
+      </view>
+
+      <view class="field">
+        <text class="label">营业状态</text>
+        <switch checked="{{form.status === 1}}" color="#ff5722" bindchange="onStatusChange" />
+      </view>
+    </view>
+
+    <view class="save {{saving ? 'disabled' : ''}}" bindtap="save">保存</view>
+  </block>
+</view>

@@ -1,31 +1,101 @@
-.header {
-  background: #fff;
-  padding: 60rpx 40rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+page {
+  background: #f5f5f5;
 }
 
-.name {
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 40rpx 32rpx;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
+}
+
+.avatar {
+  width: 108rpx;
+  height: 108rpx;
+  line-height: 108rpx;
+  text-align: center;
+  font-size: 52rpx;
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+}
+
+.profile-info {
+  flex: 1;
+  margin-left: 24rpx;
+  min-width: 0;
+}
+
+.nickname {
   font-size: 32rpx;
   font-weight: 600;
+  color: #ffffff;
+}
+
+.sub {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .logout {
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  color: #999;
+  padding: 10rpx 24rpx;
+  font-size: 24rpx;
+  color: #ffffff;
+  border: 1rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 28rpx;
 }
 
 .login-btn {
-  background: #ff5722;
-  color: #fff;
-  padding: 16rpx 60rpx;
-  border-radius: 40rpx;
+  padding: 14rpx 36rpx;
+  font-size: 26rpx;
+  color: #ff5722;
+  background: #ffffff;
+  border-radius: 32rpx;
 }
 
-.tip {
-  margin-top: 16rpx;
+.card {
+  margin: 24rpx;
+  padding: 0 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.menu-row:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  width: 44rpx;
+  font-size: 32rpx;
+}
+
+.menu-label {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.menu-value {
   font-size: 24rpx;
   color: #999;
+  margin-right: 8rpx;
+}
+
+.menu-arrow {
+  font-size: 30rpx;
+  color: #ccc;
+}
+
+.version {
+  margin-top: 60rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #bbb;
 }

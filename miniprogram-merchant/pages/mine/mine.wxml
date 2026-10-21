@@ -1,12 +1,39 @@
-<view class="mine">
-  <view class="header">
+<view class="page">
+  <view class="profile">
+    <view class="avatar">🏪</view>
     <block wx:if="{{user}}">
-      <view class="name">{{user.nickname || '商家'}}</view>
-      <view class="logout" bindtap="onLogout">退出登录</view>
+      <view class="profile-info">
+        <view class="nickname">{{shop ? shop.name : '未绑定档口'}}</view>
+        <view class="sub">账号 ID: {{user.userId}}</view>
+      </view>
+      <view class="logout" bindtap="onLogout">退出</view>
     </block>
     <block wx:else>
+      <view class="profile-info">
+        <view class="nickname">未登录</view>
+        <view class="sub">登录后管理档口与订单</view>
+      </view>
       <view class="login-btn" bindtap="onLogin">商家登录</view>
-      <view class="tip">登录后管理档口与订单</view>
     </block>
   </view>
+
+  <view class="card" wx:if="{{user}}">
+    <view class="menu-row" bindtap="goShop">
+      <text class="menu-icon">🏬</text>
+      <text class="menu-label">档口设置</text>
+      <text class="menu-value">{{shop ? shop.name : '去绑定'}}</text>
+    </view>
+    <view class="menu-row" bindtap="goDish">
+      <text class="menu-icon">🍲</text>
+      <text class="menu-label">菜品管理</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-row" bindtap="goComment">
+      <text class="menu-icon">⭐</text>
+      <text class="menu-label">顾客评价</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="version">美食城商家端 v1.0.0</view>
 </view>
