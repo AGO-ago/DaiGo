@@ -98,6 +98,7 @@ Page({
           commentCount: rows.length,
           comments: rows.slice(0, 20).map((c) => ({
             ...c,
+            createTime: (c.createTime || '').replace('T', ' ').slice(0, 16),
             stars: '★★★★★'.slice(0, c.score) + '☆☆☆☆☆'.slice(0, 5 - c.score)
           }))
         })
