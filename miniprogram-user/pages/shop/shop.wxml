@@ -1,12 +1,42 @@
 <view class="page">
-  <view class="shop-item" wx:for="{{shops}}" wx:key="id" data-shop-id="{{item.id}}" data-shop-name="{{item.name}}" bindtap="goMenu">
-    <image class="logo" src="{{item.logo}}" mode="aspectFill" />
-    <view class="info">
-      <view class="name">{{item.name}}</view>
-      <view class="desc">起送价 ¥{{item.minOrderAmount}} · 配送费 ¥{{item.deliveryFee}}</view>
-      <view class="desc">预计 {{item.averageDeliveryTime}} 分钟送达</view>
+  <!-- 美食城头部 -->
+  <view class="mall-banner" wx:if="{{mall}}">
+    <image class="banner-img" src="{{mall.coverImg}}" mode="aspectFill" />
+    <view class="banner-mask"></view>
+    <view class="banner-info">
+      <view class="banner-name">{{mall.name}}</view>
+      <view class="banner-meta">
+        <text class="banner-count">{{mall.shopCount}}个档口</text>
+        <text class="banner-distance" wx:if="{{mall.distance !== null}}">| {{mall.distance}}km</text>
+      </view>
+      <view class="banner-addr">{{mall.address}}</view>
+      <view class="banner-hours">营业时间 {{mall.businessHours}}</view>
+    </view>
+  </view>
+
+  <!-- 档口列表 -->
+  <view class="list-head">
+    <text class="list-title">全部档口</text>
+    <text class="list-count">{{shops.length}} 家</text>
+  </view>
+
+  <view class="shop-list">
+    <view class="shop-card" wx:for="{{shops}}" wx:key="id"
+          data-shop-id="{{item.id}}" data-shop-name="{{item.name}}" bindtap="goMenu">
+      <image class="shop-logo" src="{{item.logo}}" mode="aspectFill" />
+      <view class="shop-info">
+        <view class="shop-name-row">
+          <text class="shop-name">{{item.name}}</text>
+          <text class="shop-status {{item.status === 1 ? 'open' : 'rest'}}">{{item.status === 1 ? '营业中' : '休息中'}}</text>
+        </view>
+        <view class="shop-desc">起送 ¥{{item.minOrderAmount}} · 配送 ¥{{item.deliveryFee}}</view>
+        <view class="shop-desc">约 {{item.averageDeliveryTime}} 分钟送达</view>
+        <view class="shop-hours">{{item.businessHours}}</view>
+      </view>
+      <view class="shop-enter">进店 ›</view>
     </view>
   </view>
 
   <view class="empty" wx:if="{{!loading && !shops.length}}">该美食城暂未入驻档口</view>
+  <view class="bottom-space"></view>
 </view>

@@ -1,14 +1,77 @@
 <view class="page">
-  <view class="mall-list">
-    <view class="mall-item" wx:for="{{malls}}" wx:key="id" data-mall-id="{{item.id}}" data-mall-name="{{item.name}}" bindtap="goShop">
-      <image class="cover" src="{{item.coverImg}}" mode="aspectFill" />
-      <view class="info">
-        <view class="name">{{item.name}}</view>
-        <view class="addr">{{item.address}}</view>
-        <view class="hours">营业时间 {{item.businessHours}}</view>
+  <!-- 顶部定位 + 搜索 -->
+  <view class="topbar">
+    <view class="loc">
+      <text class="loc-icon">📍</text>
+      <text class="loc-text">{{location}}</text>
+    </view>
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <text class="search-placeholder">搜索</text>
+    </view>
+    <view class="cart-entry" bindtap="goCart">🛒</view>
+  </view>
+
+  <!-- 通知条 -->
+  <view class="notice">
+    <text class="notice-icon">🔔</text>
+    <text class="notice-text">自动发送短信，请您留意查看短信并及时取餐哦！</text>
+  </view>
+
+  <!-- 今日抢购 -->
+  <view class="section" wx:if="{{hotDishes.length}}">
+    <view class="section-head">
+      <view class="section-title">
+        <text class="hot-title">今日抢购</text>
+        <text class="hot-timer">距结束 {{countdown}}</text>
       </view>
+      <text class="more">更多 ›</text>
+    </view>
+    <scroll-view class="hot-scroll" scroll-x enable-flex>
+      <view class="hot-card" wx:for="{{hotDishes}}" wx:key="id">
+        <image class="hot-img" src="{{item.image}}" mode="aspectFill" />
+        <view class="hot-name">{{item.name}}</view>
+        <view class="hot-price-row">
+          <text class="hot-price">¥{{item.price}}</text>
+          <text class="hot-origin" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+          <text class="hot-badge">抢</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 美食城列表 -->
+  <view class="section-title-row">
+    <text class="mall-section-title">美食城</text>
+    <text class="mall-section-tag">档口</text>
+  </view>
+
+  <view class="mall-list">
+    <view class="mall-card" wx:for="{{malls}}" wx:key="id"
+          data-mall-id="{{item.id}}" data-mall-name="{{item.name}}" bindtap="goMall">
+      <view class="mall-head">
+        <image class="mall-logo" src="{{item.coverImg}}" mode="aspectFill" />
+        <view class="mall-info">
+          <view class="mall-name">{{item.name}}</view>
+          <view class="mall-meta">
+            <text class="mall-shop-count">{{item.shopCount}}个档口</text>
+            <text class="mall-distance" wx:if="{{item.distance !== null}}">{{item.distance}}km</text>
+          </view>
+          <view class="mall-addr">{{item.address}}</view>
+        </view>
+        <view class="mall-enter">进店 ›</view>
+      </view>
+
+      <scroll-view class="shop-scroll" scroll-x enable-flex wx:if="{{item.shops.length}}">
+        <view class="shop-thumb" wx:for="{{item.shops}}" wx:for-item="shop" wx:key="id"
+              data-shop-id="{{shop.id}}" data-shop-name="{{shop.name}}" catchtap="goShop">
+          <image class="shop-thumb-img" src="{{shop.logo}}" mode="aspectFill" />
+          <view class="shop-thumb-name">{{shop.name}}</view>
+        </view>
+      </scroll-view>
     </view>
   </view>
 
   <view class="empty" wx:if="{{!loading && !malls.length}}">暂无美食城，请先在后台维护数据</view>
+  <view class="bottom-space"></view>
 </view>

@@ -3,8 +3,10 @@ package org.com.first.zhao_waimai.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * 美食城列表项响应
+ * 美食城列表项响应（首页卡片）
  */
 @Data
 @Builder
@@ -24,4 +26,13 @@ public class MallVO {
 
     /** 营业时间 */
     private String businessHours;
+
+    /** 档口数量 */
+    private Integer shopCount;
+
+    /** 距离（公里，保留两位；未传定位时为 null） */
+    private Double distance;
+
+    /** 档口缩略列表（最多 6 个） */
+    private List<ShopBriefVO> shops;
 }

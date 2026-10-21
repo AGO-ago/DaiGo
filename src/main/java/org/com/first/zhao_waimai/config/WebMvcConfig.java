@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    /** 免登录放行路径（登录接口、接口文档、上传文件静态访问） */
+    /** 免登录放行路径（登录接口、公开浏览、接口文档、上传文件静态访问） */
     private static final String[] AUTH_WHITE_LIST = {
             "/auth/login",
             "/error",
@@ -24,7 +24,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/webjars/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/uploads/**"
+            "/uploads/**",
+            "/mall/**",
+            "/shop/**",
+            "/dish/**"
     };
 
     private final AuthInterceptor authInterceptor;

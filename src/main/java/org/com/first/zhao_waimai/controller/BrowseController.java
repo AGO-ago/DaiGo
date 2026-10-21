@@ -3,11 +3,13 @@ package org.com.first.zhao_waimai.controller;
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.Result;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
+import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
 import org.com.first.zhao_waimai.dto.ShopVO;
 import org.com.first.zhao_waimai.service.BrowseService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,11 +24,22 @@ public class BrowseController {
     private final BrowseService browseService;
 
     /**
-     * 营业中的美食城列表
+     * 营业中的美食城列表（lat/lng 传当前位置则返回距离）
      */
     @GetMapping("/mall/list")
-    public Result<List<MallVO>> listMalls() {
-        return Result.ok(browseService.listMalls());
+    public Result<List<MallVO>> listMalls(@RequestParam(required = false) Double lat,
+                                          @RequestParam(required = false) Double lng) {
+        return Result.ok(browseService.listMalls(lat, lng));
+    }
+
+    /**
+     * 美食城详情（进入美食城后的头部信息）
+     */
+    @GetMapping("/mall/{id}")
+    public Result<MallVO> getMall(@PathVariable Long id,
+                                  @RequestParam(required = false) Double lat,
+                                  @RequestParam(required = false) Double lng) {
+        return Result.ok(browseService.getMall(id, lat, lng));
     }
 
     /**
@@ -43,5 +56,13 @@ public class BrowseController {
     @GetMapping("/shop/{id}/dishes")
     public Result<List<DishTreeVO>> getDishTree(@PathVariable Long id) {
         return Result.ok(browseService.getDishTree(id));
+    }
+
+    /**
+     * 热销菜品（首页今日抢购）
+     */
+    @GetMapping("/dish/hot")
+    public Result<List<HotDishVO>> listHotDishes(@RequestParam(defaultValue = "6") int limit) {
+        return Result.ok(browseService.listHotDishes(limit));
     }
 }
