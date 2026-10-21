@@ -42,7 +42,8 @@
       </view>
     </view>
     <view class="shop-badges">
-      <text class="badge-star">★ 5.0</text>
+      <text class="badge-star" bindtap="openComments">★ {{rating}}</text>
+      <text class="badge-comment" wx:if="{{commentCount}}" bindtap="openComments">{{commentCount}}条评价 ›</text>
       <text class="badge-shop">食堂店</text>
       <text class="badge-free">免配送费</text>
     </view>
@@ -93,4 +94,28 @@
   </view>
 
   <cart-popup id="cartPopup" visible="{{cartVisible}}" bind:close="closeCart" bind:change="onCartChange" />
+
+  <!-- 顾客评价弹层 -->
+  <view class="mask" wx:if="{{commentVisible}}" bindtap="closeComments"></view>
+  <view class="comment-panel" wx:if="{{commentVisible}}" catchtap="noop">
+    <view class="panel-head">
+      <text class="panel-title">顾客评价（{{commentCount}}）</text>
+      <text class="panel-close" bindtap="closeComments">✕</text>
+    </view>
+    <view class="panel-rating" wx:if="{{commentCount}}">
+      <text class="panel-score">{{rating}}</text>
+      <text class="panel-score-label">综合评分</text>
+    </view>
+    <scroll-view class="panel-list" scroll-y>
+      <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+        <view class="comment-head">
+          <text class="comment-user">{{item.userName}}</text>
+          <text class="comment-stars">{{item.stars}}</text>
+        </view>
+        <view class="comment-content" wx:if="{{item.content}}">{{item.content}}</view>
+        <view class="comment-time">{{item.createTime}}</view>
+      </view>
+      <view class="comment-empty" wx:if="{{!comments.length}}">暂无评价</view>
+    </scroll-view>
+  </view>
 </view>

@@ -15,7 +15,12 @@ Page({
     cartCount: 0,
     cartTotal: '0.00',
     cartVisible: false,
-    favorited: false
+    favorited: false,
+    // 评价
+    rating: '5.0',
+    commentCount: 0,
+    comments: [],
+    commentVisible: false
   },
 
   onLoad(options) {
@@ -77,7 +82,38 @@ Page({
     })
     this.loadDishes(shop.id)
     this.loadFavorite(shop.id)
+    this.loadComments(shop.id)
   },
+
+  /** 档口评价：评分 + 最近评价 */
+  loadComments(shopId) {
+    get(`/comment/shop/${shopId}`, {}, false)
+      .then((list) => {
+        const rows = list || []
+        const rating = rows.length
+          ? (rows.reduce((sum, c) => sum + c.score, 0) / rows.length).toFixed(1)
+          : '5.0'
+        this.setData({
+          rating,
+          commentCount: rows.length,
+          comments: rows.slice(0, 20).map((c) => ({
+            ...c,
+            stars: '★★★★★'.slice(0, c.score) + '☆☆☆☆☆'.slice(0, 5 - c.score)
+          }))
+        })
+      })
+      .catch(() => {})
+  },
+
+  openComments() {
+    this.setData({ commentVisible: true })
+  },
+
+  closeComments() {
+    this.setData({ commentVisible: false })
+  },
+
+  noop() {},
 
   /** 收藏状态回显（未登录时静默失败，不影响菜单浏览） */
   loadFavorite(shopId) {
