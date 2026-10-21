@@ -1,0 +1,65 @@
+page {
+  background: #f6f6f6;
+}
+
+.page {
+  padding: 20rpx 24rpx calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  padding: 0 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 0;
+  border-bottom: 1rpx solid #f7f7f7;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  width: 170rpx;
+  font-size: 26rpx;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.switch-row {
+  justify-content: space-between;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+}
+
+.save {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  background: #ffd54f;
+  border-radius: 40rpx;
+}
+
+.save.disabled {
+  opacity: 0.6;
+}

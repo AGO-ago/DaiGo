@@ -1,0 +1,206 @@
+page {
+  background: #f6f6f6;
+}
+
+.page {
+  padding: 20rpx 24rpx calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.address-card {
+  padding: 28rpx 24rpx;
+}
+
+.addr-main {
+  display: flex;
+  align-items: center;
+}
+
+.addr-icon {
+  width: 40rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+}
+
+.addr-info {
+  flex: 1;
+  margin-left: 16rpx;
+  min-width: 0;
+}
+
+.addr-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.addr-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.arrow {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+
+.addr-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #ff5a3c;
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.shop-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.delivery-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+}
+
+.thumb {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 10rpx;
+  background: #f2f2f2;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  margin-left: 16rpx;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 26rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-count {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.item-amount {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.row.strong {
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid #f5f5f5;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.pay {
+  color: #ff2d3c;
+}
+
+.remark-row {
+  display: flex;
+  align-items: center;
+}
+
+.remark-label {
+  font-size: 26rpx;
+  color: #333;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.remark-input {
+  flex: 1;
+  font-size: 26rpx;
+}
+
+.empty {
+  margin: 100rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.total {
+  flex: 1;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.amount {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ff2d3c;
+}
+
+.submit {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 50rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  background: #ffd54f;
+  border-radius: 38rpx;
+}
+
+.submit.disabled {
+  opacity: 0.6;
+}

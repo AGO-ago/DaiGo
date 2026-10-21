@@ -1,7 +1,9 @@
 const { get } = require('../../utils/request')
+const icons = require('../../utils/icons')
 
 Page({
   data: {
+    icons,
     // 收货位置（首版固定为写字楼/校区，后续接入定位选择）
     location: '青岛理工大学(黄岛校区)',
     hotDishes: [],
@@ -65,12 +67,17 @@ Page({
     })
   },
 
-  /** 点击档口缩略图直达菜单 */
+  /** 点击档口缩略图直达该档口菜单（复用美食城聚合页并选中档口） */
   goShop(e) {
-    const { shopId, shopName } = e.currentTarget.dataset
+    const { shopId, shopName, mallId } = e.currentTarget.dataset
     wx.navigateTo({
-      url: `/pages/menu/menu?shopId=${shopId}&shopName=${encodeURIComponent(shopName)}`
+      url: `/pages/shop/shop?mallId=${mallId}&shopId=${shopId}&shopName=${encodeURIComponent(shopName)}`
     })
+  },
+
+  /** 今日抢购 - 更多 */
+  goSeckill() {
+    wx.navigateTo({ url: '/pages/seckill/seckill' })
   },
 
   goCart() {

@@ -1,19 +1,73 @@
-.item {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  margin: 16rpx 24rpx;
+page {
+  background: #f6f6f6;
+}
+
+.page {
+  padding: 20rpx 24rpx calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.group {
+  margin-bottom: 20rpx;
   padding: 24rpx;
+  background: #ffffff;
   border-radius: 16rpx;
 }
 
-.name {
+.group-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.shop-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.group-tag {
+  margin-left: 10rpx;
+  padding: 2rpx 10rpx;
+  font-size: 18rpx;
+  color: #ff5a3c;
+  background: #fff2ef;
+  border-radius: 6rpx;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-top: 1rpx solid #f7f7f7;
+}
+
+.thumb {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 12rpx;
+  background: #f2f2f2;
+  flex-shrink: 0;
+}
+
+.info {
   flex: 1;
+  margin-left: 16rpx;
+  min-width: 0;
+}
+
+.name {
+  font-size: 26rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .price {
-  color: #ff5722;
-  margin-right: 20rpx;
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #ff2d3c;
 }
 
 .ops {
@@ -24,27 +78,92 @@
 .op {
   width: 48rpx;
   height: 48rpx;
-  line-height: 48rpx;
+  line-height: 44rpx;
   text-align: center;
-  border: 1rpx solid #ddd;
-  border-radius: 8rpx;
+  font-size: 32rpx;
+  color: #666;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.op.plus {
+  color: #ffffff;
+  background: #38a3ff;
+  border-color: #38a3ff;
 }
 
 .count {
-  width: 64rpx;
+  width: 60rpx;
   text-align: center;
+  font-size: 26rpx;
+}
+
+.empty {
+  margin-top: 160rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.go-shop {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 14rpx 46rpx;
+  font-size: 26rpx;
+  color: #ff5a3c;
+  border: 1rpx solid #ff5a3c;
+  border-radius: 30rpx;
+}
+
+.tip {
+  padding: 0 8rpx;
+  font-size: 22rpx;
+  color: #aaa;
 }
 
 .footer {
   position: fixed;
-  bottom: 0;
   left: 0;
-  padding-bottom: env(safe-area-inset-bottom);
   right: 0;
+  bottom: 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20rpx 40rpx;
-  background: #fff;
-  border-top: 1rpx solid #eee;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.clear {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.footer-total {
+  flex: 1;
+  text-align: right;
+  margin-right: 20rpx;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.amount {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ff2d3c;
+}
+
+.submit {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 40rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  background: #ffd54f;
+  border-radius: 38rpx;
 }

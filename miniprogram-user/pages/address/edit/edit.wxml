@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="card">
+    <view class="row">
+      <text class="label">联系人</text>
+      <input class="input" placeholder="请输入姓名" value="{{form.contact}}"
+             data-field="contact" bindinput="onInput" />
+    </view>
+    <view class="row">
+      <text class="label">联系电话</text>
+      <input class="input" type="number" maxlength="11" placeholder="请输入手机号" value="{{form.phone}}"
+             data-field="phone" bindinput="onInput" />
+    </view>
+    <view class="row">
+      <text class="label">公司</text>
+      <input class="input" placeholder="写字楼/公司名称" value="{{form.company}}"
+             data-field="company" bindinput="onInput" />
+    </view>
+    <view class="row">
+      <text class="label">楼栋</text>
+      <input class="input" placeholder="如 A 座" value="{{form.building}}"
+             data-field="building" bindinput="onInput" />
+    </view>
+    <view class="row">
+      <text class="label">楼层</text>
+      <input class="input" placeholder="如 12 层" value="{{form.floor}}"
+             data-field="floor" bindinput="onInput" />
+    </view>
+    <view class="row">
+      <text class="label">工位/房号</text>
+      <input class="input" placeholder="如 1203" value="{{form.office}}"
+             data-field="office" bindinput="onInput" />
+    </view>
+    <view class="row switch-row">
+      <text class="label">设为默认地址</text>
+      <switch checked="{{form.isDefault}}" color="#ff5a3c" bindchange="onDefaultChange" />
+    </view>
+  </view>
+
+  <view class="footer">
+    <view class="save {{saving ? 'disabled' : ''}}" bindtap="save">保存</view>
+  </view>
+</view>

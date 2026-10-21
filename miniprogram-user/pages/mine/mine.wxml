@@ -1,13 +1,51 @@
-<view class="mine">
-  <view class="header">
+<view class="page">
+  <!-- 用户信息 -->
+  <view class="profile">
+    <view class="avatar">🍜</view>
     <block wx:if="{{user}}">
-      <image class="avatar" src="{{user.avatar}}" mode="aspectFill" />
-      <view class="name">{{user.nickname || '微信用户'}}</view>
-      <view class="logout" bindtap="onLogout">退出登录</view>
+      <view class="profile-info">
+        <view class="nickname">微信用户</view>
+        <view class="sub">ID: {{user.userId}}</view>
+      </view>
+      <view class="logout" bindtap="onLogout">退出</view>
     </block>
     <block wx:else>
-      <view class="login-btn" bindtap="onLogin">微信一键登录</view>
-      <view class="tip">登录后可下单、查看订单</view>
+      <view class="profile-info">
+        <view class="nickname">未登录</view>
+        <view class="sub">登录后可下单、查看订单</view>
+      </view>
+      <view class="login-btn" bindtap="onLogin">登录</view>
     </block>
   </view>
+
+  <!-- 我的订单 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">我的订单</text>
+      <view class="all" data-status="" bindtap="goOrders">全部订单 ›</view>
+    </view>
+    <view class="order-entries">
+      <view class="entry" wx:for="{{orderEntries}}" wx:key="key"
+            data-status="{{item.key}}" bindtap="goOrders">
+        <view class="entry-icon">{{item.icon}}</view>
+        <view class="entry-label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="card">
+    <view class="menu-row" bindtap="goAddress">
+      <image class="menu-icon" src="{{icons.address}}" />
+      <text class="menu-label">收货地址</text>
+      <image class="menu-arrow" src="{{icons.chevron}}" />
+    </view>
+    <view class="menu-row" bindtap="contactService">
+      <image class="menu-icon" src="{{icons.service}}" />
+      <text class="menu-label">联系客服</text>
+      <image class="menu-arrow" src="{{icons.chevron}}" />
+    </view>
+  </view>
+
+  <view class="version">赵外卖 · 校园美食城 v1.0.0</view>
 </view>

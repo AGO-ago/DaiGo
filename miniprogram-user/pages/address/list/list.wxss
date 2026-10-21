@@ -1,0 +1,91 @@
+page {
+  background: #f6f6f6;
+}
+
+.page {
+  padding: 20rpx 24rpx calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.line1 {
+  display: flex;
+  align-items: center;
+}
+
+.company {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.default-tag {
+  margin-left: 10rpx;
+  padding: 2rpx 10rpx;
+  font-size: 18rpx;
+  color: #ff5a3c;
+  background: #fff2ef;
+  border-radius: 6rpx;
+}
+
+.line2 {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #555;
+}
+
+.line3 {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.ops {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f7f7f7;
+}
+
+.op {
+  margin-left: 28rpx;
+  font-size: 22rpx;
+  color: #666;
+}
+
+.op.danger {
+  color: #ff5a3c;
+}
+
+.empty {
+  margin: 140rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+}
+
+.add {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+  background: #ffd54f;
+  border-radius: 40rpx;
+}

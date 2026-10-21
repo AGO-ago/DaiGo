@@ -35,5 +35,5 @@ public interface BrowseService {
     /**
      * 热销菜品（首页今日抢购，按销量倒序）
      */
-    List<HotDishVO> listHotDishes(int limit);
+    List<HotDishVO> listHotDishes(int limit, Double lat, Double lng);
 }

@@ -28,6 +28,11 @@ Page({
   },
 
   onShow() {
+    const filter = getApp().globalData.orderStatusFilter
+    if (filter !== undefined && filter !== null && filter !== '') {
+      getApp().globalData.orderStatusFilter = ''
+      this.setData({ currentStatus: filter })
+    }
     this.loadOrders()
   },
 

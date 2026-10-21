@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="card" wx:for="{{list}}" wx:key="id" data-index="{{index}}" bindtap="pick">
+    <view class="main">
+      <view class="line1">
+        <text class="company">{{item.company}}</text>
+        <text class="default-tag" wx:if="{{item.isDefault === 1}}">默认</text>
+      </view>
+      <view class="line2">{{item.building}} {{item.floor}} {{item.office}}</view>
+      <view class="line3">{{item.contact}} {{item.phone}}</view>
+    </view>
+    <view class="ops">
+      <text class="op" wx:if="{{item.isDefault !== 1}}" data-id="{{item.id}}" catchtap="setDefault">设为默认</text>
+      <text class="op danger" data-id="{{item.id}}" catchtap="remove">删除</text>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !list.length}}">还没有收货地址</view>
+
+  <view class="footer">
+    <view class="add" bindtap="add">+ 新增收货地址</view>
+  </view>
+</view>

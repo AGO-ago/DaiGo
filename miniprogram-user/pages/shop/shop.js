@@ -17,6 +17,7 @@ Page({
   },
 
   onLoad(options) {
+    this.targetShopId = options.shopId ? Number(options.shopId) : null
     this.setData({
       mallId: options.mallId,
       mallName: decodeURIComponent(options.mallName || '')
@@ -40,7 +41,13 @@ Page({
         wx.setNavigationBarTitle({ title: mall.name })
       }
       if (list.length) {
-        this.selectShop(0)
+        // 从首页/秒杀页带 shopId 进入时，直接选中该档口
+        let index = 0
+        if (this.targetShopId) {
+          const found = list.findIndex((s) => s.id === this.targetShopId)
+          if (found > -1) index = found
+        }
+        this.selectShop(index)
       }
     }).catch(() => {
       this.setData({ loading: false })

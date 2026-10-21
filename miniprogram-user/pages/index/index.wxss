@@ -21,8 +21,9 @@ page {
 }
 
 .loc-icon {
-  font-size: 26rpx;
-  margin-right: 4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 6rpx;
 }
 
 .loc-text {
@@ -45,7 +46,8 @@ page {
 }
 
 .search-icon {
-  font-size: 24rpx;
+  width: 28rpx;
+  height: 28rpx;
   margin-right: 8rpx;
 }
 
@@ -55,7 +57,8 @@ page {
 }
 
 .cart-entry {
-  font-size: 34rpx;
+  width: 44rpx;
+  height: 44rpx;
   margin-left: 16rpx;
 }
 

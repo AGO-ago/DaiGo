@@ -2,14 +2,14 @@
   <!-- 顶部定位 + 搜索 -->
   <view class="topbar">
     <view class="loc">
-      <text class="loc-icon">📍</text>
+      <image class="loc-icon" src="{{icons.location}}" />
       <text class="loc-text">{{location}}</text>
     </view>
     <view class="search-box">
-      <text class="search-icon">🔍</text>
-      <text class="search-placeholder">搜索</text>
+      <image class="search-icon" src="{{icons.search}}" />
+      <text class="search-placeholder">搜索店铺、美食</text>
     </view>
-    <view class="cart-entry" bindtap="goCart">🛒</view>
+    <image class="cart-entry" src="{{icons.cart}}" bindtap="goCart" />
   </view>
 
   <!-- 通知条 -->
@@ -25,7 +25,7 @@
         <text class="hot-title">今日抢购</text>
         <text class="hot-timer">距结束 {{countdown}}</text>
       </view>
-      <text class="more">更多 ›</text>
+      <text class="more" bindtap="goSeckill">更多 ›</text>
     </view>
     <scroll-view class="hot-scroll" scroll-x enable-flex>
       <view class="hot-card" wx:for="{{hotDishes}}" wx:key="id">
@@ -64,7 +64,7 @@
 
       <scroll-view class="shop-scroll" scroll-x enable-flex wx:if="{{item.shops.length}}">
         <view class="shop-thumb" wx:for="{{item.shops}}" wx:for-item="shop" wx:key="id"
-              data-shop-id="{{shop.id}}" data-shop-name="{{shop.name}}" catchtap="goShop">
+              data-mall-id="{{item.id}}" data-shop-id="{{shop.id}}" data-shop-name="{{shop.name}}" catchtap="goShop">
           <image class="shop-thumb-img" src="{{shop.logo}}" mode="aspectFill" />
           <view class="shop-thumb-name">{{shop.name}}</view>
         </view>

@@ -2,10 +2,14 @@
   "pages": [
     "pages/index/index",
     "pages/shop/shop",
+    "pages/seckill/seckill",
     "pages/menu/menu",
     "pages/cart/cart",
+    "pages/checkout/checkout",
     "pages/order/list/list",
     "pages/order/detail/detail",
+    "pages/address/list/list",
+    "pages/address/edit/edit",
     "pages/mine/mine"
   ],
   "window": {

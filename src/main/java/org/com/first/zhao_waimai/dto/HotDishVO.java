@@ -18,6 +18,9 @@ public class HotDishVO {
     /** 档口 id */
     private Long shopId;
 
+    /** 所属美食城 id */
+    private Long mallId;
+
     /** 档口名 */
     private String shopName;
 
@@ -35,4 +38,7 @@ public class HotDishVO {
 
     /** 销量 */
     private Integer soldCount;
+
+    /** 距离（公里，未传定位时为 null） */
+    private Double distance;
 }

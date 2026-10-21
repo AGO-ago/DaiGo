@@ -142,7 +142,7 @@ public class BrowseServiceImpl implements BrowseService {
     }
 
     @Override
-    public List<HotDishVO> listHotDishes(int limit) {
+    public List<HotDishVO> listHotDishes(int limit, Double lat, Double lng) {
         int size = Math.max(1, Math.min(limit, 20));
         List<Dish> dishes = dishMapper.selectList(Wrappers.<Dish>lambdaQuery()
                 .eq(Dish::getStatus, 1)
@@ -152,20 +152,35 @@ public class BrowseServiceImpl implements BrowseService {
             return List.of();
         }
         List<Long> shopIds = dishes.stream().map(Dish::getShopId).distinct().toList();
-        Map<Long, String> shopNames = new HashMap<>();
+        Map<Long, Shop> shopMap = new HashMap<>();
         for (Shop shop : shopMapper.selectList(Wrappers.<Shop>lambdaQuery().in(Shop::getId, shopIds))) {
-            shopNames.put(shop.getId(), shop.getName());
+            shopMap.put(shop.getId(), shop);
         }
-        return dishes.stream().map(d -> HotDishVO.builder()
-                .id(d.getId())
-                .shopId(d.getShopId())
-                .shopName(shopNames.getOrDefault(d.getShopId(), ""))
-                .name(d.getName())
-                .image(d.getImage())
-                .price(d.getPrice())
-                .originalPrice(d.getOriginalPrice())
-                .soldCount(d.getSoldCount())
-                .build()).toList();
+        // 档口所属美食城坐标，用于计算距离
+        List<Long> mallIds = shopMap.values().stream().map(Shop::getMallId).distinct().toList();
+        Map<Long, Mall> mallMap = new HashMap<>();
+        if (!mallIds.isEmpty()) {
+            for (Mall mall : mallMapper.selectList(Wrappers.<Mall>lambdaQuery().in(Mall::getId, mallIds))) {
+                mallMap.put(mall.getId(), mall);
+            }
+        }
+        return dishes.stream().map(d -> {
+            Shop shop = shopMap.get(d.getShopId());
+            Mall mall = shop == null ? null : mallMap.get(shop.getMallId());
+            Double distance = mall == null ? null : distanceKm(lat, lng, mall.getLatitude(), mall.getLongitude());
+            return HotDishVO.builder()
+                    .id(d.getId())
+                    .shopId(d.getShopId())
+                    .mallId(shop == null ? null : shop.getMallId())
+                    .shopName(shop == null ? "" : shop.getName())
+                    .name(d.getName())
+                    .image(d.getImage())
+                    .price(d.getPrice())
+                    .originalPrice(d.getOriginalPrice())
+                    .soldCount(d.getSoldCount())
+                    .distance(distance)
+                    .build();
+        }).toList();
     }
 
     private DishVO toDishVO(Dish d) {

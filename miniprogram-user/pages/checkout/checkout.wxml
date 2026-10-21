@@ -1,0 +1,67 @@
+<view class="page">
+  <!-- 收货地址 -->
+  <view class="card address-card" bindtap="chooseAddress">
+    <block wx:if="{{address}}">
+      <view class="addr-main">
+        <image class="addr-icon" src="{{icons.location}}" />
+        <view class="addr-info">
+          <view class="addr-title">{{address.company}} {{address.building}}{{address.floor}}{{address.office}}</view>
+          <view class="addr-sub">{{address.contact}} {{address.phone}}</view>
+        </view>
+        <image class="arrow" src="{{icons.chevron}}" />
+      </view>
+    </block>
+    <view class="addr-empty" wx:else>
+      <text>请选择收货地址</text>
+      <image class="arrow" src="{{icons.chevron}}" />
+    </view>
+  </view>
+
+  <!-- 拆单预览 -->
+  <view class="card" wx:for="{{preview.groups}}" wx:key="shopId">
+    <view class="group-head">
+      <text class="shop-name">{{item.shopName}}</text>
+      <text class="delivery-time">约 {{item.averageDeliveryTime}} 分钟</text>
+    </view>
+    <view class="item" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+      <image class="thumb" src="{{dish.dishImage}}" mode="aspectFill" />
+      <view class="item-info">
+        <view class="item-name">{{dish.dishName}}</view>
+        <view class="item-count">× {{dish.quantity}}</view>
+      </view>
+      <view class="item-amount">¥{{dish.amount}}</view>
+    </view>
+    <view class="row">
+      <text>商品小计</text>
+      <text>¥{{item.totalAmount}}</text>
+    </view>
+    <view class="row">
+      <text>配送费</text>
+      <text>¥{{item.deliveryFee}}</text>
+    </view>
+    <view class="row strong">
+      <text>本单实付</text>
+      <text class="pay">¥{{item.payAmount}}</text>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="card">
+    <view class="remark-row">
+      <text class="remark-label">备注</text>
+      <input class="remark-input" placeholder="口味、餐具等要求" maxlength="200"
+             value="{{remark}}" bindinput="onRemarkInput" />
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !preview}}">购物车为空或暂无可结算商品</view>
+
+  <!-- 底部提交 -->
+  <view class="footer">
+    <view class="total">
+      <text class="label">合计</text>
+      <text class="amount">¥{{preview ? preview.totalAmount : '0.00'}}</text>
+    </view>
+    <view class="submit {{submitting ? 'disabled' : ''}}" bindtap="submit">提交订单</view>
+  </view>
+</view>

@@ -62,7 +62,9 @@ public class BrowseController {
      * 热销菜品（首页今日抢购）
      */
     @GetMapping("/dish/hot")
-    public Result<List<HotDishVO>> listHotDishes(@RequestParam(defaultValue = "6") int limit) {
-        return Result.ok(browseService.listHotDishes(limit));
+    public Result<List<HotDishVO>> listHotDishes(@RequestParam(defaultValue = "6") int limit,
+                                                 @RequestParam(required = false) Double lat,
+                                                 @RequestParam(required = false) Double lng) {
+        return Result.ok(browseService.listHotDishes(limit, lat, lng));
     }
 }
