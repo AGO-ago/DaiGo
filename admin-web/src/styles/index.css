@@ -1,0 +1,63 @@
+:root {
+  --admin-primary: #ff6b35;
+  --admin-primary-dark: #e85520;
+  --admin-bg: #f5f6fa;
+  --admin-text: #303133;
+  --admin-border: #ebeef5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'PingFang SC', 'Microsoft YaHei', Helvetica, Arial, sans-serif;
+  color: var(--admin-text);
+  background: var(--admin-bg);
+}
+
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--admin-primary);
+  --el-button-border-color: var(--admin-primary);
+  --el-button-hover-bg-color: var(--admin-primary-dark);
+  --el-button-hover-border-color: var(--admin-primary-dark);
+  --el-button-active-bg-color: var(--admin-primary-dark);
+  --el-button-active-border-color: var(--admin-primary-dark);
+}
+
+.el-pagination {
+  margin-top: 16px;
+  justify-content: flex-end;
+}
