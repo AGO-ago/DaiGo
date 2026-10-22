@@ -22,6 +22,10 @@ public class Coupon {
     public static final int TYPE_THRESHOLD = 1;
     /** 类型：折扣 */
     public static final int TYPE_DISCOUNT = 2;
+    /** 创建方：平台 */
+    public static final int CREATOR_PLATFORM = 1;
+    /** 创建方：商家 */
+    public static final int CREATOR_SHOP = 2;
 
     /** 主键 */
     @TableId(type = IdType.AUTO)
@@ -53,6 +57,9 @@ public class Coupon {
 
     /** 限定档口 id（空为平台通用券） */
     private Long shopId;
+
+    /** 创建方：1 平台 2 商家 */
+    private Integer creatorType;
 
     /** 创建时间（自动填充） */
     @TableField(fill = FieldFill.INSERT)

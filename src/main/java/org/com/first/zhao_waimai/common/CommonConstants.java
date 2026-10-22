@@ -17,6 +17,8 @@ public final class CommonConstants {
     public static final int ROLE_USER = 1;
     /** 角色：商家（档口） */
     public static final int ROLE_MERCHANT = 2;
+    /** 角色：平台管理员 */
+    public static final int ROLE_ADMIN = 3;
 
     /** 逻辑删除：未删除 */
     public static final int NOT_DELETED = 0;

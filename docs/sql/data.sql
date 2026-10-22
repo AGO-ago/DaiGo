@@ -160,3 +160,37 @@ INSERT INTO `dish` (`id`, `shop_id`, `category_id`, `name`, `image`, `price`, `o
 (20, 7, 10, '牛肉卷饼',
  'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=beef%20wrap%20burrito%20realistic%20food%20photo&image_size=square',
  19.00, NULL, '牛肉加倍', 1, 1, 164);
+
+-- -------------------------------------------------------------
+-- 平台管理员 / 入驻申请 / 菜品规格 / 秒杀活动（可重复执行）
+-- 管理员：admin / admin123（仅本地联调）
+-- -------------------------------------------------------------
+INSERT INTO `admin` (`username`, `password`, `salt`, `real_name`, `role`, `status`)
+VALUES ('admin', 'cY/9f+6CcPS3xVhEJ9QDChsP5ImL3ISntW6mfelTILo=', 'a3qcHS4/QFFic4SVprfI2Q==', '平台管理员', 1, 1)
+ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
+
+INSERT INTO `platform_config` (`config_key`, `config_value`, `remark`) VALUES
+('commission_rate', '0.05', '默认抽佣比例（0-0.3）'),
+('default_delivery_fee', '2.00', '默认配送费'),
+('default_min_order_amount', '15.00', '默认起送价'),
+('auto_accept', '0', '全局自动接单：0 关 1 开'),
+('home_notice', '欢迎使用橙盟美食城，下单立享优惠', '首页公告')
+ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
+
+INSERT INTO `merchant_apply` (`user_id`, `shop_name`, `mall_id`, `contact`, `phone`, `business_hours`, `status`, `create_time`)
+SELECT 9001, '示例：茶饮小站', 1, '张同学', '13900000001', '10:00-21:00', 0, NOW()
+WHERE NOT EXISTS (SELECT 1 FROM `merchant_apply` WHERE `user_id` = 9001 AND `shop_name` = '示例：茶饮小站');
+
+INSERT INTO `dish_spec` (`dish_id`, `name`, `price`, `sort`, `status`)
+SELECT 1, '微辣', 0.00, 0, 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `dish_spec` WHERE `dish_id` = 1 AND `name` = '微辣');
+INSERT INTO `dish_spec` (`dish_id`, `name`, `price`, `sort`, `status`)
+SELECT 1, '中辣', 0.00, 1, 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `dish_spec` WHERE `dish_id` = 1 AND `name` = '中辣');
+INSERT INTO `dish_spec` (`dish_id`, `name`, `price`, `sort`, `status`)
+SELECT 1, '大份', 3.00, 2, 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `dish_spec` WHERE `dish_id` = 1 AND `name` = '大份');
+
+INSERT INTO `seckill_activity` (`dish_id`, `shop_id`, `seckill_price`, `start_time`, `end_time`, `stock`, `sold_count`, `limit_per_user`, `status`)
+SELECT 1, 1, 9.90, DATE_SUB(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 7 DAY), 100, 0, 1, 1 FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `seckill_activity` WHERE `dish_id` = 1 AND `status` = 1);

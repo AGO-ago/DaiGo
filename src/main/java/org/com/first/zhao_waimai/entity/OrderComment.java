@@ -39,6 +39,18 @@ public class OrderComment {
     /** 评价图，逗号分隔 URL */
     private String images;
 
+    /** 商家回复 */
+    private String replyContent;
+
+    /** 商家回复时间 */
+    private LocalDateTime replyTime;
+
+    /** 平台回复 */
+    private String adminReply;
+
+    /** 是否隐藏：0 否 1 是 */
+    private Integer hidden;
+
     /** 创建时间（自动填充） */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

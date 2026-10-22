@@ -49,6 +49,15 @@ public class Shop {
     /** 状态：0 休息 1 营业 */
     private Integer status;
 
+    /** 档口公告 */
+    private String announcement;
+
+    /** 自动接单：0 否 1 是 */
+    private Integer autoAccept;
+
+    /** 抽佣比例，空取平台默认 */
+    private BigDecimal commissionRate;
+
     /** 绑定商家账号 id（平台开通后写入，空表示未绑定） */
     private Long merchantUserId;
 

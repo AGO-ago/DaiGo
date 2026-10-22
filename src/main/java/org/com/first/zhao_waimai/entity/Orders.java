@@ -34,7 +34,7 @@ public class Orders {
     /** 档口 id（拆单维度） */
     private Long shopId;
 
-    /** 状态：0 待支付 1 待接单 2 备餐中 3 配送中 4 已完成 5 已取消 */
+    /** 状态：0 待支付 1 待接单 2 备餐中 3 配送中 4 已完成 5 已取消 6 退款中 7 已退款 */
     private Integer status;
 
     /** 商品总额 */
@@ -57,6 +57,15 @@ public class Orders {
 
     /** 开始配送时间 */
     private LocalDateTime deliveryTime;
+
+    /** 接单时间 */
+    private LocalDateTime acceptTime;
+
+    /** 开始备餐时间 */
+    private LocalDateTime prepareTime;
+
+    /** 取消时间 */
+    private LocalDateTime cancelTime;
 
     /** 完成时间 */
     private LocalDateTime finishTime;

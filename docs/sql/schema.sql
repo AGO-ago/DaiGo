@@ -45,6 +45,9 @@ CREATE TABLE `shop` (
   `average_delivery_time` INT                    DEFAULT 30 COMMENT '预计送达分钟数',
   `business_hours`        VARCHAR(64)            DEFAULT NULL COMMENT '营业时间',
   `status`                TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 休息 1 营业',
+  `announcement`          VARCHAR(200)           DEFAULT NULL COMMENT '档口公告',
+  `auto_accept`           TINYINT       NOT NULL DEFAULT 0 COMMENT '自动接单：0 否 1 是',
+  `commission_rate`       DECIMAL(5,4)           DEFAULT NULL COMMENT '抽佣比例，空取平台默认',
   `merchant_user_id`      BIGINT                 DEFAULT NULL COMMENT '绑定商家账号 id（平台开通后写入）',
   `create_time`           DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`           DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -103,6 +106,8 @@ CREATE TABLE `dish_spec` (
   `dish_id`     BIGINT        NOT NULL COMMENT '所属菜品 id',
   `name`        VARCHAR(32)   NOT NULL COMMENT '规格名，如 微辣/大份',
   `price`       DECIMAL(10,2)          DEFAULT NULL COMMENT '加价（可空为不加价）',
+  `sort`        INT           NOT NULL DEFAULT 0 COMMENT '排序值，越小越靠前',
+  `status`      TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 停用 1 启用',
   `create_time` DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`     TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
@@ -164,6 +169,7 @@ CREATE TABLE `coupon` (
   `start_time`   DATETIME      NOT NULL COMMENT '生效时间',
   `end_time`     DATETIME      NOT NULL COMMENT '失效时间',
   `shop_id`      BIGINT                 DEFAULT NULL COMMENT '限定档口 id（空为平台通用券）',
+  `creator_type` TINYINT       NOT NULL DEFAULT 1 COMMENT '创建方：1 平台 2 商家',
   `create_time`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`      TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
@@ -199,7 +205,7 @@ CREATE TABLE `payment` (
   `user_id`         BIGINT        NOT NULL COMMENT '用户 id',
   `total_amount`    DECIMAL(10,2) NOT NULL COMMENT '应付总额（各子单实付之和）',
   `channel`         TINYINT       NOT NULL DEFAULT 1 COMMENT '支付渠道：1 模拟 2 微信支付',
-  `status`          TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 待支付 1 已支付 2 已取消',
+  `status`          TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 待支付 1 已支付 2 已取消 3 已退款',
   `pay_time`        DATETIME               DEFAULT NULL COMMENT '支付成功时间',
   `transaction_id`  VARCHAR(64)            DEFAULT NULL COMMENT '第三方支付流水号',
   `create_time`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -220,15 +226,18 @@ CREATE TABLE `orders` (
   `payment_id`       BIGINT        NOT NULL COMMENT '所属支付单 id',
   `user_id`          BIGINT        NOT NULL COMMENT '下单用户 id',
   `shop_id`          BIGINT        NOT NULL COMMENT '档口 id（拆单维度）',
-  `status`           TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 待支付 1 待接单 2 备餐中 3 配送中 4 已完成 5 已取消',
+  `status`           TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 待支付 1 待接单 2 备餐中 3 配送中 4 已完成 5 已取消 6 退款中 7 已退款',
   `total_amount`     DECIMAL(10,2) NOT NULL COMMENT '商品总额',
   `delivery_fee`     DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '配送费',
   `discount_amount`  DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '优惠金额',
   `pay_amount`       DECIMAL(10,2) NOT NULL COMMENT '实付金额 = 商品总额 + 配送费 - 优惠',
   `address_snapshot` VARCHAR(500)  NOT NULL COMMENT '收货信息快照（联系人/公司/楼栋/楼层/工位/电话）',
   `remark`           VARCHAR(200)           DEFAULT NULL COMMENT '订单备注',
+  `accept_time`      DATETIME               DEFAULT NULL COMMENT '接单时间',
+  `prepare_time`     DATETIME               DEFAULT NULL COMMENT '开始备餐时间',
   `delivery_time`    DATETIME               DEFAULT NULL COMMENT '开始配送时间',
   `finish_time`      DATETIME               DEFAULT NULL COMMENT '完成时间',
+  `cancel_time`      DATETIME               DEFAULT NULL COMMENT '取消时间',
   `create_time`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`          TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
@@ -248,7 +257,9 @@ CREATE TABLE `order_item` (
   `order_id`    BIGINT        NOT NULL COMMENT '所属子订单 id',
   `dish_id`     BIGINT        NOT NULL COMMENT '菜品 id',
   `dish_name`   VARCHAR(64)   NOT NULL COMMENT '菜品名称快照',
+  `spec_id`     BIGINT                 DEFAULT NULL COMMENT '规格 id',
   `spec_name`   VARCHAR(64)            DEFAULT NULL COMMENT '规格名快照',
+  `spec_price`  DECIMAL(10,2)          DEFAULT NULL COMMENT '规格加价快照',
   `dish_image`  VARCHAR(500)           DEFAULT NULL COMMENT '菜品图快照',
   `price`       DECIMAL(10,2) NOT NULL COMMENT '成交单价快照',
   `count`       INT           NOT NULL COMMENT '数量',
@@ -287,10 +298,14 @@ CREATE TABLE `order_comment` (
   `shop_id`     BIGINT       NOT NULL COMMENT '档口 id',
   `score`       TINYINT      NOT NULL COMMENT '评分 1-5',
   `content`     VARCHAR(500)          DEFAULT NULL COMMENT '评价内容',
-  `images`      VARCHAR(1000)         DEFAULT NULL COMMENT '评价图，逗号分隔 URL',
-  `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `deleted`     TINYINT      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  `images`        VARCHAR(1000)         DEFAULT NULL COMMENT '评价图，逗号分隔 URL',
+  `reply_content` VARCHAR(200)          DEFAULT NULL COMMENT '商家回复',
+  `reply_time`    DATETIME              DEFAULT NULL COMMENT '商家回复时间',
+  `admin_reply`   VARCHAR(200)          DEFAULT NULL COMMENT '平台回复',
+  `hidden`        TINYINT     NOT NULL DEFAULT 0 COMMENT '是否隐藏：0 否 1 是',
+  `create_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`       TINYINT     NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
   PRIMARY KEY (`id`),
   KEY `idx_order_id` (`order_id`),
   KEY `idx_shop_id` (`shop_id`)
@@ -311,3 +326,142 @@ CREATE TABLE `favorite` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_user_shop_type` (`user_id`, `shop_id`, `type`)
 ) ENGINE = InnoDB COMMENT = '收藏';
+
+-- -------------------------------------------------------------
+-- 16. 平台管理员
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `admin`;
+CREATE TABLE `admin` (
+  `id`              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `username`        VARCHAR(32)  NOT NULL COMMENT '登录账号',
+  `password`        VARCHAR(200) NOT NULL COMMENT '密码哈希（PBKDF2WithHmacSHA256，Base64）',
+  `salt`            VARCHAR(64)  NOT NULL COMMENT '密码盐（Base64）',
+  `real_name`       VARCHAR(32)           DEFAULT NULL COMMENT '姓名',
+  `role`            TINYINT      NOT NULL DEFAULT 2 COMMENT '角色：1 超管 2 运营',
+  `status`          TINYINT      NOT NULL DEFAULT 1 COMMENT '状态：0 禁用 1 正常',
+  `last_login_time` DATETIME              DEFAULT NULL COMMENT '最后登录时间',
+  `create_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`         TINYINT      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_username` (`username`)
+) ENGINE = InnoDB COMMENT = '平台管理员';
+
+-- -------------------------------------------------------------
+-- 17. 商家入驻申请
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `merchant_apply`;
+CREATE TABLE `merchant_apply` (
+  `id`              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id`         BIGINT       NOT NULL COMMENT '申请账号 id',
+  `shop_name`       VARCHAR(64)  NOT NULL COMMENT '档口名称',
+  `mall_id`         BIGINT                DEFAULT NULL COMMENT '所属美食城 id',
+  `contact`         VARCHAR(32)  NOT NULL COMMENT '联系人',
+  `phone`           VARCHAR(20)  NOT NULL COMMENT '联系电话',
+  `license_img`     VARCHAR(500)          DEFAULT NULL COMMENT '营业执照图 URL',
+  `business_hours`  VARCHAR(64)           DEFAULT NULL COMMENT '营业时间',
+  `status`          TINYINT      NOT NULL DEFAULT 0 COMMENT '状态：0 待审 1 通过 2 驳回',
+  `reject_reason`   VARCHAR(200)          DEFAULT NULL COMMENT '驳回原因',
+  `audit_admin_id`  BIGINT                DEFAULT NULL COMMENT '审核管理员 id',
+  `audit_time`      DATETIME              DEFAULT NULL COMMENT '审核时间',
+  `shop_id`         BIGINT                DEFAULT NULL COMMENT '审核通过后绑定的档口 id',
+  `create_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`         TINYINT      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_status` (`status`)
+) ENGINE = InnoDB COMMENT = '商家入驻申请';
+
+-- -------------------------------------------------------------
+-- 18. 退款单
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `order_refund`;
+CREATE TABLE `order_refund` (
+  `id`               BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `refund_no`        VARCHAR(32)   NOT NULL COMMENT '退款单号（唯一）',
+  `order_id`         BIGINT        NOT NULL COMMENT '子订单 id',
+  `payment_id`       BIGINT                 DEFAULT NULL COMMENT '支付单 id',
+  `user_id`          BIGINT        NOT NULL COMMENT '申请用户 id',
+  `shop_id`          BIGINT        NOT NULL COMMENT '档口 id',
+  `amount`           DECIMAL(10,2) NOT NULL COMMENT '退款金额',
+  `reason`           VARCHAR(200)  NOT NULL COMMENT '退款原因',
+  `status`           TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 申请中 1 已同意 2 已拒绝 3 已退款',
+  `reject_reason`    VARCHAR(200)           DEFAULT NULL COMMENT '拒绝原因',
+  `handle_admin_id`  BIGINT                 DEFAULT NULL COMMENT '处理管理员 id',
+  `handle_time`      DATETIME               DEFAULT NULL COMMENT '处理时间',
+  `create_time`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`          TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_refund_no` (`refund_no`),
+  KEY `idx_order_id` (`order_id`),
+  KEY `idx_shop_id_status` (`shop_id`, `status`)
+) ENGINE = InnoDB COMMENT = '退款单';
+
+-- -------------------------------------------------------------
+-- 19. 结算单
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `settlement`;
+CREATE TABLE `settlement` (
+  `id`                BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `settlement_no`     VARCHAR(32)   NOT NULL COMMENT '结算单号（唯一）',
+  `shop_id`           BIGINT        NOT NULL COMMENT '档口 id',
+  `period_start`      DATE          NOT NULL COMMENT '结算周期开始',
+  `period_end`        DATE          NOT NULL COMMENT '结算周期结束',
+  `order_count`       INT           NOT NULL DEFAULT 0 COMMENT '订单数',
+  `goods_amount`      DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '商品金额',
+  `delivery_amount`   DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '配送费',
+  `discount_amount`   DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '优惠金额',
+  `commission_rate`   DECIMAL(5,4)  NOT NULL DEFAULT 0 COMMENT '抽佣比例',
+  `commission_amount` DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '抽佣金额',
+  `refund_amount`     DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '退款金额',
+  `net_amount`        DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '应结金额',
+  `status`            TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 待结算 1 已结算',
+  `settle_time`       DATETIME               DEFAULT NULL COMMENT '打款/结算时间',
+  `create_time`       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`           TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_settlement_no` (`settlement_no`),
+  KEY `idx_shop_period` (`shop_id`, `period_start`, `period_end`)
+) ENGINE = InnoDB COMMENT = '结算单';
+
+-- -------------------------------------------------------------
+-- 20. 平台配置
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `platform_config`;
+CREATE TABLE `platform_config` (
+  `id`           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `config_key`   VARCHAR(64)  NOT NULL COMMENT '配置键',
+  `config_value` VARCHAR(500) NOT NULL COMMENT '配置值',
+  `remark`       VARCHAR(200)          DEFAULT NULL COMMENT '说明',
+  `create_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`      TINYINT      NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_config_key` (`config_key`)
+) ENGINE = InnoDB COMMENT = '平台配置';
+
+-- -------------------------------------------------------------
+-- 21. 秒杀活动
+-- -------------------------------------------------------------
+DROP TABLE IF EXISTS `seckill_activity`;
+CREATE TABLE `seckill_activity` (
+  `id`             BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `dish_id`        BIGINT        NOT NULL COMMENT '菜品 id',
+  `shop_id`        BIGINT        NOT NULL COMMENT '档口 id',
+  `seckill_price`  DECIMAL(10,2) NOT NULL COMMENT '秒杀价',
+  `start_time`     DATETIME      NOT NULL COMMENT '开始时间',
+  `end_time`       DATETIME      NOT NULL COMMENT '结束时间',
+  `stock`          INT           NOT NULL DEFAULT 0 COMMENT '活动库存',
+  `sold_count`     INT           NOT NULL DEFAULT 0 COMMENT '已售数量',
+  `limit_per_user` INT           NOT NULL DEFAULT 1 COMMENT '每人限购份数',
+  `status`         TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 下线 1 上线',
+  `create_time`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted`        TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',
+  PRIMARY KEY (`id`),
+  KEY `idx_dish_time` (`dish_id`, `start_time`, `end_time`),
+  KEY `idx_status_time` (`status`, `start_time`, `end_time`)
+) ENGINE = InnoDB COMMENT = '秒杀活动';
