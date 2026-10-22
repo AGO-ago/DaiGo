@@ -12,7 +12,7 @@ Page({
   },
 
   onLoad() {
-    get('/dish/hot', { limit: 20 }, false)
+    get('/seckill/list', {}, false)
       .then((list) => this.setData({ dishes: list || [], loading: false }))
       .catch(() => this.setData({ loading: false }))
     this.startCountdown()
@@ -45,12 +45,12 @@ Page({
     const dish = this.data.dishes[e.currentTarget.dataset.index]
     if (!dish) return
     const cart = wx.getStorageSync('cart') || []
-    const idx = cart.findIndex((i) => i.dishId === dish.id)
+    const idx = cart.findIndex((i) => i.dishId === dish.dishId && !i.specId)
     if (idx > -1) {
       cart[idx].count += 1
     } else {
       cart.push({
-        dishId: dish.id,
+        dishId: dish.dishId,
         name: dish.name,
         image: dish.image,
         price: dish.price,

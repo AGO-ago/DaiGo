@@ -31,9 +31,8 @@
             <text class="shop-arrow">›</text>
           </view>
           <view class="tags">
-            <text class="tag-star">★ 5.0</text>
-            <text class="tag">免配送费</text>
-            <text class="tag" wx:if="{{item.distance !== null}}">{{item.distance}}km</text>
+            <text class="tag">仅剩 {{item.remainStock}} 份</text>
+            <text class="tag">每人限购 {{item.limitPerUser}} 份</text>
           </view>
         </view>
       </view>

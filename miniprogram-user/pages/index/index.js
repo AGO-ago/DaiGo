@@ -44,11 +44,11 @@ Page({
   loadAll() {
     Promise.all([
       get('/mall/list', {}, false),
-      get('/dish/hot', { limit: 6 }, false)
-    ]).then(([malls, hotDishes]) => {
+      get('/seckill/list', {}, false)
+    ]).then(([malls, seckills]) => {
       this.setData({
         malls: malls || [],
-        hotDishes: hotDishes || [],
+        hotDishes: (seckills || []).slice(0, 6),
         loading: false
       })
     }).catch(() => {

@@ -23,6 +23,7 @@ import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.OrderComment;
 import org.com.first.zhao_waimai.entity.OrderRefund;
 import org.com.first.zhao_waimai.entity.Payment;
+import org.com.first.zhao_waimai.entity.SeckillActivity;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.entity.UserAddress;
 import org.com.first.zhao_waimai.entity.UserCoupon;
@@ -35,6 +36,7 @@ import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrderRefundMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
+import org.com.first.zhao_waimai.mapper.SeckillActivityMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.mapper.UserAddressMapper;
 import org.com.first.zhao_waimai.mapper.UserCouponMapper;
@@ -76,11 +78,12 @@ public class OrderServiceImpl implements OrderService {
     private final UserCouponMapper userCouponMapper;
     private final OrderCouponMapper orderCouponMapper;
     private final OrderRefundMapper orderRefundMapper;
+    private final SeckillActivityMapper seckillActivityMapper;
 
     @Override
     public CheckoutResultDTO checkout(Long userId, CheckoutRequestDTO request) {
         UserAddress address = loadAddress(userId, request.getAddressId());
-        List<CheckoutGroupDTO> groups = buildGroups(request.getItems());
+        List<CheckoutGroupDTO> groups = buildGroups(userId, request.getItems());
         AppliedCoupon applied = applyCoupon(userId, request.getUserCouponId(), groups);
         return assemble(null, null, address, groups, applied);
     }
@@ -89,9 +92,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = Exception.class)
     public CheckoutResultDTO submit(Long userId, CheckoutRequestDTO request) {
         UserAddress address = loadAddress(userId, request.getAddressId());
-        List<CheckoutGroupDTO> groups = buildGroups(request.getItems());
+        List<CheckoutGroupDTO> groups = buildGroups(userId, request.getItems());
         AppliedCoupon applied = applyCoupon(userId, request.getUserCouponId(), groups);
         String snapshot = buildAddressSnapshot(address);
+        // 秒杀库存扣减（条件更新防超卖）
+        deductSeckillStock(groups);
 
         // 1. 支付单：一次结算一个
         Payment payment = new Payment();
@@ -381,7 +386,7 @@ public class OrderServiceImpl implements OrderService {
      * 购物车校验 + 按档口分组：
      * 菜品存在性/上架状态 → 档口营业状态 → 起送价；相同菜品+规格自动合并数量
      */
-    private List<CheckoutGroupDTO> buildGroups(List<CheckoutItemDTO> items) {
+    private List<CheckoutGroupDTO> buildGroups(Long userId, List<CheckoutItemDTO> items) {
         // 合并相同菜品+规格的数量，保持提交顺序
         Map<ItemKey, Integer> quantityMap = new LinkedHashMap<>();
         for (CheckoutItemDTO item : items) {
@@ -394,6 +399,7 @@ public class OrderServiceImpl implements OrderService {
 
         Map<Long, CheckoutGroupDTO> groupMap = new LinkedHashMap<>();
         Map<Long, Shop> shopCache = new HashMap<>();
+        Map<Long, SeckillActivity> seckillCache = new HashMap<>();
         for (Map.Entry<ItemKey, Integer> entry : quantityMap.entrySet()) {
             Long dishId = entry.getKey().dishId();
             Long specId = entry.getKey().specId();
@@ -426,7 +432,20 @@ public class OrderServiceImpl implements OrderService {
                 throw new BusinessException(ErrorCode.BUSINESS_ERROR, "档口「" + shop.getName() + "」休息中，暂不接单");
             }
 
-            BigDecimal unitPrice = dish.getPrice().add(specPrice);
+            // 秒杀：命中进行中的活动时按活动价计价，并校验每人限购
+            BigDecimal basePrice = dish.getPrice();
+            SeckillActivity seckill = findActiveSeckill(dish.getId(), seckillCache);
+            if (seckill != null) {
+                int limit = seckill.getLimitPerUser() == null ? 1 : seckill.getLimitPerUser();
+                int bought = orderItemMapper.sumUserDishQuantity(userId, dish.getId(),
+                        seckill.getStartTime(), seckill.getEndTime());
+                if (bought + entry.getValue() > limit) {
+                    throw new BusinessException(ErrorCode.BUSINESS_ERROR,
+                            "秒杀商品「" + dish.getName() + "」每人限购 " + limit + " 份");
+                }
+                basePrice = seckill.getSeckillPrice();
+            }
+            BigDecimal unitPrice = basePrice.add(specPrice);
             BigDecimal amount = unitPrice.multiply(BigDecimal.valueOf(entry.getValue()));
             CheckoutGroupDTO group = groupMap.computeIfAbsent(shop.getId(), k -> {
                 CheckoutGroupDTO g = new CheckoutGroupDTO();
@@ -455,6 +474,54 @@ public class OrderServiceImpl implements OrderService {
                     .subtract(group.getDiscountAmount()));
         }
         return new ArrayList<>(groupMap.values());
+    }
+
+    /**
+     * 查找菜品当前进行中的秒杀活动（带本次请求内缓存）
+     */
+    private SeckillActivity findActiveSeckill(Long dishId, Map<Long, SeckillActivity> cache) {
+        if (cache.containsKey(dishId)) {
+            return cache.get(dishId);
+        }
+        LocalDateTime now = LocalDateTime.now();
+        SeckillActivity activity = seckillActivityMapper.selectOne(Wrappers.<SeckillActivity>lambdaQuery()
+                .eq(SeckillActivity::getDishId, dishId)
+                .eq(SeckillActivity::getStatus, SeckillActivity.STATUS_ONLINE)
+                .le(SeckillActivity::getStartTime, now)
+                .ge(SeckillActivity::getEndTime, now)
+                .orderByDesc(SeckillActivity::getId)
+                .last("LIMIT 1"));
+        cache.put(dishId, activity);
+        return activity;
+    }
+
+    /**
+     * 秒杀库存扣减：条件更新保证并发下不超卖
+     */
+    private void deductSeckillStock(List<CheckoutGroupDTO> groups) {
+        Map<Long, Integer> quantityByDish = new LinkedHashMap<>();
+        for (CheckoutGroupDTO group : groups) {
+            for (CheckoutItemVO item : group.getItems()) {
+                quantityByDish.merge(item.getDishId(), item.getQuantity(), Integer::sum);
+            }
+        }
+        Map<Long, SeckillActivity> cache = new HashMap<>();
+        for (Map.Entry<Long, Integer> entry : quantityByDish.entrySet()) {
+            SeckillActivity activity = findActiveSeckill(entry.getKey(), cache);
+            if (activity == null) {
+                continue;
+            }
+            int quantity = entry.getValue();
+            int updated = seckillActivityMapper.update(null, Wrappers.<SeckillActivity>lambdaUpdate()
+                    .eq(SeckillActivity::getId, activity.getId())
+                    .apply("sold_count + {0} <= stock", quantity)
+                    .setSql("sold_count = sold_count + " + quantity));
+            if (updated == 0) {
+                Dish dish = dishMapper.selectById(entry.getKey());
+                throw new BusinessException(ErrorCode.BUSINESS_ERROR,
+                        "秒杀商品「" + (dish == null ? "" : dish.getName()) + "」库存不足");
+            }
+        }
     }
 
     /**

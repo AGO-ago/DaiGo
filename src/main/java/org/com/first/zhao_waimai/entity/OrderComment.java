@@ -51,6 +51,9 @@ public class OrderComment {
     /** 是否隐藏：0 否 1 是 */
     private Integer hidden;
 
+    /** 隐藏原因 */
+    private String hiddenReason;
+
     /** 创建时间（自动填充） */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

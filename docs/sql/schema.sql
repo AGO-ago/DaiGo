@@ -304,6 +304,7 @@ CREATE TABLE `order_comment` (
   `reply_time`    DATETIME              DEFAULT NULL COMMENT '商家回复时间',
   `admin_reply`   VARCHAR(200)          DEFAULT NULL COMMENT '平台回复',
   `hidden`        TINYINT     NOT NULL DEFAULT 0 COMMENT '是否隐藏：0 否 1 是',
+  `hidden_reason` VARCHAR(200)         DEFAULT NULL COMMENT '隐藏原因',
   `create_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`       TINYINT     NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',

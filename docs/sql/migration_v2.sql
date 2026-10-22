@@ -173,6 +173,7 @@ CALL add_column_if_not_exists('order_comment', 'reply_content', 'VARCHAR(200) DE
 CALL add_column_if_not_exists('order_comment', 'reply_time', 'DATETIME DEFAULT NULL COMMENT ''商家回复时间''');
 CALL add_column_if_not_exists('order_comment', 'admin_reply', 'VARCHAR(200) DEFAULT NULL COMMENT ''平台回复''');
 CALL add_column_if_not_exists('order_comment', 'hidden', 'TINYINT NOT NULL DEFAULT 0 COMMENT ''是否隐藏：0 否 1 是''');
+CALL add_column_if_not_exists('order_comment', 'hidden_reason', 'VARCHAR(200) DEFAULT NULL COMMENT ''隐藏原因''');
 
 -- 2.4 菜品规格：排序、启用状态
 CALL add_column_if_not_exists('dish_spec', 'sort', 'INT NOT NULL DEFAULT 0 COMMENT ''排序值，越小越靠前''');
