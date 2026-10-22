@@ -8,7 +8,9 @@ const STATUS_MAP = {
   2: { text: '备餐中', action: 'prepare', btn: '开始配送' },
   3: { text: '配送中', action: 'deliver', btn: '确认完成' },
   4: { text: '已完成', action: '', btn: '' },
-  5: { text: '已取消', action: '', btn: '' }
+  5: { text: '已取消', action: '', btn: '' },
+  6: { text: '退款中', action: '', btn: '' },
+  7: { text: '已退款', action: '', btn: '' }
 }
 
 Page({
@@ -18,6 +20,7 @@ Page({
       { key: '2', label: '备餐中' },
       { key: '3', label: '配送中' },
       { key: '4', label: '已完成' },
+      { key: '6', label: '退款' },
       { key: '', label: '全部' }
     ],
     currentStatus: '1',
@@ -52,7 +55,7 @@ Page({
       .then((list) => {
         const orders = (list || []).map((o) => {
           const meta = STATUS_MAP[o.status] || { text: '未知', action: '', btn: '' }
-          return { ...o, statusText: meta.text, action: meta.action, btnText: meta.btn }
+          return { ...o, statusText: meta.text, action: meta.action, btnText: meta.btn, canReject: o.status === 1 }
         })
         this.setData({ orders, loading: false })
         wx.stopPullDownRefresh()
@@ -78,6 +81,34 @@ Page({
           .catch(() => {})
       }
     })
+  },
+
+  onReject(e) {
+    const { id } = e.currentTarget.dataset
+    wx.showModal({
+      title: '拒单原因',
+      editable: true,
+      placeholderText: '请填写拒单原因，将同步给顾客',
+      success: (res) => {
+        if (!res.confirm) return
+        const reason = (res.content || '').trim()
+        if (!reason) {
+          wx.showToast({ title: '拒单原因不能为空', icon: 'none' })
+          return
+        }
+        put(`/merchant/order/${id}/reject`, { reason })
+          .then(() => {
+            wx.showToast({ title: '已拒单并退款', icon: 'none' })
+            this.loadOrders()
+          })
+          .catch(() => {})
+      }
+    })
+  },
+
+  goDetail(e) {
+    const { id } = e.currentTarget.dataset
+    wx.navigateTo({ url: `/pages/order/detail/detail?id=${id}` })
   },
 
   callCustomer() {

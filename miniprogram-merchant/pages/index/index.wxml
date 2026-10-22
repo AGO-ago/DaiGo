@@ -52,13 +52,13 @@
           <text class="section-title">待接单</text>
           <view class="section-more" data-status="1" bindtap="goOrders">全部订单 ›</view>
         </view>
-        <view class="order" wx:for="{{pendingOrders}}" wx:key="orderId">
+        <view class="order" wx:for="{{pendingOrders}}" wx:key="orderId" data-id="{{item.orderId}}" bindtap="goOrderDetail">
           <view class="order-head">
             <text class="order-no">#{{item.orderNo}}</text>
             <text class="order-amount">¥{{item.payAmount}}</text>
           </view>
           <view class="order-dishes">
-            <text class="dish-line" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">{{dish.dishName}}×{{dish.count}}</text>
+            <text class="dish-line" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">{{dish.dishName}}{{dish.specName ? '·' + dish.specName : ''}}×{{dish.count}}</text>
           </view>
           <view class="order-addr">{{item.addressSnapshot}}</view>
           <view class="order-foot">

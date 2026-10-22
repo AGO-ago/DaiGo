@@ -1,0 +1,175 @@
+page {
+  background: #f5f5f5;
+}
+
+.page {
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  background: #ffffff;
+}
+
+.tab {
+  flex: 1;
+  position: relative;
+  padding: 26rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.tab.active {
+  color: #222;
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 40rpx;
+  height: 6rpx;
+  margin-left: -20rpx;
+  background: #ff5722;
+  border-radius: 3rpx;
+}
+
+.summary {
+  margin: 20rpx 24rpx 0;
+  padding: 30rpx 24rpx;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
+  border-radius: 16rpx;
+}
+
+.sum-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.sum-label {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sum-value {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sum-grid {
+  display: flex;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.25);
+}
+
+.sum-item {
+  flex: 1;
+  text-align: center;
+}
+
+.sum-item .num {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.sum-item .label {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.section {
+  margin: 20rpx 24rpx 0;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.section-title {
+  margin-bottom: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.bill-item {
+  padding: 18rpx 0;
+  border-top: 1rpx solid #f5f5f5;
+}
+
+.bill-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.order-no,
+.period {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.net {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ff2d3c;
+}
+
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6rpx 0;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.bill-row.total {
+  margin-top: 6rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid #f5f5f5;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.up {
+  color: #4caf50;
+}
+
+.down {
+  color: #ff5722;
+}
+
+.settle {
+  padding: 18rpx 0;
+  border-top: 1rpx solid #f5f5f5;
+}
+
+.settle-status {
+  font-size: 24rpx;
+  color: #ff9800;
+}
+
+.settle-status.done {
+  color: #4caf50;
+}
+
+.empty {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}

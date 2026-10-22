@@ -20,8 +20,8 @@
   <view class="card" wx:if="{{user}}">
     <view class="menu-row" bindtap="goShop">
       <text class="menu-icon">🏬</text>
-      <text class="menu-label">档口设置</text>
-      <text class="menu-value">{{shop ? shop.name : '去绑定'}}</text>
+      <text class="menu-label">{{shop ? '档口设置' : '入驻申请'}}</text>
+      <text class="menu-value">{{shop ? shop.name : (apply ? (apply.status === 0 ? '审核中' : (apply.status === 2 ? '已驳回' : '已通过')) : '去申请')}}</text>
     </view>
     <view class="menu-row" bindtap="goDish">
       <text class="menu-icon">🍲</text>
@@ -33,7 +33,22 @@
       <text class="menu-label">顾客评价</text>
       <text class="menu-arrow">›</text>
     </view>
+    <view class="menu-row" bindtap="goRefund">
+      <text class="menu-icon">↩️</text>
+      <text class="menu-label">退款申请</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-row" bindtap="goBill">
+      <text class="menu-icon">💰</text>
+      <text class="menu-label">账单结算</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-row">
+      <text class="menu-icon">🔔</text>
+      <text class="menu-label">新订单提醒</text>
+      <switch class="menu-switch" checked="{{remindOn}}" color="#ff5722" bindchange="onRemindChange" />
+    </view>
   </view>
 
-  <view class="version">美食城商家端 v1.0.0</view>
+  <view class="version">美食城商家端 v1.2.0</view>
 </view>

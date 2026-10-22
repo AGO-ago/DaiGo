@@ -3,17 +3,10 @@
     <view class="empty">加载中…</view>
   </block>
 
-  <!-- 未绑定：选择档口 -->
+  <!-- 未绑定：引导入驻申请 -->
   <block wx:elif="{{!bound}}">
-    <view class="tip">当前账号未绑定档口，请选择要经营的档口（演示环境仅展示未绑定档口）</view>
-    <view class="bind-item" wx:for="{{bindable}}" wx:key="id">
-      <view class="bind-info">
-        <view class="bind-name">{{item.name}}</view>
-        <view class="bind-sub">起送 ¥{{item.minOrderAmount}} · 配送 ¥{{item.deliveryFee}} · {{item.businessHours}}</view>
-      </view>
-      <view class="bind-btn" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="bind">绑定</view>
-    </view>
-    <view class="empty" wx:if="{{!bindable.length}}">没有可绑定的档口</view>
+    <view class="tip">当前账号尚未入驻，提交入驻申请并通过平台审核后即可管理档口。</view>
+    <view class="save" bindtap="goApply">去提交入驻申请</view>
   </block>
 
   <!-- 已绑定：编辑档口信息 -->

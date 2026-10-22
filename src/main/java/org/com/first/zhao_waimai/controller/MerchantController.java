@@ -9,6 +9,8 @@ import org.com.first.zhao_waimai.dto.DishSaveDTO;
 import org.com.first.zhao_waimai.dto.MerchantDishListVO;
 import org.com.first.zhao_waimai.dto.MerchantOrderVO;
 import org.com.first.zhao_waimai.dto.MerchantStatVO;
+import org.com.first.zhao_waimai.dto.MerchantApplySaveDTO;
+import org.com.first.zhao_waimai.dto.MerchantApplyVO;
 import org.com.first.zhao_waimai.dto.ShopUpdateDTO;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.service.MerchantService;
@@ -176,5 +178,21 @@ public class MerchantController {
     @GetMapping("/stat/today")
     public Result<MerchantStatVO> statToday() {
         return Result.ok(merchantService.statToday(UserContext.getUserId()));
+    }
+
+    /**
+     * 提交入驻申请
+     */
+    @PostMapping("/apply")
+    public Result<Long> submitApply(@Valid @RequestBody MerchantApplySaveDTO dto) {
+        return Result.ok(merchantService.submitApply(UserContext.getUserId(), dto));
+    }
+
+    /**
+     * 最近一次入驻申请进度
+     */
+    @GetMapping("/apply")
+    public Result<MerchantApplyVO> myApply() {
+        return Result.ok(merchantService.myLatestApply(UserContext.getUserId()));
     }
 }

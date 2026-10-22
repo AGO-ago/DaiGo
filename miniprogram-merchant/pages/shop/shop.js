@@ -1,12 +1,11 @@
 const app = getApp()
-const { get, post, put } = require('../../utils/request')
+const { get, put } = require('../../utils/request')
 
 Page({
   data: {
     loading: true,
     bound: false,
     shop: null,
-    bindable: [],
     form: {
       name: '',
       logo: '',
@@ -34,8 +33,7 @@ Page({
     get('/merchant/shop')
       .then((shop) => {
         if (!shop) {
-          this.setData({ shop: null, bound: false })
-          this.loadBindable()
+          this.setData({ shop: null, bound: false, loading: false })
           return
         }
         this.setData({
@@ -57,27 +55,8 @@ Page({
       .catch(() => this.setData({ loading: false }))
   },
 
-  loadBindable() {
-    get('/merchant/shops/bindable')
-      .then((list) => this.setData({ bindable: list || [], loading: false }))
-      .catch(() => this.setData({ loading: false }))
-  },
-
-  bind(e) {
-    const { id, name } = e.currentTarget.dataset
-    wx.showModal({
-      title: '绑定档口',
-      content: `确定绑定「${name}」作为本账号经营档口？`,
-      success: (res) => {
-        if (!res.confirm) return
-        post(`/merchant/bind/${id}`)
-          .then(() => {
-            wx.showToast({ title: '绑定成功', icon: 'success' })
-            this.load()
-          })
-          .catch(() => {})
-      }
-    })
+  goApply() {
+    wx.navigateTo({ url: '/pages/apply/apply' })
   },
 
   onInput(e) {

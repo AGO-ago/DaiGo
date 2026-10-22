@@ -74,6 +74,14 @@ page {
   color: #bbb;
 }
 
+.status-6 {
+  color: #ff9800;
+}
+
+.status-7 {
+  color: #bbb;
+}
+
 .dish {
   display: flex;
   align-items: center;
@@ -104,6 +112,11 @@ page {
 
 .dish-count {
   margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.dish-spec {
   font-size: 22rpx;
   color: #999;
 }
@@ -173,6 +186,12 @@ page {
 .btn.primary {
   color: #ffffff;
   background: linear-gradient(135deg, #ff8a5c, #ff5722);
+}
+
+.btn.ghost {
+  margin-right: 16rpx;
+  color: #666;
+  border: 1rpx solid #ddd;
 }
 
 .empty {

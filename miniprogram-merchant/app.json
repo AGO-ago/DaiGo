@@ -6,6 +6,10 @@
     "pages/dish/edit/edit",
     "pages/comment/list/list",
     "pages/shop/shop",
+    "pages/apply/apply",
+    "pages/order/detail/detail",
+    "pages/refund/list/list",
+    "pages/bill/bill",
     "pages/mine/mine"
   ],
   "window": {

@@ -1,0 +1,26 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{current === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="switchTab">{{item.label}}</view>
+  </view>
+
+  <view class="list">
+    <view class="card" wx:for="{{list}}" wx:key="id">
+      <view class="card-head" data-id="{{item.orderId}}" bindtap="goOrder">
+        <text class="order-no">#{{item.orderNo}}</text>
+        <text class="status {{item.color}}">{{item.statusText}}</text>
+      </view>
+      <view class="amount">¥{{item.amountText}}</view>
+      <view class="reason">退款原因：{{item.reason}}</view>
+      <view class="reason reject" wx:if="{{item.rejectReason}}">拒绝原因：{{item.rejectReason}}</view>
+      <view class="time">申请于 {{item.createTimeText}}<text wx:if="{{item.handleTimeText}}"> · 处理于 {{item.handleTimeText}}</text></view>
+
+      <view class="actions" wx:if="{{item.status === 0}}">
+        <view class="btn ghost" data-id="{{item.id}}" bindtap="onReject">拒绝</view>
+        <view class="btn primary" data-id="{{item.id}}" bindtap="onAgree">同意退款</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !list.length}}">暂无退款申请</view>
+</view>

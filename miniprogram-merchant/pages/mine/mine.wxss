@@ -93,6 +93,10 @@ page {
   color: #ccc;
 }
 
+.menu-switch {
+  transform: scale(0.8);
+}
+
 .version {
   margin-top: 60rpx;
   text-align: center;

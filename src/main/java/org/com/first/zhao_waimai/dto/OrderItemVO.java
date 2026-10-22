@@ -16,6 +16,15 @@ public class OrderItemVO {
     /** 菜品名快照 */
     private String dishName;
 
+    /** 规格 id */
+    private Long specId;
+
+    /** 规格名快照 */
+    private String specName;
+
+    /** 规格加价快照 */
+    private BigDecimal specPrice;
+
     /** 菜品图快照 */
     private String dishImage;
 

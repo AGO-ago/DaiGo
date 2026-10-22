@@ -6,6 +6,8 @@ import org.com.first.zhao_waimai.dto.DishSaveDTO;
 import org.com.first.zhao_waimai.dto.MerchantDishListVO;
 import org.com.first.zhao_waimai.dto.MerchantOrderVO;
 import org.com.first.zhao_waimai.dto.MerchantStatVO;
+import org.com.first.zhao_waimai.dto.MerchantApplySaveDTO;
+import org.com.first.zhao_waimai.dto.MerchantApplyVO;
 import org.com.first.zhao_waimai.dto.ShopUpdateDTO;
 import org.com.first.zhao_waimai.entity.Shop;
 
@@ -60,4 +62,10 @@ public interface MerchantService {
 
     /** 今日经营统计 */
     MerchantStatVO statToday(Long userId);
+
+    /** 提交入驻申请 */
+    Long submitApply(Long userId, MerchantApplySaveDTO dto);
+
+    /** 最近一次入驻申请（无则返回 null） */
+    MerchantApplyVO myLatestApply(Long userId);
 }

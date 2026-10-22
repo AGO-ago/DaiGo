@@ -5,7 +5,7 @@
   </view>
 
   <view class="list">
-    <view class="order" wx:for="{{orders}}" wx:key="orderId">
+    <view class="order" wx:for="{{orders}}" wx:key="orderId" data-id="{{item.orderId}}" bindtap="goDetail">
       <view class="order-head">
         <text class="order-no">#{{item.orderNo}}</text>
         <text class="status status-{{item.status}}">{{item.statusText}}</text>
@@ -14,7 +14,7 @@
       <view class="dish" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
         <image class="thumb" src="{{dish.dishImage}}" mode="aspectFill" />
         <view class="dish-info">
-          <view class="dish-name">{{dish.dishName}}</view>
+          <view class="dish-name">{{dish.dishName}}<text wx:if="{{dish.specName}}" class="dish-spec"> · {{dish.specName}}</text></view>
           <view class="dish-count">× {{dish.count}}</view>
         </view>
         <text class="dish-amount">¥{{dish.amount}}</text>
@@ -31,8 +31,9 @@
         </view>
       </view>
 
-      <view class="actions" wx:if="{{item.action}}">
-        <view class="btn primary" data-id="{{item.orderId}}" data-action="{{item.action}}" data-text="{{item.btnText}}" bindtap="onAction">{{item.btnText}}</view>
+      <view class="actions" wx:if="{{item.action || item.canReject}}">
+        <view class="btn ghost" wx:if="{{item.canReject}}" data-id="{{item.orderId}}" catchtap="onReject">拒单</view>
+        <view class="btn primary" wx:if="{{item.action}}" data-id="{{item.orderId}}" data-action="{{item.action}}" data-text="{{item.btnText}}" catchtap="onAction">{{item.btnText}}</view>
       </view>
     </view>
   </view>

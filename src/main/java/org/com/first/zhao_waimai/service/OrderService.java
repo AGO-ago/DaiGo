@@ -40,4 +40,9 @@ public interface OrderService {
      * 取消订单（仅本人、仅待支付可取消），支付单同步取消
      */
     void cancel(Long userId, Long orderId);
+
+    /**
+     * 申请退款（仅待接单/备餐中可申请），订单置退款中并生成退款单
+     */
+    void applyRefund(Long userId, Long orderId, String reason);
 }

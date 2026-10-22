@@ -1,0 +1,162 @@
+page {
+  background: #f5f5f5;
+}
+
+.page {
+  padding-bottom: 60rpx;
+}
+
+.loading {
+  padding: 120rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+}
+
+.status-card {
+  margin: 24rpx;
+  padding: 32rpx;
+  border-radius: 20rpx;
+  background: #ffffff;
+  border-left: 10rpx solid #ff5722;
+}
+
+.status-card.pending {
+  border-left-color: #ff9800;
+}
+
+.status-card.rejected {
+  border-left-color: #f44336;
+}
+
+.status-card.approved {
+  border-left-color: #4caf50;
+}
+
+.status-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-desc {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.status-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.status-btn {
+  margin-top: 24rpx;
+  display: inline-block;
+  padding: 14rpx 36rpx;
+  font-size: 26rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 32rpx;
+}
+
+.form-card {
+  margin: 24rpx;
+  padding: 8rpx 28rpx 32rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+}
+
+.form-title {
+  padding: 24rpx 0 8rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  min-height: 92rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+}
+
+.form-label {
+  width: 180rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.picker-value.placeholder {
+  color: #bbb;
+}
+
+.arrow {
+  font-size: 32rpx;
+  color: #ccc;
+}
+
+.license-row {
+  align-items: flex-start;
+  padding: 24rpx 0;
+}
+
+.license-box {
+  width: 200rpx;
+  height: 140rpx;
+  border: 1rpx dashed #d9d9d9;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+}
+
+.license-plus {
+  font-size: 40rpx;
+  color: #bbb;
+}
+
+.license-tip {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #bbb;
+}
+
+.license-img {
+  width: 200rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+}
+
+.submit-btn {
+  margin-top: 40rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
+  border-radius: 44rpx;
+}
+
+.submit-btn.disabled {
+  opacity: 0.6;
+}
+
+.form-tip {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.6;
+  text-align: center;
+}

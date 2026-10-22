@@ -20,6 +20,7 @@ import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.OrderCoupon;
 import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.OrderComment;
+import org.com.first.zhao_waimai.entity.OrderRefund;
 import org.com.first.zhao_waimai.entity.Payment;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.entity.UserAddress;
@@ -29,6 +30,7 @@ import org.com.first.zhao_waimai.mapper.DishMapper;
 import org.com.first.zhao_waimai.mapper.OrderCommentMapper;
 import org.com.first.zhao_waimai.mapper.OrderCouponMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
+import org.com.first.zhao_waimai.mapper.OrderRefundMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
@@ -70,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
     private final CouponMapper couponMapper;
     private final UserCouponMapper userCouponMapper;
     private final OrderCouponMapper orderCouponMapper;
+    private final OrderRefundMapper orderRefundMapper;
 
     @Override
     public CheckoutResultDTO checkout(Long userId, CheckoutRequestDTO request) {
@@ -259,6 +262,40 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void applyRefund(Long userId, Long orderId, String reason) {
+        Orders order = loadOwnOrder(userId, orderId);
+        if (order.getStatus() != 1 && order.getStatus() != 2) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "当前状态不可申请退款，仅待接单或备餐中订单可申请");
+        }
+        Long applying = orderRefundMapper.selectCount(Wrappers.<OrderRefund>lambdaQuery()
+                .eq(OrderRefund::getOrderId, orderId)
+                .eq(OrderRefund::getStatus, OrderRefund.STATUS_APPLYING));
+        if (applying > 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "该订单已提交退款申请，请等待商家处理");
+        }
+        OrderRefund refund = new OrderRefund();
+        refund.setRefundNo(genNo("R"));
+        refund.setOrderId(order.getId());
+        refund.setPaymentId(order.getPaymentId());
+        refund.setUserId(userId);
+        refund.setShopId(order.getShopId());
+        refund.setAmount(order.getPayAmount());
+        refund.setReason(reason);
+        refund.setStatus(OrderRefund.STATUS_APPLYING);
+        refund.setPrevStatus(order.getStatus());
+        orderRefundMapper.insert(refund);
+
+        int updated = ordersMapper.update(null, Wrappers.<Orders>lambdaUpdate()
+                .eq(Orders::getId, orderId)
+                .eq(Orders::getStatus, order.getStatus())
+                .set(Orders::getStatus, 6));
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "订单状态已变更，请刷新后重试");
+        }
+    }
+
     /**
      * 支付单下子单全部取消后，退回本单使用的优惠券
      */
@@ -300,6 +337,9 @@ public class OrderServiceImpl implements OrderService {
             OrderItemVO vo = new OrderItemVO();
             vo.setDishId(item.getDishId());
             vo.setDishName(item.getDishName());
+            vo.setSpecId(item.getSpecId());
+            vo.setSpecName(item.getSpecName());
+            vo.setSpecPrice(item.getSpecPrice());
             vo.setDishImage(item.getDishImage());
             vo.setPrice(item.getPrice());
             vo.setCount(item.getCount());

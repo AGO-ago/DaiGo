@@ -181,6 +181,9 @@ CALL add_column_if_not_exists('dish_spec', 'status', 'TINYINT NOT NULL DEFAULT 1
 -- 2.5 优惠券：创建方
 CALL add_column_if_not_exists('coupon', 'creator_type', 'TINYINT NOT NULL DEFAULT 1 COMMENT ''创建方：1 平台 2 商家''');
 
+-- 2.5.1 退款单：申请前订单状态（拒绝退款时恢复）
+CALL add_column_if_not_exists('order_refund', 'prev_status', 'TINYINT DEFAULT NULL COMMENT ''申请前订单状态''');
+
 -- 2.6 订单：各状态时间节点
 CALL add_column_if_not_exists('orders', 'accept_time', 'DATETIME DEFAULT NULL COMMENT ''接单时间''');
 CALL add_column_if_not_exists('orders', 'prepare_time', 'DATETIME DEFAULT NULL COMMENT ''开始备餐时间''');

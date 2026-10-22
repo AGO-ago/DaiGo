@@ -8,6 +8,7 @@ import org.com.first.zhao_waimai.dto.CheckoutResultDTO;
 import org.com.first.zhao_waimai.dto.OrderDetailVO;
 import org.com.first.zhao_waimai.dto.OrderListVO;
 import org.com.first.zhao_waimai.dto.PageDTO;
+import org.com.first.zhao_waimai.dto.RefundApplyDTO;
 import org.com.first.zhao_waimai.service.OrderService;
 import org.com.first.zhao_waimai.util.UserContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,6 +79,15 @@ public class OrderController {
     @PutMapping("/{id}/cancel")
     public Result<Void> cancel(@PathVariable Long id) {
         orderService.cancel(UserContext.getUserId(), id);
+        return Result.ok(null);
+    }
+
+    /**
+     * 申请退款（仅待接单/备餐中）
+     */
+    @PostMapping("/{id}/refund")
+    public Result<Void> refund(@PathVariable Long id, @Valid @RequestBody RefundApplyDTO dto) {
+        orderService.applyRefund(UserContext.getUserId(), id, dto.getReason());
         return Result.ok(null);
     }
 }

@@ -11,15 +11,21 @@ import org.com.first.zhao_waimai.dto.DishSaveDTO;
 import org.com.first.zhao_waimai.dto.MerchantDishListVO;
 import org.com.first.zhao_waimai.dto.MerchantOrderVO;
 import org.com.first.zhao_waimai.dto.MerchantStatVO;
+import org.com.first.zhao_waimai.dto.MerchantApplySaveDTO;
+import org.com.first.zhao_waimai.dto.MerchantApplyVO;
 import org.com.first.zhao_waimai.dto.OrderItemVO;
 import org.com.first.zhao_waimai.dto.ShopUpdateDTO;
 import org.com.first.zhao_waimai.entity.Dish;
 import org.com.first.zhao_waimai.entity.DishCategory;
+import org.com.first.zhao_waimai.entity.Mall;
+import org.com.first.zhao_waimai.entity.MerchantApply;
 import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.mapper.DishCategoryMapper;
 import org.com.first.zhao_waimai.mapper.DishMapper;
+import org.com.first.zhao_waimai.mapper.MallMapper;
+import org.com.first.zhao_waimai.mapper.MerchantApplyMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
@@ -67,6 +73,8 @@ public class MerchantServiceImpl implements MerchantService {
     private final OrdersMapper ordersMapper;
     private final OrderItemMapper orderItemMapper;
     private final CommentService commentService;
+    private final MerchantApplyMapper merchantApplyMapper;
+    private final MallMapper mallMapper;
 
     @Override
     public Shop myShop(Long userId) {
@@ -175,11 +183,18 @@ public class MerchantServiceImpl implements MerchantService {
         if (order == null || !shop.getId().equals(order.getShopId())) {
             throw new BusinessException(ErrorCode.NOT_FOUND, "订单不存在");
         }
-        // 条件更新，防止重复点击导致状态越级
-        int updated = ordersMapper.update(null, Wrappers.<Orders>lambdaUpdate()
+        // 条件更新，防止重复点击导致状态越级；同步记录状态时间轴
+        LocalDateTime now = LocalDateTime.now();
+        var update = Wrappers.<Orders>lambdaUpdate()
                 .eq(Orders::getId, orderId)
                 .eq(Orders::getStatus, transition[0])
-                .set(Orders::getStatus, transition[1]));
+                .set(Orders::getStatus, transition[1]);
+        switch (action) {
+            case "accept" -> update.set(Orders::getAcceptTime, now).set(Orders::getPrepareTime, now);
+            case "prepare" -> update.set(Orders::getDeliveryTime, now);
+            default -> update.set(Orders::getFinishTime, now);
+        }
+        int updated = ordersMapper.update(null, update);
         if (updated == 0) {
             throw new BusinessException(ErrorCode.BUSINESS_ERROR, "订单状态已变更，请刷新后重试");
         }
@@ -353,13 +368,71 @@ public class MerchantServiceImpl implements MerchantService {
                 .build();
     }
 
+    @Override
+    public Long submitApply(Long userId, MerchantApplySaveDTO dto) {
+        requireMerchantRole();
+        if (myShop(userId) != null) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "当前账号已绑定档口，无需重复申请");
+        }
+        long pending = merchantApplyMapper.selectCount(Wrappers.<MerchantApply>lambdaQuery()
+                .eq(MerchantApply::getUserId, userId)
+                .eq(MerchantApply::getStatus, MerchantApply.STATUS_PENDING));
+        if (pending > 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "已有待审核的入驻申请，请耐心等待");
+        }
+        Mall mall = mallMapper.selectById(dto.getMallId());
+        if (mall == null || mall.getStatus() == null || mall.getStatus() != 1) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "所选美食城不可用");
+        }
+        MerchantApply apply = new MerchantApply();
+        apply.setUserId(userId);
+        apply.setShopName(dto.getShopName());
+        apply.setMallId(dto.getMallId());
+        apply.setContact(dto.getContact());
+        apply.setPhone(dto.getPhone());
+        apply.setLicenseImg(dto.getLicenseImg());
+        apply.setBusinessHours(dto.getBusinessHours());
+        apply.setStatus(MerchantApply.STATUS_PENDING);
+        merchantApplyMapper.insert(apply);
+        return apply.getId();
+    }
+
+    @Override
+    public MerchantApplyVO myLatestApply(Long userId) {
+        requireMerchantRole();
+        MerchantApply apply = merchantApplyMapper.selectOne(Wrappers.<MerchantApply>lambdaQuery()
+                .eq(MerchantApply::getUserId, userId)
+                .orderByDesc(MerchantApply::getId)
+                .last("LIMIT 1"));
+        if (apply == null) {
+            return null;
+        }
+        MerchantApplyVO vo = new MerchantApplyVO();
+        vo.setId(apply.getId());
+        vo.setUserId(apply.getUserId());
+        vo.setShopName(apply.getShopName());
+        vo.setMallId(apply.getMallId());
+        Mall mall = apply.getMallId() == null ? null : mallMapper.selectById(apply.getMallId());
+        vo.setMallName(mall == null ? null : mall.getName());
+        vo.setContact(apply.getContact());
+        vo.setPhone(apply.getPhone());
+        vo.setLicenseImg(apply.getLicenseImg());
+        vo.setBusinessHours(apply.getBusinessHours());
+        vo.setStatus(apply.getStatus());
+        vo.setRejectReason(apply.getRejectReason());
+        vo.setShopId(apply.getShopId());
+        vo.setAuditTime(apply.getAuditTime());
+        vo.setCreateTime(apply.getCreateTime());
+        return vo;
+    }
+
     /**
      * 校验商家角色并返回绑定档口
      */
     private Shop requireShop(Long userId) {
         Shop shop = myShop(userId);
         if (shop == null) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "账号未绑定档口，请先在「我的」绑定");
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "账号未绑定档口，请先提交入驻申请");
         }
         return shop;
     }
@@ -378,6 +451,9 @@ public class MerchantServiceImpl implements MerchantService {
             OrderItemVO vo = new OrderItemVO();
             vo.setDishId(item.getDishId());
             vo.setDishName(item.getDishName());
+            vo.setSpecId(item.getSpecId());
+            vo.setSpecName(item.getSpecName());
+            vo.setSpecPrice(item.getSpecPrice());
             vo.setDishImage(item.getDishImage());
             vo.setPrice(item.getPrice());
             vo.setCount(item.getCount());

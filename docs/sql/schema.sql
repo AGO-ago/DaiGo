@@ -387,6 +387,7 @@ CREATE TABLE `order_refund` (
   `amount`           DECIMAL(10,2) NOT NULL COMMENT '退款金额',
   `reason`           VARCHAR(200)  NOT NULL COMMENT '退款原因',
   `status`           TINYINT       NOT NULL DEFAULT 0 COMMENT '状态：0 申请中 1 已同意 2 已拒绝 3 已退款',
+  `prev_status`      TINYINT                DEFAULT NULL COMMENT '申请前订单状态',
   `reject_reason`    VARCHAR(200)           DEFAULT NULL COMMENT '拒绝原因',
   `handle_admin_id`  BIGINT                 DEFAULT NULL COMMENT '处理管理员 id',
   `handle_time`      DATETIME               DEFAULT NULL COMMENT '处理时间',

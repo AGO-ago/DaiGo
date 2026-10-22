@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{period === item.key ? 'active' : ''}}" wx:for="{{periods}}" wx:key="key"
+          data-key="{{item.key}}" bindtap="switchPeriod">{{item.label}}</view>
+  </view>
+
+  <!-- 汇总 -->
+  <view class="summary" wx:if="{{summary}}">
+    <view class="sum-main">
+      <view class="sum-label">应结金额</view>
+      <view class="sum-value">¥{{summary.netAmount}}</view>
+    </view>
+    <view class="sum-grid">
+      <view class="sum-item"><text class="num">{{summary.orderCount}}</text><text class="label">完成订单</text></view>
+      <view class="sum-item"><text class="num">¥{{summary.goodsAmount}}</text><text class="label">商品金额</text></view>
+      <view class="sum-item"><text class="num">¥{{summary.deliveryAmount}}</text><text class="label">配送费</text></view>
+      <view class="sum-item"><text class="num">-¥{{summary.commissionAmount}}</text><text class="label">平台抽佣</text></view>
+    </view>
+  </view>
+
+  <!-- 明细 -->
+  <view class="section">
+    <view class="section-title">订单明细</view>
+    <view class="bill-item" wx:for="{{items}}" wx:key="orderId" data-id="{{item.orderId}}" bindtap="goOrder">
+      <view class="bill-head">
+        <text class="order-no">#{{item.orderNo}}</text>
+        <text class="net">应结 ¥{{item.netAmountText}}</text>
+      </view>
+      <view class="bill-row"><text>完成时间</text><text>{{item.finishTimeText}}</text></view>
+      <view class="bill-row"><text>商品 / 配送</text><text>¥{{item.goodsAmountText}} / ¥{{item.deliveryAmountText}}</text></view>
+      <view class="bill-row" wx:if="{{item.platformDiscount > 0}}"><text>平台券补贴</text><text class="up">+¥{{item.platformDiscountText}}</text></view>
+      <view class="bill-row" wx:if="{{item.shopDiscount > 0}}"><text>店铺券成本</text><text class="down">-¥{{item.shopDiscountText}}</text></view>
+      <view class="bill-row"><text>抽佣（{{item.commissionRateText}}）</text><text class="down">-¥{{item.commissionAmountText}}</text></view>
+    </view>
+    <view class="empty" wx:if="{{!loading && !items.length}}">该周期暂无已完成订单</view>
+  </view>
+
+  <!-- 结算单 -->
+  <view class="section">
+    <view class="section-title">平台结算单</view>
+    <view class="settle" wx:for="{{settlements}}" wx:key="id">
+      <view class="bill-head">
+        <text class="period">{{item.periodText}}</text>
+        <text class="settle-status {{item.status === 1 ? 'done' : ''}}">{{item.statusText}}</text>
+      </view>
+      <view class="bill-row"><text>订单数</text><text>{{item.orderCount}}</text></view>
+      <view class="bill-row"><text>商品 / 配送</text><text>¥{{item.goodsAmountText}} / ¥{{item.deliveryAmountText}}</text></view>
+      <view class="bill-row"><text>抽佣（{{item.commissionRateText}}）</text><text class="down">-¥{{item.commissionAmountText}}</text></view>
+      <view class="bill-row total"><text>应结金额</text><text>¥{{item.netAmountText}}</text></view>
+      <view class="bill-row" wx:if="{{item.settleTimeText}}"><text>结算时间</text><text>{{item.settleTimeText}}</text></view>
+    </view>
+    <view class="empty" wx:if="{{!settlements.length}}">暂无结算单</view>
+  </view>
+</view>

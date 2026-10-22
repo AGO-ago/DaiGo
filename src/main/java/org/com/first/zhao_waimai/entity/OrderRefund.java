@@ -55,6 +55,9 @@ public class OrderRefund {
     /** 状态：0 申请中 1 已同意 2 已拒绝 3 已退款 */
     private Integer status;
 
+    /** 申请前订单状态 */
+    private Integer prevStatus;
+
     /** 拒绝原因 */
     private String rejectReason;
 

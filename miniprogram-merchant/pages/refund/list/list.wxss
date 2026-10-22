@@ -1,0 +1,130 @@
+page {
+  background: #f5f5f5;
+}
+
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  background: #ffffff;
+}
+
+.tab {
+  flex: 1;
+  position: relative;
+  padding: 26rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.tab.active {
+  color: #222;
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 40rpx;
+  height: 6rpx;
+  margin-left: -20rpx;
+  background: #ff5722;
+  border-radius: 3rpx;
+}
+
+.list {
+  padding: 20rpx 24rpx calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.order-no {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.status {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.status.done {
+  color: #4caf50;
+}
+
+.status.reject {
+  color: #999;
+}
+
+.amount {
+  margin-top: 16rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ff2d3c;
+}
+
+.reason {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #555;
+}
+
+.reason.reject {
+  color: #999;
+}
+
+.time {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #aaa;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #f5f5f5;
+}
+
+.btn {
+  margin-left: 20rpx;
+  padding: 12rpx 36rpx;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+}
+
+.btn.primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
+}
+
+.btn.ghost {
+  color: #666;
+  border: 1rpx solid #ddd;
+}
+
+.empty {
+  padding: 140rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}

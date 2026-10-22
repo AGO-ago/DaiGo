@@ -5,12 +5,17 @@ Page({
   data: {
     user: null,
     shop: null,
+    apply: null,
+    remindOn: true,
     loadingShop: false
   },
 
   onShow() {
     const user = wx.getStorageSync('user')
-    this.setData({ user: user || null })
+    this.setData({
+      user: user || null,
+      remindOn: wx.getStorageSync('order_remind') !== false
+    })
     if (user) {
       this.loadShop()
     }
@@ -19,8 +24,19 @@ Page({
   loadShop() {
     this.setData({ loadingShop: true })
     get('/merchant/shop')
-      .then((shop) => this.setData({ shop: shop || null, loadingShop: false }))
+      .then((shop) => {
+        this.setData({ shop: shop || null, loadingShop: false })
+        if (!shop) {
+          this.loadApply()
+        }
+      })
       .catch(() => this.setData({ shop: null, loadingShop: false }))
+  },
+
+  loadApply() {
+    get('/merchant/apply')
+      .then((apply) => this.setData({ apply: apply || null }))
+      .catch(() => this.setData({ apply: null }))
   },
 
   onLogin() {
@@ -45,7 +61,7 @@ Page({
       wx.showToast({ title: '请先登录', icon: 'none' })
       return
     }
-    wx.navigateTo({ url: '/pages/shop/shop' })
+    wx.navigateTo({ url: this.data.shop ? '/pages/shop/shop' : '/pages/apply/apply' })
   },
 
   goDish() {
@@ -54,6 +70,21 @@ Page({
 
   goComment() {
     wx.navigateTo({ url: '/pages/comment/list/list' })
+  },
+
+  goRefund() {
+    wx.navigateTo({ url: '/pages/refund/list/list' })
+  },
+
+  goBill() {
+    wx.navigateTo({ url: '/pages/bill/bill' })
+  },
+
+  onRemindChange(e) {
+    const on = e.detail.value
+    this.setData({ remindOn: on })
+    wx.setStorageSync('order_remind', on)
+    wx.showToast({ title: on ? '已开启新订单提醒' : '已关闭新订单提醒', icon: 'none' })
   },
 
   onLogout() {
@@ -65,7 +96,7 @@ Page({
         app.globalData.token = ''
         wx.removeStorageSync('token')
         wx.removeStorageSync('user')
-        this.setData({ user: null, shop: null })
+        this.setData({ user: null, shop: null, apply: null })
       }
     })
   }

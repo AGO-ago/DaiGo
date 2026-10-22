@@ -1,0 +1,57 @@
+<view class="page" wx:if="{{order}}">
+  <!-- 状态头部 -->
+  <view class="head">
+    <view class="head-status">{{statusText}}</view>
+    <view class="head-no">订单号 {{order.orderNo}}</view>
+    <view class="head-amount">¥{{order.payAmountText}}</view>
+  </view>
+
+  <!-- 状态时间轴 -->
+  <view class="card">
+    <view class="card-title">订单进度</view>
+    <view class="timeline">
+      <view class="step" wx:for="{{timeline}}" wx:key="label">
+        <view class="dot {{item.active ? 'active' : ''}}"></view>
+        <view class="step-label">{{item.label}}</view>
+        <view class="step-time">{{item.time}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收货信息 -->
+  <view class="card">
+    <view class="card-title">收货信息</view>
+    <view class="addr">{{order.addressSnapshot}}</view>
+    <view class="remark" wx:if="{{order.remark}}">备注：{{order.remark}}</view>
+  </view>
+
+  <!-- 商品明细 -->
+  <view class="card">
+    <view class="card-title">商品明细</view>
+    <view class="dish" wx:for="{{order.items}}" wx:key="dishId">
+      <image class="thumb" src="{{item.dishImage}}" mode="aspectFill" />
+      <view class="dish-info">
+        <view class="dish-name">{{item.dishName}}<text wx:if="{{item.specName}}" class="spec"> · {{item.specName}}</text></view>
+        <view class="dish-count">× {{item.count}}</view>
+      </view>
+      <text class="dish-amount">¥{{item.amountText}}</text>
+    </view>
+  </view>
+
+  <!-- 金额 -->
+  <view class="card">
+    <view class="row"><text>商品金额</text><text>¥{{order.totalAmountText}}</text></view>
+    <view class="row"><text>配送费</text><text>¥{{order.deliveryFeeText}}</text></view>
+    <view class="row" wx:if="{{order.discountAmount > 0}}"><text>优惠</text><text class="minus">-¥{{order.discountAmountText}}</text></view>
+    <view class="row total"><text>顾客实付</text><text>¥{{order.payAmountText}}</text></view>
+  </view>
+
+  <!-- 操作区 -->
+  <view class="footer">
+    <view class="btn ghost" wx:if="{{order.status === 1}}" bindtap="onReject">拒单</view>
+    <view class="btn ghost" wx:if="{{order.status === 6}}" bindtap="goRefunds">处理退款</view>
+    <view class="btn primary" wx:if="{{action}}" bindtap="onAction">{{actionText}}</view>
+  </view>
+</view>
+
+<view class="empty" wx:if="{{!loading && !order}}">订单不存在或已被删除</view>
