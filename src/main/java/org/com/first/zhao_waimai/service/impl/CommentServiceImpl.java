@@ -57,6 +57,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentVO> listByShop(Long shopId) {
         List<OrderComment> comments = orderCommentMapper.selectList(Wrappers.<OrderComment>lambdaQuery()
                 .eq(OrderComment::getShopId, shopId)
+                .eq(OrderComment::getHidden, 0)
                 .orderByDesc(OrderComment::getId)
                 .last("LIMIT " + SHOP_COMMENT_LIMIT));
         return comments.stream().map(c -> CommentVO.builder()
@@ -67,6 +68,8 @@ public class CommentServiceImpl implements CommentService {
                 .images(c.getImages())
                 .userName(maskName(c.getUserId()))
                 .createTime(c.getCreateTime())
+                .replyContent(c.getReplyContent())
+                .replyTime(c.getReplyTime())
                 .build()).toList();
     }
 

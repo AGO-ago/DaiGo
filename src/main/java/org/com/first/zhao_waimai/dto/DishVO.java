@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 菜品响应
@@ -35,4 +36,7 @@ public class DishVO {
 
     /** 状态：0 下架 1 上架 */
     private Integer status;
+
+    /** 启用中的规格列表（无规格为空数组） */
+    private List<DishSpecVO> specs;
 }

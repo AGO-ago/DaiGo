@@ -54,5 +54,27 @@
     </view>
   </view>
 
+  <!-- 菜品规格：加价叠加到售价，用户下单时选择 -->
+  <view class="card spec-card" wx:if="{{id}}">
+    <view class="spec-title">菜品规格（选填）</view>
+    <view class="spec-row" wx:for="{{specs}}" wx:key="id">
+      <view class="spec-name">{{item.name}}</view>
+      <view class="spec-price">{{item.price > 0 ? '+¥' + item.price : '不加价'}}</view>
+      <view class="spec-status {{item.status === 1 ? 'on' : ''}}"
+            data-id="{{item.id}}" data-status="{{item.status}}" bindtap="toggleSpec">
+        {{item.status === 1 ? '启用' : '停用'}}
+      </view>
+      <view class="spec-del" data-id="{{item.id}}" bindtap="removeSpec">删除</view>
+    </view>
+    <view class="spec-empty" wx:if="{{!specs.length}}">暂无规格，用户可直接下单</view>
+    <view class="spec-add-row">
+      <input class="spec-input" placeholder="规格名，如 大份" maxlength="32"
+             data-field="newSpecName" value="{{newSpecName}}" bindinput="onSpecInput" />
+      <input class="spec-input price" type="digit" placeholder="加价"
+             data-field="newSpecPrice" value="{{newSpecPrice}}" bindinput="onSpecInput" />
+      <view class="spec-add-btn" bindtap="addSpec">添加</view>
+    </view>
+  </view>
+
   <view class="save {{saving ? 'disabled' : ''}}" bindtap="save">保存</view>
 </view>

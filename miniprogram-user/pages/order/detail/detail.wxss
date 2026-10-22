@@ -66,6 +66,12 @@ page {
   text-overflow: ellipsis;
 }
 
+.item-spec {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
 .item-price {
   margin-top: 6rpx;
   font-size: 22rpx;

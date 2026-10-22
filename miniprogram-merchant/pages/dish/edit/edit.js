@@ -1,5 +1,5 @@
 const app = getApp()
-const { get, post, put } = require('../../../utils/request')
+const { get, post, put, del } = require('../../../utils/request')
 
 Page({
   data: {
@@ -18,7 +18,11 @@ Page({
       sort: 0
     },
     uploading: false,
-    saving: false
+    saving: false,
+    // 规格（仅编辑已有菜品时可维护）
+    specs: [],
+    newSpecName: '',
+    newSpecPrice: ''
   },
 
   onLoad(options) {
@@ -58,6 +62,64 @@ Page({
         this.setData(data)
       })
       .catch(() => {})
+    if (dishId) {
+      this.loadSpecs(dishId)
+    }
+  },
+
+  /** 规格列表（含停用，便于商家恢复） */
+  loadSpecs(dishId) {
+    get('/merchant/specs', { dishId })
+      .then((list) => this.setData({ specs: list || [] }))
+      .catch(() => {})
+  },
+
+  onSpecInput(e) {
+    this.setData({ [e.currentTarget.dataset.field]: e.detail.value })
+  },
+
+  addSpec() {
+    const name = (this.data.newSpecName || '').trim()
+    if (!name) {
+      wx.showToast({ title: '请输入规格名', icon: 'none' })
+      return
+    }
+    const price = Number(this.data.newSpecPrice) || 0
+    post(`/merchant/specs?dishId=${this.data.id}`, { name, price, status: 1, sort: this.data.specs.length })
+      .then(() => {
+        this.setData({ newSpecName: '', newSpecPrice: '' })
+        this.loadSpecs(this.data.id)
+      })
+      .catch(() => {})
+  },
+
+  /** 启用/停用规格 */
+  toggleSpec(e) {
+    const { id, status } = e.currentTarget.dataset
+    const spec = this.data.specs.find((s) => s.id === id)
+    if (!spec) return
+    put(`/merchant/specs/${id}?dishId=${this.data.id}`, {
+      name: spec.name,
+      price: spec.price || 0,
+      sort: spec.sort || 0,
+      status: status === 1 ? 0 : 1
+    })
+      .then(() => this.loadSpecs(this.data.id))
+      .catch(() => {})
+  },
+
+  removeSpec(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除规格',
+      content: '删除后用户端将不再展示该规格，确定删除吗？',
+      success: (res) => {
+        if (!res.confirm) return
+        del(`/merchant/specs/${id}`)
+          .then(() => this.loadSpecs(this.data.id))
+          .catch(() => {})
+      }
+    })
   },
 
   onInput(e) {

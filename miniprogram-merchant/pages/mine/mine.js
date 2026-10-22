@@ -80,6 +80,10 @@ Page({
     wx.navigateTo({ url: '/pages/bill/bill' })
   },
 
+  goCoupon() {
+    wx.navigateTo({ url: '/pages/coupon/list/list' })
+  },
+
   onRemindChange(e) {
     const on = e.detail.value
     this.setData({ remindOn: on })

@@ -10,8 +10,24 @@
       <text class="stars">{{item.stars}}</text>
     </view>
     <view class="content" wx:if="{{item.content}}">{{item.content}}</view>
-    <view class="time">{{item.createTime}}</view>
+    <view class="time">{{item.showTime}}</view>
+    <view class="reply" wx:if="{{item.replyContent}}">
+      <view class="reply-text">商家回复：{{item.replyContent}}</view>
+      <view class="reply-time">{{item.replyTimeText}}</view>
+    </view>
+    <view class="reply-btn" bindtap="openReply" data-item="{{item}}">{{item.replyContent ? '修改回复' : '回复评价'}}</view>
   </view>
 
   <view class="empty" wx:if="{{!loading && !list.length}}">暂无评价</view>
+
+  <view class="mask" wx:if="{{replyVisible}}" bindtap="closeReply"></view>
+  <view class="panel" wx:if="{{replyVisible}}">
+    <view class="panel-title">回复评价</view>
+    <view class="panel-quote" wx:if="{{replyTarget.content}}">{{replyTarget.content}}</view>
+    <textarea class="panel-input" value="{{replyContent}}" maxlength="200" placeholder="用真诚的回复留住顾客～" bindinput="onReplyInput" />
+    <view class="panel-actions">
+      <view class="panel-cancel" bindtap="closeReply">取消</view>
+      <view class="panel-confirm" bindtap="submitReply">发布回复</view>
+    </view>
+  </view>
 </view>

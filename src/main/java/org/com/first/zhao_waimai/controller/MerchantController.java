@@ -4,13 +4,18 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.Result;
 import org.com.first.zhao_waimai.dto.CommentVO;
+import org.com.first.zhao_waimai.dto.CouponSaveDTO;
 import org.com.first.zhao_waimai.dto.DishCategorySaveDTO;
 import org.com.first.zhao_waimai.dto.DishSaveDTO;
+import org.com.first.zhao_waimai.dto.DishSpecSaveDTO;
+import org.com.first.zhao_waimai.dto.DishSpecVO;
 import org.com.first.zhao_waimai.dto.MerchantDishListVO;
+import org.com.first.zhao_waimai.dto.MerchantCouponVO;
 import org.com.first.zhao_waimai.dto.MerchantOrderVO;
 import org.com.first.zhao_waimai.dto.MerchantStatVO;
 import org.com.first.zhao_waimai.dto.MerchantApplySaveDTO;
 import org.com.first.zhao_waimai.dto.MerchantApplyVO;
+import org.com.first.zhao_waimai.dto.ReplyDTO;
 import org.com.first.zhao_waimai.dto.ShopUpdateDTO;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.service.MerchantService;
@@ -165,11 +170,96 @@ public class MerchantController {
     }
 
     /**
+     * 菜品规格列表（含停用）
+     */
+    @GetMapping("/specs")
+    public Result<List<DishSpecVO>> specs(@RequestParam Long dishId) {
+        return Result.ok(merchantService.listSpecs(UserContext.getUserId(), dishId));
+    }
+
+    /**
+     * 新增菜品规格
+     */
+    @PostMapping("/specs")
+    public Result<Long> createSpec(@RequestParam Long dishId, @Valid @RequestBody DishSpecSaveDTO dto) {
+        return Result.ok(merchantService.saveSpec(UserContext.getUserId(), dishId, null, dto));
+    }
+
+    /**
+     * 编辑菜品规格
+     */
+    @PutMapping("/specs/{id}")
+    public Result<Long> updateSpec(@PathVariable Long id, @RequestParam Long dishId,
+                                   @Valid @RequestBody DishSpecSaveDTO dto) {
+        return Result.ok(merchantService.saveSpec(UserContext.getUserId(), dishId, id, dto));
+    }
+
+    /**
+     * 删除菜品规格
+     */
+    @DeleteMapping("/specs/{id}")
+    public Result<Void> deleteSpec(@PathVariable Long id) {
+        merchantService.deleteSpec(UserContext.getUserId(), id);
+        return Result.ok();
+    }
+
+    /**
      * 档口评价
      */
     @GetMapping("/comments")
     public Result<List<CommentVO>> comments() {
         return Result.ok(merchantService.listComments(UserContext.getUserId()));
+    }
+
+    /**
+     * 回复评价
+     */
+    @PutMapping("/comment/{id}/reply")
+    public Result<Void> replyComment(@PathVariable Long id, @Valid @RequestBody ReplyDTO dto) {
+        merchantService.replyComment(UserContext.getUserId(), id, dto.getContent());
+        return Result.ok();
+    }
+
+    /**
+     * 店铺券列表
+     */
+    @GetMapping("/coupons")
+    public Result<List<MerchantCouponVO>> coupons() {
+        return Result.ok(merchantService.listCoupons(UserContext.getUserId()));
+    }
+
+    /**
+     * 新增店铺券
+     */
+    @PostMapping("/coupons")
+    public Result<Long> createCoupon(@Valid @RequestBody CouponSaveDTO dto) {
+        return Result.ok(merchantService.saveCoupon(UserContext.getUserId(), null, dto));
+    }
+
+    /**
+     * 编辑店铺券
+     */
+    @PutMapping("/coupons/{id}")
+    public Result<Long> updateCoupon(@PathVariable Long id, @Valid @RequestBody CouponSaveDTO dto) {
+        return Result.ok(merchantService.saveCoupon(UserContext.getUserId(), id, dto));
+    }
+
+    /**
+     * 删除店铺券
+     */
+    @DeleteMapping("/coupons/{id}")
+    public Result<Void> deleteCoupon(@PathVariable Long id) {
+        merchantService.deleteCoupon(UserContext.getUserId(), id);
+        return Result.ok();
+    }
+
+    /**
+     * 启用/停用店铺券
+     */
+    @PutMapping("/coupons/{id}/status")
+    public Result<Void> updateCouponStatus(@PathVariable Long id, @RequestParam Integer status) {
+        merchantService.updateCouponStatus(UserContext.getUserId(), id, status);
+        return Result.ok();
     }
 
     /**

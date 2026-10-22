@@ -73,7 +73,8 @@
               <text class="price-num">{{item.price}}</text>
               <text class="price-origin" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
             </view>
-            <view class="add-btn" data-dish-id="{{item.id}}" bindtap="addToCart">+</view>
+            <view class="add-btn spec-btn" wx:if="{{item.specs.length}}" data-dish-id="{{item.id}}" catchtap="addToCart">选规格</view>
+            <view class="add-btn" wx:else data-dish-id="{{item.id}}" bindtap="addToCart">+</view>
           </view>
         </view>
       </view>
@@ -113,9 +114,44 @@
           <text class="comment-stars">{{item.stars}}</text>
         </view>
         <view class="comment-content" wx:if="{{item.content}}">{{item.content}}</view>
+        <view class="comment-reply" wx:if="{{item.replyContent}}">
+          <view class="comment-reply-text">商家回复：{{item.replyContent}}</view>
+          <view class="comment-reply-time">{{item.replyTimeText}}</view>
+        </view>
         <view class="comment-time">{{item.createTime}}</view>
       </view>
       <view class="comment-empty" wx:if="{{!comments.length}}">暂无评价</view>
     </scroll-view>
+  </view>
+
+  <!-- 规格选择弹层 -->
+  <view class="mask" wx:if="{{specVisible}}" bindtap="closeSpec"></view>
+  <view class="spec-panel" wx:if="{{specVisible}}" catchtap="noop">
+    <view class="spec-head">
+      <image class="spec-img" src="{{specDish.image}}" mode="aspectFill" />
+      <view class="spec-head-info">
+        <view class="spec-name">{{specDish.name}}</view>
+        <view class="spec-price">¥{{specUnitPrice}}</view>
+      </view>
+      <text class="panel-close" bindtap="closeSpec">✕</text>
+    </view>
+    <view class="spec-section">
+      <view class="spec-title">规格</view>
+      <view class="spec-options">
+        <view class="spec-chip {{specIndex === index ? 'on' : ''}}"
+              wx:for="{{specDish.specs}}" wx:key="id" data-index="{{index}}" bindtap="pickSpec">
+          <text>{{item.name}}</text>
+          <text class="spec-add" wx:if="{{item.price > 0}}">+¥{{item.price}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="spec-foot">
+      <view class="spec-counter">
+        <view class="spec-op" data-delta="-1" bindtap="changeSpecCount">−</view>
+        <text class="spec-count">{{specCount}}</text>
+        <view class="spec-op plus" data-delta="1" bindtap="changeSpecCount">+</view>
+      </view>
+      <view class="spec-confirm" bindtap="confirmSpec">加入购物车 ¥{{specTotalPrice}}</view>
+    </view>
   </view>
 </view>

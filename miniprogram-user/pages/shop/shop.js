@@ -20,7 +20,14 @@ Page({
     rating: '5.0',
     commentCount: 0,
     comments: [],
-    commentVisible: false
+    commentVisible: false,
+    // 规格选择弹层
+    specVisible: false,
+    specDish: null,
+    specIndex: 0,
+    specCount: 1,
+    specUnitPrice: '0.00',
+    specTotalPrice: '0.00'
   },
 
   onLoad(options) {
@@ -99,6 +106,7 @@ Page({
           comments: rows.slice(0, 20).map((c) => ({
             ...c,
             createTime: (c.createTime || '').replace('T', ' ').slice(0, 16),
+            replyTimeText: (c.replyTime || '').replace('T', ' ').slice(0, 16),
             stars: '★★★★★'.slice(0, c.score) + '☆☆☆☆☆'.slice(0, 5 - c.score)
           }))
         })
@@ -165,26 +173,89 @@ Page({
     })
   },
 
-  /** 加入购物车（跨档口共用一份本地购物车，结算时后端按档口拆单） */
+  /** 加购入口：有规格先弹层选择，无规格直接加 1 份 */
   addToCart(e) {
     const dishId = Number(e.currentTarget.dataset.dishId)
-    const shop = this.data.shop
     const dish = this.findDish(dishId)
     if (!dish) return
+    if (dish.specs && dish.specs.length) {
+      this.openSpec(dish)
+      return
+    }
+    this.addItem(dish, null, 1)
+  },
 
+  /** 打开规格选择弹层（默认选中第一个规格） */
+  openSpec(dish) {
+    this.setData({
+      specVisible: true,
+      specDish: dish,
+      specIndex: 0,
+      specCount: 1
+    })
+    this.refreshSpecPrice(0, 1)
+  },
+
+  closeSpec() {
+    this.setData({ specVisible: false, specDish: null })
+  },
+
+  pickSpec(e) {
+    const index = Number(e.currentTarget.dataset.index)
+    this.setData({ specIndex: index })
+    this.refreshSpecPrice(index, this.data.specCount)
+  },
+
+  changeSpecCount(e) {
+    const delta = Number(e.currentTarget.dataset.delta)
+    const count = Math.min(99, Math.max(1, this.data.specCount + delta))
+    this.setData({ specCount: count })
+    this.refreshSpecPrice(this.data.specIndex, count)
+  },
+
+  /** 单价 = 菜品价 + 规格加价；总价 = 单价 × 份数 */
+  refreshSpecPrice(index, count) {
+    const dish = this.data.specDish
+    if (!dish) return
+    const spec = (dish.specs || [])[index]
+    const unit = Number(dish.price) + Number((spec && spec.price) || 0)
+    this.setData({
+      specUnitPrice: unit.toFixed(2),
+      specTotalPrice: (unit * count).toFixed(2)
+    })
+  },
+
+  confirmSpec() {
+    const dish = this.data.specDish
+    if (!dish) return
+    const spec = (dish.specs || [])[this.data.specIndex] || null
+    this.addItem(dish, spec, this.data.specCount)
+    this.closeSpec()
+  },
+
+  /** 写入本地购物车：同一菜品不同规格视为不同条目 */
+  addItem(dish, spec, count) {
+    const shop = this.data.shop
+    const specId = spec ? spec.id : null
+    const key = `${dish.id}-${specId || 0}`
+    const unitPrice = Number(dish.price) + Number((spec && spec.price) || 0)
     const cart = wx.getStorageSync('cart') || []
-    const idx = cart.findIndex((i) => i.dishId === dishId)
+    const idx = cart.findIndex((i) => i.key === key || (!i.key && i.dishId === dish.id && !i.specId))
     if (idx > -1) {
-      cart[idx].count += 1
+      cart[idx].count += count
     } else {
       cart.push({
+        key,
         dishId: dish.id,
+        specId,
+        specName: spec ? spec.name : '',
+        specPrice: spec ? Number(spec.price || 0) : 0,
         name: dish.name,
         image: dish.image,
-        price: dish.price,
+        price: unitPrice,
         shopId: shop.id,
         shopName: shop.name,
-        count: 1
+        count
       })
     }
     wx.setStorageSync('cart', cart)

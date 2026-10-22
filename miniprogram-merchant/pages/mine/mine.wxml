@@ -43,6 +43,11 @@
       <text class="menu-label">账单结算</text>
       <text class="menu-arrow">›</text>
     </view>
+    <view class="menu-row" bindtap="goCoupon">
+      <text class="menu-icon">🎫</text>
+      <text class="menu-label">店铺券</text>
+      <text class="menu-arrow">›</text>
+    </view>
     <view class="menu-row">
       <text class="menu-icon">🔔</text>
       <text class="menu-label">新订单提醒</text>

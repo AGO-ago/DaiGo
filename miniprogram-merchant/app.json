@@ -10,6 +10,7 @@
     "pages/order/detail/detail",
     "pages/refund/list/list",
     "pages/bill/bill",
+    "pages/coupon/list/list",
     "pages/mine/mine"
   ],
   "window": {

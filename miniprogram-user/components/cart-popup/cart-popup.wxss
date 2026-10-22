@@ -102,6 +102,12 @@
   color: #ff2d3c;
 }
 
+.spec {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
 .ops {
   display: flex;
   align-items: center;

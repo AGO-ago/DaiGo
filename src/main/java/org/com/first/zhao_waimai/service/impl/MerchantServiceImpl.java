@@ -6,29 +6,41 @@ import org.com.first.zhao_waimai.common.BusinessException;
 import org.com.first.zhao_waimai.common.CommonConstants;
 import org.com.first.zhao_waimai.common.ErrorCode;
 import org.com.first.zhao_waimai.dto.CommentVO;
+import org.com.first.zhao_waimai.dto.CouponSaveDTO;
 import org.com.first.zhao_waimai.dto.DishCategorySaveDTO;
 import org.com.first.zhao_waimai.dto.DishSaveDTO;
+import org.com.first.zhao_waimai.dto.DishSpecSaveDTO;
+import org.com.first.zhao_waimai.dto.DishSpecVO;
 import org.com.first.zhao_waimai.dto.MerchantDishListVO;
+import org.com.first.zhao_waimai.dto.MerchantCouponVO;
 import org.com.first.zhao_waimai.dto.MerchantOrderVO;
 import org.com.first.zhao_waimai.dto.MerchantStatVO;
 import org.com.first.zhao_waimai.dto.MerchantApplySaveDTO;
 import org.com.first.zhao_waimai.dto.MerchantApplyVO;
 import org.com.first.zhao_waimai.dto.OrderItemVO;
 import org.com.first.zhao_waimai.dto.ShopUpdateDTO;
+import org.com.first.zhao_waimai.entity.Coupon;
 import org.com.first.zhao_waimai.entity.Dish;
 import org.com.first.zhao_waimai.entity.DishCategory;
+import org.com.first.zhao_waimai.entity.DishSpec;
 import org.com.first.zhao_waimai.entity.Mall;
 import org.com.first.zhao_waimai.entity.MerchantApply;
+import org.com.first.zhao_waimai.entity.OrderComment;
 import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.Shop;
+import org.com.first.zhao_waimai.entity.UserCoupon;
+import org.com.first.zhao_waimai.mapper.CouponMapper;
 import org.com.first.zhao_waimai.mapper.DishCategoryMapper;
 import org.com.first.zhao_waimai.mapper.DishMapper;
+import org.com.first.zhao_waimai.mapper.DishSpecMapper;
 import org.com.first.zhao_waimai.mapper.MallMapper;
 import org.com.first.zhao_waimai.mapper.MerchantApplyMapper;
+import org.com.first.zhao_waimai.mapper.OrderCommentMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
+import org.com.first.zhao_waimai.mapper.UserCouponMapper;
 import org.com.first.zhao_waimai.service.CommentService;
 import org.com.first.zhao_waimai.service.MerchantService;
 import org.com.first.zhao_waimai.util.UserContext;
@@ -70,11 +82,15 @@ public class MerchantServiceImpl implements MerchantService {
     private final ShopMapper shopMapper;
     private final DishMapper dishMapper;
     private final DishCategoryMapper dishCategoryMapper;
+    private final DishSpecMapper dishSpecMapper;
     private final OrdersMapper ordersMapper;
     private final OrderItemMapper orderItemMapper;
     private final CommentService commentService;
     private final MerchantApplyMapper merchantApplyMapper;
     private final MallMapper mallMapper;
+    private final OrderCommentMapper orderCommentMapper;
+    private final CouponMapper couponMapper;
+    private final UserCouponMapper userCouponMapper;
 
     @Override
     public Shop myShop(Long userId) {
@@ -342,9 +358,191 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
+    public List<DishSpecVO> listSpecs(Long userId, Long dishId) {
+        requireOwnDish(userId, dishId);
+        return dishSpecMapper.selectList(Wrappers.<DishSpec>lambdaQuery()
+                        .eq(DishSpec::getDishId, dishId)
+                        .orderByAsc(DishSpec::getSort)
+                        .orderByAsc(DishSpec::getId))
+                .stream().map(this::toSpecVO).toList();
+    }
+
+    @Override
+    public Long saveSpec(Long userId, Long dishId, Long specId, DishSpecSaveDTO dto) {
+        requireOwnDish(userId, dishId);
+        if (specId == null) {
+            DishSpec spec = new DishSpec();
+            spec.setDishId(dishId);
+            spec.setName(dto.getName().trim());
+            spec.setPrice(dto.getPrice() == null ? BigDecimal.ZERO : dto.getPrice());
+            spec.setSort(dto.getSort() == null ? 0 : dto.getSort());
+            spec.setStatus(dto.getStatus() == null ? 1 : dto.getStatus());
+            dishSpecMapper.insert(spec);
+            return spec.getId();
+        }
+        DishSpec exists = dishSpecMapper.selectById(specId);
+        if (exists == null || !dishId.equals(exists.getDishId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "规格不存在");
+        }
+        DishSpec update = new DishSpec();
+        update.setId(specId);
+        update.setName(dto.getName().trim());
+        update.setPrice(dto.getPrice() == null ? BigDecimal.ZERO : dto.getPrice());
+        update.setSort(dto.getSort() == null ? exists.getSort() : dto.getSort());
+        update.setStatus(dto.getStatus() == null ? exists.getStatus() : dto.getStatus());
+        dishSpecMapper.updateById(update);
+        return specId;
+    }
+
+    @Override
+    public void deleteSpec(Long userId, Long specId) {
+        DishSpec exists = dishSpecMapper.selectById(specId);
+        if (exists == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "规格不存在");
+        }
+        requireOwnDish(userId, exists.getDishId());
+        dishSpecMapper.deleteById(specId);
+    }
+
+    /**
+     * 校验菜品归属当前商家档口，返回菜品
+     */
+    private Dish requireOwnDish(Long userId, Long dishId) {
+        Shop shop = requireShop(userId);
+        Dish dish = dishMapper.selectById(dishId);
+        if (dish == null || !shop.getId().equals(dish.getShopId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "菜品不存在");
+        }
+        return dish;
+    }
+
+    private DishSpecVO toSpecVO(DishSpec spec) {
+        return DishSpecVO.builder()
+                .id(spec.getId())
+                .dishId(spec.getDishId())
+                .name(spec.getName())
+                .price(spec.getPrice())
+                .sort(spec.getSort())
+                .status(spec.getStatus())
+                .build();
+    }
+
+    @Override
     public List<CommentVO> listComments(Long userId) {
         Shop shop = requireShop(userId);
         return commentService.listByShop(shop.getId());
+    }
+
+    @Override
+    public void replyComment(Long userId, Long commentId, String content) {
+        Shop shop = requireShop(userId);
+        OrderComment comment = orderCommentMapper.selectById(commentId);
+        if (comment == null || !shop.getId().equals(comment.getShopId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "评价不存在");
+        }
+        OrderComment update = new OrderComment();
+        update.setId(commentId);
+        update.setReplyContent(content.trim());
+        update.setReplyTime(LocalDateTime.now());
+        orderCommentMapper.updateById(update);
+    }
+
+    @Override
+    public List<MerchantCouponVO> listCoupons(Long userId) {
+        Shop shop = requireShop(userId);
+        return couponMapper.selectList(Wrappers.<Coupon>lambdaQuery()
+                        .eq(Coupon::getShopId, shop.getId())
+                        .orderByDesc(Coupon::getId))
+                .stream().map(c -> MerchantCouponVO.builder()
+                        .id(c.getId())
+                        .name(c.getName())
+                        .type(c.getType())
+                        .threshold(c.getThreshold())
+                        .amount(c.getAmount())
+                        .totalCount(c.getTotalCount())
+                        .remainCount(c.getRemainCount())
+                        .receivedCount(userCouponMapper.selectCount(Wrappers.<UserCoupon>lambdaQuery()
+                                .eq(UserCoupon::getCouponId, c.getId())).intValue())
+                        .startTime(c.getStartTime())
+                        .endTime(c.getEndTime())
+                        .status(c.getStatus())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public Long saveCoupon(Long userId, Long couponId, CouponSaveDTO dto) {
+        Shop shop = requireShop(userId);
+        if (!dto.getEndTime().isAfter(dto.getStartTime())) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "失效时间必须晚于生效时间");
+        }
+        if (dto.getType() == Coupon.TYPE_DISCOUNT
+                && dto.getAmount().compareTo(BigDecimal.ONE) >= 0) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "折扣率需在 0-1 之间，如 0.85 表示 85 折");
+        }
+        BigDecimal threshold = dto.getThreshold() == null ? BigDecimal.ZERO : dto.getThreshold();
+        if (couponId == null) {
+            Coupon coupon = new Coupon();
+            coupon.setName(dto.getName().trim());
+            coupon.setType(dto.getType());
+            coupon.setThreshold(threshold);
+            coupon.setAmount(dto.getAmount());
+            coupon.setTotalCount(dto.getTotalCount());
+            coupon.setRemainCount(dto.getTotalCount());
+            coupon.setStartTime(dto.getStartTime());
+            coupon.setEndTime(dto.getEndTime());
+            coupon.setShopId(shop.getId());
+            coupon.setCreatorType(Coupon.CREATOR_SHOP);
+            coupon.setStatus(dto.getStatus() == null ? Coupon.STATUS_ENABLED : dto.getStatus());
+            couponMapper.insert(coupon);
+            return coupon.getId();
+        }
+        Coupon exists = couponMapper.selectById(couponId);
+        if (exists == null || !shop.getId().equals(exists.getShopId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券不存在");
+        }
+        // 已领取数量固定，调整总量时同步剩余数量，避免超发或负数
+        int used = Math.max(0, exists.getTotalCount() - exists.getRemainCount());
+        int remain = Math.max(0, dto.getTotalCount() - used);
+        Coupon update = new Coupon();
+        update.setId(couponId);
+        update.setName(dto.getName().trim());
+        update.setType(dto.getType());
+        update.setThreshold(threshold);
+        update.setAmount(dto.getAmount());
+        update.setTotalCount(dto.getTotalCount());
+        update.setRemainCount(remain);
+        update.setStartTime(dto.getStartTime());
+        update.setEndTime(dto.getEndTime());
+        update.setStatus(dto.getStatus() == null ? exists.getStatus() : dto.getStatus());
+        couponMapper.updateById(update);
+        return couponId;
+    }
+
+    @Override
+    public void deleteCoupon(Long userId, Long couponId) {
+        Shop shop = requireShop(userId);
+        Coupon exists = couponMapper.selectById(couponId);
+        if (exists == null || !shop.getId().equals(exists.getShopId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券不存在");
+        }
+        couponMapper.deleteById(couponId);
+    }
+
+    @Override
+    public void updateCouponStatus(Long userId, Long couponId, Integer status) {
+        Shop shop = requireShop(userId);
+        if (status == null || (status != Coupon.STATUS_DISABLED && status != Coupon.STATUS_ENABLED)) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "状态不合法");
+        }
+        Coupon exists = couponMapper.selectById(couponId);
+        if (exists == null || !shop.getId().equals(exists.getShopId())) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券不存在");
+        }
+        Coupon update = new Coupon();
+        update.setId(couponId);
+        update.setStatus(status);
+        couponMapper.updateById(update);
     }
 
     @Override

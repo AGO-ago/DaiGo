@@ -6,7 +6,9 @@ const STATUS_TEXT = {
   2: '备餐中',
   3: '配送中',
   4: '已完成',
-  5: '已取消'
+  5: '已取消',
+  6: '退款中',
+  7: '已退款'
 }
 
 Page({
@@ -70,12 +72,17 @@ Page({
     if (!order || !order.items || !order.items.length) return
     const cart = wx.getStorageSync('cart') || []
     order.items.forEach((item) => {
-      const idx = cart.findIndex((i) => i.dishId === item.dishId)
+      const key = `${item.dishId}-${item.specId || 0}`
+      const idx = cart.findIndex((i) => i.key === key || (!i.key && i.dishId === item.dishId && !i.specId))
       if (idx > -1) {
         cart[idx].count += item.count
       } else {
         cart.push({
+          key,
           dishId: item.dishId,
+          specId: item.specId || null,
+          specName: item.specName || '',
+          specPrice: item.specPrice || 0,
           name: item.dishName,
           image: item.dishImage,
           price: item.price,
@@ -92,6 +99,29 @@ Page({
         url: `/pages/shop/shop?mallId=${order.mallId}&shopId=${order.shopId}&shopName=${encodeURIComponent(order.shopName || '')}`
       })
     }, 500)
+  },
+
+  /** 申请退款（待接单/备餐中可申请，由商家审核） */
+  applyRefund() {
+    wx.showModal({
+      title: '申请退款',
+      editable: true,
+      placeholderText: '请填写退款原因',
+      success: (res) => {
+        if (!res.confirm) return
+        const reason = (res.content || '').trim()
+        if (!reason) {
+          wx.showToast({ title: '请填写退款原因', icon: 'none' })
+          return
+        }
+        post(`/order/${this.orderId}/refund`, { reason })
+          .then(() => {
+            wx.showToast({ title: '已提交退款申请', icon: 'success' })
+            this.loadDetail()
+          })
+          .catch(() => {})
+      }
+    })
   },
 
   /** 评价已完成订单 */

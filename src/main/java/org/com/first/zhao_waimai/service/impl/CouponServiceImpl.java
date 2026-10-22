@@ -40,6 +40,7 @@ public class CouponServiceImpl implements CouponService {
                 .le(Coupon::getStartTime, now)
                 .ge(Coupon::getEndTime, now)
                 .gt(Coupon::getRemainCount, 0)
+                .eq(Coupon::getStatus, Coupon.STATUS_ENABLED)
                 .orderByAsc(Coupon::getThreshold));
         if (coupons.isEmpty()) {
             return List.of();
@@ -70,6 +71,9 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponMapper.selectById(couponId);
         if (coupon == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券不存在");
+        }
+        if (coupon.getStatus() == null || coupon.getStatus() != Coupon.STATUS_ENABLED) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券已停用");
         }
         LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(coupon.getStartTime()) || now.isAfter(coupon.getEndTime())) {

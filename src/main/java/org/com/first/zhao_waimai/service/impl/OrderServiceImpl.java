@@ -16,6 +16,7 @@ import org.com.first.zhao_waimai.dto.OrderListVO;
 import org.com.first.zhao_waimai.dto.PageDTO;
 import org.com.first.zhao_waimai.entity.Coupon;
 import org.com.first.zhao_waimai.entity.Dish;
+import org.com.first.zhao_waimai.entity.DishSpec;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.OrderCoupon;
 import org.com.first.zhao_waimai.entity.OrderItem;
@@ -27,6 +28,7 @@ import org.com.first.zhao_waimai.entity.UserAddress;
 import org.com.first.zhao_waimai.entity.UserCoupon;
 import org.com.first.zhao_waimai.mapper.CouponMapper;
 import org.com.first.zhao_waimai.mapper.DishMapper;
+import org.com.first.zhao_waimai.mapper.DishSpecMapper;
 import org.com.first.zhao_waimai.mapper.OrderCommentMapper;
 import org.com.first.zhao_waimai.mapper.OrderCouponMapper;
 import org.com.first.zhao_waimai.mapper.OrderItemMapper;
@@ -64,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final UserAddressMapper userAddressMapper;
     private final DishMapper dishMapper;
+    private final DishSpecMapper dishSpecMapper;
     private final ShopMapper shopMapper;
     private final PaymentMapper paymentMapper;
     private final OrdersMapper ordersMapper;
@@ -120,6 +123,9 @@ public class OrderServiceImpl implements OrderService {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrderId(order.getId());
                 orderItem.setDishId(item.getDishId());
+                orderItem.setSpecId(item.getSpecId());
+                orderItem.setSpecName(item.getSpecName());
+                orderItem.setSpecPrice(item.getSpecPrice());
                 orderItem.setDishName(item.getDishName());
                 orderItem.setDishImage(item.getDishImage());
                 orderItem.setPrice(item.getPrice());
@@ -373,13 +379,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 购物车校验 + 按档口分组：
-     * 菜品存在性/上架状态 → 档口营业状态 → 起送价；相同菜品自动合并数量
+     * 菜品存在性/上架状态 → 档口营业状态 → 起送价；相同菜品+规格自动合并数量
      */
     private List<CheckoutGroupDTO> buildGroups(List<CheckoutItemDTO> items) {
-        // 合并相同菜品数量，保持提交顺序
-        Map<Long, Integer> quantityMap = new LinkedHashMap<>();
+        // 合并相同菜品+规格的数量，保持提交顺序
+        Map<ItemKey, Integer> quantityMap = new LinkedHashMap<>();
         for (CheckoutItemDTO item : items) {
-            int merged = quantityMap.merge(item.getDishId(), item.getQuantity(), Integer::sum);
+            ItemKey key = new ItemKey(item.getDishId(), item.getSpecId());
+            int merged = quantityMap.merge(key, item.getQuantity(), Integer::sum);
             if (merged > 99) {
                 throw new BusinessException(ErrorCode.BUSINESS_ERROR, "单品数量不能超过 99");
             }
@@ -387,13 +394,29 @@ public class OrderServiceImpl implements OrderService {
 
         Map<Long, CheckoutGroupDTO> groupMap = new LinkedHashMap<>();
         Map<Long, Shop> shopCache = new HashMap<>();
-        for (Map.Entry<Long, Integer> entry : quantityMap.entrySet()) {
-            Dish dish = dishMapper.selectById(entry.getKey());
+        for (Map.Entry<ItemKey, Integer> entry : quantityMap.entrySet()) {
+            Long dishId = entry.getKey().dishId();
+            Long specId = entry.getKey().specId();
+            Dish dish = dishMapper.selectById(dishId);
             if (dish == null) {
                 throw new BusinessException(ErrorCode.NOT_FOUND, "菜品不存在（可能已删除，请刷新购物车）");
             }
             if (dish.getStatus() == null || dish.getStatus() == 0) {
                 throw new BusinessException(ErrorCode.BUSINESS_ERROR, "菜品「" + dish.getName() + "」已下架，请移除后再结算");
+            }
+            // 规格校验：必须属于该菜品且启用中，价格以后端为准
+            DishSpec spec = null;
+            BigDecimal specPrice = BigDecimal.ZERO;
+            if (specId != null) {
+                spec = dishSpecMapper.selectById(specId);
+                if (spec == null || !dishId.equals(spec.getDishId())) {
+                    throw new BusinessException(ErrorCode.NOT_FOUND, "所选规格不存在，请重新选择");
+                }
+                if (spec.getStatus() == null || spec.getStatus() == 0) {
+                    throw new BusinessException(ErrorCode.BUSINESS_ERROR,
+                            "菜品「" + dish.getName() + "」的规格「" + spec.getName() + "」已停用，请重新选择");
+                }
+                specPrice = spec.getPrice() == null ? BigDecimal.ZERO : spec.getPrice();
             }
             Shop shop = shopCache.computeIfAbsent(dish.getShopId(), shopMapper::selectById);
             if (shop == null) {
@@ -403,7 +426,8 @@ public class OrderServiceImpl implements OrderService {
                 throw new BusinessException(ErrorCode.BUSINESS_ERROR, "档口「" + shop.getName() + "」休息中，暂不接单");
             }
 
-            BigDecimal amount = dish.getPrice().multiply(BigDecimal.valueOf(entry.getValue()));
+            BigDecimal unitPrice = dish.getPrice().add(specPrice);
+            BigDecimal amount = unitPrice.multiply(BigDecimal.valueOf(entry.getValue()));
             CheckoutGroupDTO group = groupMap.computeIfAbsent(shop.getId(), k -> {
                 CheckoutGroupDTO g = new CheckoutGroupDTO();
                 g.setShopId(shop.getId());
@@ -416,7 +440,7 @@ public class OrderServiceImpl implements OrderService {
                 return g;
             });
             group.setTotalAmount(group.getTotalAmount().add(amount));
-            group.getItems().add(toItemVO(dish, entry.getValue(), amount));
+            group.getItems().add(toItemVO(dish, spec, specPrice, entry.getValue(), unitPrice, amount));
         }
 
         // 起送价校验 + 实付计算（放在分组完成后统一处理）
@@ -455,6 +479,9 @@ public class OrderServiceImpl implements OrderService {
         Coupon coupon = couponMapper.selectById(userCoupon.getCouponId());
         if (coupon == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND, "优惠券模板不存在");
+        }
+        if (coupon.getStatus() == null || coupon.getStatus() != Coupon.STATUS_ENABLED) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "优惠券已停用");
         }
         LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(coupon.getStartTime()) || now.isAfter(coupon.getEndTime())) {
@@ -516,15 +543,25 @@ public class OrderServiceImpl implements OrderService {
     private record AppliedCoupon(Long userCouponId, String couponName, BigDecimal discount) {
     }
 
-    private CheckoutItemVO toItemVO(Dish dish, int quantity, BigDecimal amount) {
+    private CheckoutItemVO toItemVO(Dish dish, DishSpec spec, BigDecimal specPrice,
+                                    int quantity, BigDecimal unitPrice, BigDecimal amount) {
         CheckoutItemVO vo = new CheckoutItemVO();
         vo.setDishId(dish.getId());
+        vo.setSpecId(spec == null ? null : spec.getId());
+        vo.setSpecName(spec == null ? null : spec.getName());
+        vo.setSpecPrice(spec == null ? null : specPrice);
         vo.setDishName(dish.getName());
         vo.setDishImage(dish.getImage());
-        vo.setPrice(dish.getPrice());
+        vo.setPrice(unitPrice);
         vo.setQuantity(quantity);
         vo.setAmount(amount);
         return vo;
+    }
+
+    /**
+     * 购物车合并键：同一菜品下不同规格视为不同条目
+     */
+    private record ItemKey(Long dishId, Long specId) {
     }
 
     private CheckoutResultDTO assemble(Long paymentId, BigDecimal totalAmount, UserAddress address,

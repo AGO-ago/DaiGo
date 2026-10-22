@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="tip">店铺券仅限本档口使用，成本由商家承担</view>
+
+  <view class="coupon" wx:for="{{list}}" wx:key="id">
+    <view class="coupon-left">
+      <view class="coupon-amount">{{item.amountText}}</view>
+      <view class="coupon-threshold">{{item.thresholdText}}</view>
+    </view>
+    <view class="coupon-main" data-id="{{item.id}}" bindtap="openEdit">
+      <view class="coupon-name">{{item.name}}</view>
+      <view class="coupon-date">{{item.dateText}}</view>
+      <view class="coupon-stock">剩余 {{item.remainCount}} / {{item.totalCount}} · 已领 {{item.receivedCount}}</view>
+    </view>
+    <view class="coupon-ops">
+      <view class="status {{item.status === 1 ? 'on' : ''}}" data-id="{{item.id}}" data-status="{{item.status}}" catchtap="toggle">
+        {{item.statusText}}
+      </view>
+      <view class="del" data-id="{{item.id}}" catchtap="remove">删除</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !list.length}}">还没有店铺券，点击下方按钮创建</view>
+
+  <view class="create" bindtap="openCreate">＋ 新建店铺券</view>
+
+  <!-- 表单弹层 -->
+  <view class="mask" wx:if="{{formVisible}}" bindtap="closeForm"></view>
+  <view class="panel" wx:if="{{formVisible}}" catchtap="noop">
+    <view class="panel-head">
+      <text class="panel-title">{{editingId ? '编辑店铺券' : '新建店铺券'}}</text>
+      <text class="panel-close" bindtap="closeForm">✕</text>
+    </view>
+    <scroll-view class="panel-body" scroll-y>
+      <view class="field">
+        <text class="label">券名称</text>
+        <input class="input" placeholder="如：满30减5" maxlength="64"
+               data-field="name" value="{{form.name}}" bindinput="onFormInput" />
+      </view>
+      <view class="field">
+        <text class="label">券类型</text>
+        <picker class="picker" range="{{['满减券', '折扣券']}}" value="{{form.typeIndex}}" bindchange="onTypeChange">
+          <view class="picker-value">{{form.typeIndex === 0 ? '满减券' : '折扣券'}} ›</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="label">使用门槛</text>
+        <input class="input" type="digit" placeholder="0 表示无门槛"
+               data-field="threshold" value="{{form.threshold}}" bindinput="onFormInput" />
+      </view>
+      <view class="field">
+        <text class="label">{{form.typeIndex === 0 ? '减免金额' : '折扣率'}}</text>
+        <input class="input" type="digit" placeholder="{{form.typeIndex === 0 ? '如 5' : '如 0.85'}}"
+               data-field="amount" value="{{form.amount}}" bindinput="onFormInput" />
+      </view>
+      <view class="field">
+        <text class="label">发放总量</text>
+        <input class="input" type="number" placeholder="如 100"
+               data-field="totalCount" value="{{form.totalCount}}" bindinput="onFormInput" />
+      </view>
+      <view class="field">
+        <text class="label">生效日期</text>
+        <picker class="picker" mode="date" data-field="startDate" value="{{form.startDate}}" bindchange="onDateChange">
+          <view class="picker-value">{{form.startDate}} ›</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="label">失效日期</text>
+        <picker class="picker" mode="date" data-field="endDate" value="{{form.endDate}}" bindchange="onDateChange">
+          <view class="picker-value">{{form.endDate}} ›</view>
+        </picker>
+      </view>
+    </scroll-view>
+    <view class="panel-foot">
+      <view class="save" bindtap="save">保存</view>
+    </view>
+  </view>
+</view>

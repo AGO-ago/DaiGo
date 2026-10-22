@@ -170,6 +170,7 @@ CREATE TABLE `coupon` (
   `end_time`     DATETIME      NOT NULL COMMENT '失效时间',
   `shop_id`      BIGINT                 DEFAULT NULL COMMENT '限定档口 id（空为平台通用券）',
   `creator_type` TINYINT       NOT NULL DEFAULT 1 COMMENT '创建方：1 平台 2 商家',
+  `status`       TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 停用 1 启用',
   `create_time`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted`      TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除：0 未删 1 已删',

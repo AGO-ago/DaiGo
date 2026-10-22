@@ -178,8 +178,9 @@ CALL add_column_if_not_exists('order_comment', 'hidden', 'TINYINT NOT NULL DEFAU
 CALL add_column_if_not_exists('dish_spec', 'sort', 'INT NOT NULL DEFAULT 0 COMMENT ''排序值，越小越靠前''');
 CALL add_column_if_not_exists('dish_spec', 'status', 'TINYINT NOT NULL DEFAULT 1 COMMENT ''状态：0 停用 1 启用''');
 
--- 2.5 优惠券：创建方
+-- 2.5 优惠券：创建方、启用状态
 CALL add_column_if_not_exists('coupon', 'creator_type', 'TINYINT NOT NULL DEFAULT 1 COMMENT ''创建方：1 平台 2 商家''');
+CALL add_column_if_not_exists('coupon', 'status', 'TINYINT NOT NULL DEFAULT 1 COMMENT ''状态：0 停用 1 启用''');
 
 -- 2.5.1 退款单：申请前订单状态（拒绝退款时恢复）
 CALL add_column_if_not_exists('order_refund', 'prev_status', 'TINYINT DEFAULT NULL COMMENT ''申请前订单状态''');

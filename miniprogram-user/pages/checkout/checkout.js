@@ -60,7 +60,7 @@ Page({
     const payload = {
       addressId: this.data.address.id,
       remark: this.data.remark,
-      items: cart.map((i) => ({ dishId: i.dishId, quantity: i.count }))
+      items: cart.map((i) => ({ dishId: i.dishId, specId: i.specId || null, quantity: i.count }))
     }
     if (this.data.selectedCouponId) {
       payload.userCouponId = this.data.selectedCouponId
@@ -174,7 +174,7 @@ Page({
     const payload = {
       addressId: this.data.address.id,
       remark: this.data.remark,
-      items: cart.map((i) => ({ dishId: i.dishId, quantity: i.count }))
+      items: cart.map((i) => ({ dishId: i.dishId, specId: i.specId || null, quantity: i.count }))
     }
     if (this.data.selectedCouponId) {
       payload.userCouponId = this.data.selectedCouponId

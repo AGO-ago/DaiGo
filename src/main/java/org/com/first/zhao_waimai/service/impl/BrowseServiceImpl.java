@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.BusinessException;
 import org.com.first.zhao_waimai.common.ErrorCode;
+import org.com.first.zhao_waimai.dto.DishDetailVO;
+import org.com.first.zhao_waimai.dto.DishSpecVO;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.DishVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
@@ -13,10 +15,12 @@ import org.com.first.zhao_waimai.dto.ShopBriefVO;
 import org.com.first.zhao_waimai.dto.ShopVO;
 import org.com.first.zhao_waimai.entity.Dish;
 import org.com.first.zhao_waimai.entity.DishCategory;
+import org.com.first.zhao_waimai.entity.DishSpec;
 import org.com.first.zhao_waimai.entity.Mall;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.mapper.DishCategoryMapper;
 import org.com.first.zhao_waimai.mapper.DishMapper;
+import org.com.first.zhao_waimai.mapper.DishSpecMapper;
 import org.com.first.zhao_waimai.mapper.MallMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.service.BrowseService;
@@ -43,6 +47,7 @@ public class BrowseServiceImpl implements BrowseService {
     private final ShopMapper shopMapper;
     private final DishCategoryMapper dishCategoryMapper;
     private final DishMapper dishMapper;
+    private final DishSpecMapper dishSpecMapper;
 
     @Override
     public List<MallVO> listMalls(Double lat, Double lng) {
@@ -129,6 +134,7 @@ public class BrowseServiceImpl implements BrowseService {
                 .eq(Dish::getShopId, shopId)
                 .eq(Dish::getStatus, 1)
                 .orderByAsc(Dish::getSort));
+        Map<Long, List<DishSpecVO>> specMap = loadSpecs(dishes.stream().map(Dish::getId).toList());
 
         return categories.stream().map(c -> {
             DishTreeVO node = new DishTreeVO();
@@ -136,10 +142,58 @@ public class BrowseServiceImpl implements BrowseService {
             node.setCategoryName(c.getName());
             node.setDishes(dishes.stream()
                     .filter(d -> c.getId().equals(d.getCategoryId()))
-                    .map(this::toDishVO)
+                    .map(d -> toDishVO(d, specMap.getOrDefault(d.getId(), List.of())))
                     .toList());
             return node;
         }).toList();
+    }
+
+    @Override
+    public DishDetailVO getDish(Long dishId) {
+        Dish dish = dishMapper.selectById(dishId);
+        if (dish == null || dish.getStatus() == null || dish.getStatus() == 0) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "菜品不存在或已下架");
+        }
+        Shop shop = shopMapper.selectById(dish.getShopId());
+        return DishDetailVO.builder()
+                .id(dish.getId())
+                .shopId(dish.getShopId())
+                .shopName(shop == null ? "" : shop.getName())
+                .name(dish.getName())
+                .image(dish.getImage())
+                .price(dish.getPrice())
+                .originalPrice(dish.getOriginalPrice())
+                .description(dish.getDescription())
+                .soldCount(dish.getSoldCount())
+                .status(dish.getStatus())
+                .specs(loadSpecs(List.of(dishId)).getOrDefault(dishId, List.of()))
+                .build();
+    }
+
+    /**
+     * 批量加载启用中的规格，按菜品 id 分组（避免 N+1）
+     */
+    private Map<Long, List<DishSpecVO>> loadSpecs(List<Long> dishIds) {
+        Map<Long, List<DishSpecVO>> map = new HashMap<>();
+        if (dishIds.isEmpty()) {
+            return map;
+        }
+        List<DishSpec> specs = dishSpecMapper.selectList(Wrappers.<DishSpec>lambdaQuery()
+                .in(DishSpec::getDishId, dishIds)
+                .eq(DishSpec::getStatus, 1)
+                .orderByAsc(DishSpec::getSort)
+                .orderByAsc(DishSpec::getId));
+        for (DishSpec spec : specs) {
+            map.computeIfAbsent(spec.getDishId(), k -> new ArrayList<>()).add(DishSpecVO.builder()
+                    .id(spec.getId())
+                    .dishId(spec.getDishId())
+                    .name(spec.getName())
+                    .price(spec.getPrice())
+                    .sort(spec.getSort())
+                    .status(spec.getStatus())
+                    .build());
+        }
+        return map;
     }
 
     @Override
@@ -237,7 +291,7 @@ public class BrowseServiceImpl implements BrowseService {
         return buildHotDishVOs(dishes, lat, lng);
     }
 
-    private DishVO toDishVO(Dish d) {
+    private DishVO toDishVO(Dish d, List<DishSpecVO> specs) {
         return DishVO.builder()
                 .id(d.getId())
                 .name(d.getName())
@@ -247,6 +301,7 @@ public class BrowseServiceImpl implements BrowseService {
                 .description(d.getDescription())
                 .soldCount(d.getSoldCount())
                 .status(d.getStatus())
+                .specs(specs)
                 .build();
     }
 

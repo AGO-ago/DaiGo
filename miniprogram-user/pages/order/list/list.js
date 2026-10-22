@@ -6,7 +6,9 @@ const STATUS_TEXT = {
   2: '备餐中',
   3: '配送中',
   4: '已完成',
-  5: '已取消'
+  5: '已取消',
+  6: '退款中',
+  7: '已退款'
 }
 
 Page({
@@ -50,7 +52,7 @@ Page({
           ...o,
           id: o.orderId,
           statusText: STATUS_TEXT[o.status] || '',
-          summary: (o.items || []).map((i) => i.dishName).join('、'),
+          summary: (o.items || []).map((i) => i.specName ? `${i.dishName}(${i.specName})` : i.dishName).join('、'),
           createTime: (o.createTime || '').replace('T', ' ').slice(0, 16)
         }))
         this.setData({ orders, loading: false })

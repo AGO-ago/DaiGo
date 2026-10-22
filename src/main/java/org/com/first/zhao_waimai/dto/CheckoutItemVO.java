@@ -13,6 +13,15 @@ public class CheckoutItemVO {
     /** 菜品 id */
     private Long dishId;
 
+    /** 规格 id（无规格为空） */
+    private Long specId;
+
+    /** 规格名 */
+    private String specName;
+
+    /** 规格加价 */
+    private BigDecimal specPrice;
+
     /** 菜品名 */
     private String dishName;
 

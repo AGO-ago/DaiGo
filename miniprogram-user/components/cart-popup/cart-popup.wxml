@@ -9,10 +9,11 @@
   <scroll-view scroll-y class="list" wx:if="{{count}}">
     <view class="group" wx:for="{{groups}}" wx:key="shopId">
       <view class="group-name">{{item.shopName}}</view>
-      <view class="row" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+      <view class="row" wx:for="{{item.items}}" wx:for-item="dish" wx:key="index">
         <image class="thumb" src="{{dish.image}}" mode="aspectFill" />
         <view class="info">
           <view class="name">{{dish.name}}</view>
+          <view class="spec" wx:if="{{dish.specName}}">{{dish.specName}}</view>
           <view class="price">¥{{dish.price}}</view>
         </view>
         <view class="ops">

@@ -570,10 +570,171 @@ page {
   color: #bbb;
 }
 
+.comment-reply {
+  margin-top: 12rpx;
+  padding: 12rpx 16rpx;
+  background: #fff7f2;
+  border-radius: 8rpx;
+}
+
+.comment-reply-text {
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: #d84315;
+}
+
+.comment-reply-time {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #bfa89d;
+}
+
 .comment-empty {
   padding: 80rpx 0;
   text-align: center;
   font-size: 24rpx;
   color: #999;
+}
+
+/* 规格选择弹层 */
+.spec-btn {
+  width: auto;
+  padding: 0 16rpx;
+  border-radius: 24rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.spec-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 101;
+  box-sizing: border-box;
+}
+
+.spec-head {
+  display: flex;
+  align-items: center;
+  padding: 28rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+}
+
+.spec-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  background: #f2f2f2;
+  flex-shrink: 0;
+}
+
+.spec-head-info {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+
+.spec-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #222;
+}
+
+.spec-price {
+  margin-top: 10rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #ff2d3c;
+}
+
+.spec-section {
+  padding: 24rpx 28rpx 8rpx;
+}
+
+.spec-title {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.spec-options {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.spec-chip {
+  display: flex;
+  align-items: center;
+  margin: 0 16rpx 16rpx 0;
+  padding: 12rpx 22rpx;
+  font-size: 24rpx;
+  color: #444;
+  background: #f5f5f5;
+  border: 1rpx solid transparent;
+  border-radius: 8rpx;
+}
+
+.spec-chip.on {
+  color: #ff6a00;
+  background: #fff4ec;
+  border-color: #ff6a00;
+}
+
+.spec-add {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  color: #ff6a00;
+}
+
+.spec-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 28rpx 24rpx;
+}
+
+.spec-counter {
+  display: flex;
+  align-items: center;
+}
+
+.spec-op {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #333;
+  background: #f2f2f2;
+  border-radius: 50%;
+}
+
+.spec-op.plus {
+  color: #ffffff;
+  background: #38a3ff;
+}
+
+.spec-count {
+  min-width: 60rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #222;
+}
+
+.spec-confirm {
+  flex: 1;
+  margin-left: 28rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ffffff;
+  background: #ff6a00;
+  border-radius: 38rpx;
 }
 

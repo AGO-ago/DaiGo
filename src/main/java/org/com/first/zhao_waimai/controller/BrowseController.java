@@ -2,6 +2,7 @@ package org.com.first.zhao_waimai.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.Result;
+import org.com.first.zhao_waimai.dto.DishDetailVO;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
@@ -57,6 +58,14 @@ public class BrowseController {
     @GetMapping("/shop/{id}/dishes")
     public Result<List<DishTreeVO>> getDishTree(@PathVariable Long id) {
         return Result.ok(browseService.getDishTree(id));
+    }
+
+    /**
+     * 菜品详情（含启用中的规格，用户端选规格）
+     */
+    @GetMapping("/dish/{id}")
+    public Result<DishDetailVO> getDish(@PathVariable Long id) {
+        return Result.ok(browseService.getDish(id));
     }
 
     /**

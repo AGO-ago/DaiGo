@@ -1,5 +1,6 @@
 package org.com.first.zhao_waimai.service;
 
+import org.com.first.zhao_waimai.dto.DishDetailVO;
 import org.com.first.zhao_waimai.dto.DishTreeVO;
 import org.com.first.zhao_waimai.dto.HotDishVO;
 import org.com.first.zhao_waimai.dto.MallVO;
@@ -32,6 +33,11 @@ public interface BrowseService {
      * 档口菜品树（按分类分组，仅上架）
      */
     List<DishTreeVO> getDishTree(Long shopId);
+
+    /**
+     * 菜品详情（含启用中的规格）
+     */
+    DishDetailVO getDish(Long dishId);
 
     /**
      * 热销菜品（首页今日抢购，按销量倒序）

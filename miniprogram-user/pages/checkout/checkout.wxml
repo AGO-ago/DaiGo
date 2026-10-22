@@ -42,10 +42,11 @@
       <text class="shop-name">{{item.shopName}}</text>
       <text class="delivery-time">约 {{item.averageDeliveryTime}} 分钟</text>
     </view>
-    <view class="item" wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId">
+    <view class="item" wx:for="{{item.items}}" wx:for-item="dish" wx:key="index">
       <image class="thumb" src="{{dish.dishImage}}" mode="aspectFill" />
       <view class="item-info">
         <view class="item-name">{{dish.dishName}}</view>
+        <view class="item-spec" wx:if="{{dish.specName}}">{{dish.specName}}</view>
         <view class="item-count">× {{dish.quantity}}</view>
       </view>
       <view class="item-amount">¥{{dish.amount}}</view>

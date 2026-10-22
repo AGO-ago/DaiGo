@@ -2,14 +2,17 @@
   <view class="status-card">
     <view class="status-text">{{statusText}}</view>
     <view class="status-tip" wx:if="{{order.status === 0}}">请尽快完成支付，超时订单将自动取消</view>
+    <view class="status-tip" wx:if="{{order.status === 6}}">退款申请已提交，等待商家处理</view>
+    <view class="status-tip" wx:if="{{order.status === 7}}">退款已完成，款项将原路退回</view>
   </view>
 
   <view class="card">
     <view class="shop-name">{{order.shopName}}</view>
-    <view class="item" wx:for="{{order.items}}" wx:key="dishId">
+    <view class="item" wx:for="{{order.items}}" wx:key="index">
       <image class="item-img" src="{{item.dishImage}}" mode="aspectFill" />
       <view class="item-info">
         <view class="item-name">{{item.dishName}}</view>
+        <view class="item-spec" wx:if="{{item.specName}}">{{item.specName}}</view>
         <view class="item-price">¥{{item.price}} × {{item.count}}</view>
       </view>
       <view class="item-amount">¥{{item.amount}}</view>
@@ -42,6 +45,10 @@
   <view class="actions" wx:if="{{order.status === 0}}">
     <view class="btn ghost" bindtap="cancel">取消订单</view>
     <view class="btn primary" bindtap="pay">立即支付</view>
+  </view>
+
+  <view class="actions" wx:elif="{{order.status === 1 || order.status === 2}}">
+    <view class="btn ghost" bindtap="applyRefund">申请退款</view>
   </view>
 
   <view class="actions" wx:elif="{{order.status === 4}}">

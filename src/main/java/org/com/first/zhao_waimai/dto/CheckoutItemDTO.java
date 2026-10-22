@@ -15,6 +15,9 @@ public class CheckoutItemDTO {
     @NotNull(message = "菜品 id 不能为空")
     private Long dishId;
 
+    /** 规格 id（无规格菜品传空） */
+    private Long specId;
+
     /** 数量 */
     @NotNull(message = "数量不能为空")
     @Min(value = 1, message = "数量至少为 1")

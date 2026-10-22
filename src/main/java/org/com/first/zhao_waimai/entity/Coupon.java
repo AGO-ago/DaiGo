@@ -26,6 +26,10 @@ public class Coupon {
     public static final int CREATOR_PLATFORM = 1;
     /** 创建方：商家 */
     public static final int CREATOR_SHOP = 2;
+    /** 状态：停用 */
+    public static final int STATUS_DISABLED = 0;
+    /** 状态：启用 */
+    public static final int STATUS_ENABLED = 1;
 
     /** 主键 */
     @TableId(type = IdType.AUTO)
@@ -60,6 +64,9 @@ public class Coupon {
 
     /** 创建方：1 平台 2 商家 */
     private Integer creatorType;
+
+    /** 状态：0 停用 1 启用 */
+    private Integer status;
 
     /** 创建时间（自动填充） */
     @TableField(fill = FieldFill.INSERT)

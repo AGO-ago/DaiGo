@@ -60,6 +60,111 @@ page {
   color: #bbb;
 }
 
+.reply {
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #fff7f2;
+  border-radius: 10rpx;
+}
+
+.reply-text {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #d84315;
+}
+
+.reply-time {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #bfa89d;
+}
+
+.reply-btn {
+  margin-top: 16rpx;
+  display: inline-block;
+  padding: 8rpx 26rpx;
+  font-size: 24rpx;
+  color: #ff5722;
+  border: 1rpx solid #ff5722;
+  border-radius: 100rpx;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+}
+
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  background: #ffffff;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.panel-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.panel-quote {
+  margin-top: 24rpx;
+  padding: 16rpx 20rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #888;
+  background: #f7f7f7;
+  border-radius: 10rpx;
+}
+
+.panel-input {
+  margin-top: 24rpx;
+  width: 100%;
+  height: 200rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+  line-height: 1.6;
+  background: #f7f7f7;
+  border-radius: 12rpx;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 28rpx;
+}
+
+.panel-cancel,
+.panel-confirm {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  font-size: 28rpx;
+  border-radius: 100rpx;
+}
+
+.panel-cancel {
+  color: #666;
+  background: #f2f2f2;
+}
+
+.panel-confirm {
+  color: #ffffff;
+  background: #ff5722;
+}
+
 .empty {
   padding: 160rpx 0;
   text-align: center;

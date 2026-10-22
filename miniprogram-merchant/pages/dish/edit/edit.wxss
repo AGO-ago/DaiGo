@@ -77,6 +77,96 @@ page {
   color: #ccc;
 }
 
+/* 规格维护 */
+.spec-card {
+  margin-top: 24rpx;
+  padding: 24rpx;
+}
+
+.spec-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f6f6f6;
+}
+
+.spec-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f8f8f8;
+}
+
+.spec-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #222;
+}
+
+.spec-price {
+  margin-right: 20rpx;
+  font-size: 24rpx;
+  color: #ff5722;
+}
+
+.spec-status {
+  padding: 6rpx 18rpx;
+  font-size: 22rpx;
+  color: #999;
+  background: #f2f2f2;
+  border-radius: 20rpx;
+}
+
+.spec-status.on {
+  color: #ffffff;
+  background: #ff8a5c;
+}
+
+.spec-del {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.spec-empty {
+  padding: 24rpx 0;
+  font-size: 24rpx;
+  color: #bbb;
+}
+
+.spec-add-row {
+  display: flex;
+  align-items: center;
+  padding-top: 20rpx;
+}
+
+.spec-input {
+  flex: 1;
+  height: 68rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  background: #f7f7f7;
+  border-radius: 10rpx;
+  box-sizing: border-box;
+}
+
+.spec-input.price {
+  flex: 0 0 140rpx;
+  margin-left: 12rpx;
+}
+
+.spec-add-btn {
+  margin-left: 12rpx;
+  padding: 0 24rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  font-size: 26rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 10rpx;
+}
+
 .save {
   margin-top: 40rpx;
   height: 88rpx;

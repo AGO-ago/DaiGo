@@ -32,4 +32,10 @@ public class CommentVO {
 
     /** 评价时间 */
     private LocalDateTime createTime;
+
+    /** 商家回复 */
+    private String replyContent;
+
+    /** 商家回复时间 */
+    private LocalDateTime replyTime;
 }
