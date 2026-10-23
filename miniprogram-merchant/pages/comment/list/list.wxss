@@ -29,10 +29,33 @@ page {
   border-radius: 16rpx;
 }
 
+.comment.bad {
+  border: 1rpx solid #ffd6d6;
+  box-shadow: 0 2rpx 10rpx rgba(245, 108, 108, 0.12);
+}
+
 .comment-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.head-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.bad-tag {
+  padding: 2rpx 12rpx;
+  font-size: 20rpx;
+  color: #f56c6c;
+  background: #fef0f0;
+  border-radius: 20rpx;
+}
+
+.stars-bad {
+  color: #f56c6c;
 }
 
 .user {

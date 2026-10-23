@@ -38,12 +38,15 @@ Page({
     get('/merchant/bill', { period: this.data.period })
       .then((data) => {
         const summary = data.summary || {}
+        const refundAmount = Number(summary.refundAmount || 0)
         this.setData({
           summary: {
             orderCount: summary.orderCount || 0,
             goodsAmount: money(summary.goodsAmount),
             deliveryAmount: money(summary.deliveryAmount),
             commissionAmount: money(summary.commissionAmount),
+            refundAmount: money(refundAmount),
+            hasRefund: refundAmount > 0,
             netAmount: money(summary.netAmount)
           },
           items: (data.items || []).map((item) => ({
@@ -77,6 +80,7 @@ Page({
             goodsAmountText: money(item.goodsAmount),
             deliveryAmountText: money(item.deliveryAmount),
             commissionAmountText: money(item.commissionAmount),
+            refundAmountText: money(item.refundAmount),
             netAmountText: money(item.netAmount),
             commissionRateText: percent(item.commissionRate),
             statusText: item.status === 1 ? '已结算' : '待结算',

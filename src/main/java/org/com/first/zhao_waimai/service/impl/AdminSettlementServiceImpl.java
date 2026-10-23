@@ -7,16 +7,22 @@ import org.com.first.zhao_waimai.common.BusinessException;
 import org.com.first.zhao_waimai.common.ErrorCode;
 import org.com.first.zhao_waimai.dto.PageDTO;
 import org.com.first.zhao_waimai.dto.SettlementVO;
+import org.com.first.zhao_waimai.entity.Coupon;
+import org.com.first.zhao_waimai.entity.OrderCoupon;
 import org.com.first.zhao_waimai.entity.OrderRefund;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.PlatformConfig;
 import org.com.first.zhao_waimai.entity.Settlement;
 import org.com.first.zhao_waimai.entity.Shop;
+import org.com.first.zhao_waimai.entity.UserCoupon;
+import org.com.first.zhao_waimai.mapper.CouponMapper;
+import org.com.first.zhao_waimai.mapper.OrderCouponMapper;
 import org.com.first.zhao_waimai.mapper.OrderRefundMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PlatformConfigMapper;
 import org.com.first.zhao_waimai.mapper.SettlementMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
+import org.com.first.zhao_waimai.mapper.UserCouponMapper;
 import org.com.first.zhao_waimai.service.AdminSettlementService;
 import org.com.first.zhao_waimai.util.AdminGuard;
 import org.springframework.stereotype.Service;
@@ -48,6 +54,9 @@ public class AdminSettlementServiceImpl implements AdminSettlementService {
     private final OrderRefundMapper orderRefundMapper;
     private final ShopMapper shopMapper;
     private final PlatformConfigMapper platformConfigMapper;
+    private final OrderCouponMapper orderCouponMapper;
+    private final UserCouponMapper userCouponMapper;
+    private final CouponMapper couponMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -101,8 +110,12 @@ public class AdminSettlementServiceImpl implements AdminSettlementService {
                 continue;
             }
             BigDecimal rate = shop.getCommissionRate() == null ? defaultRate : shop.getCommissionRate();
-            BigDecimal commission = goods.multiply(rate).setScale(2, RoundingMode.HALF_UP);
-            BigDecimal net = goods.add(delivery).subtract(discount).subtract(commission).subtract(refund)
+            // 口径与商家账单一致：平台券分摊由平台承担，不计入抽佣基数、也不扣商家净额
+            BigDecimal platformDiscount = platformDiscountOf(orders);
+            BigDecimal merchantDiscount = discount.subtract(platformDiscount).max(BigDecimal.ZERO);
+            BigDecimal commissionBase = goods.subtract(platformDiscount).max(BigDecimal.ZERO);
+            BigDecimal commission = commissionBase.multiply(rate).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal net = goods.add(delivery).subtract(merchantDiscount).subtract(commission).subtract(refund)
                     .setScale(2, RoundingMode.HALF_UP);
 
             Settlement settlement = new Settlement();
@@ -173,6 +186,42 @@ public class AdminSettlementServiceImpl implements AdminSettlementService {
         } catch (NumberFormatException e) {
             return DEFAULT_COMMISSION_RATE;
         }
+    }
+
+    /**
+     * 平台券分摊：order_coupon → user_coupon → coupon，仅统计平台券（shop_id 为空）
+     */
+    private BigDecimal platformDiscountOf(List<Orders> orders) {
+        if (orders.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        List<OrderCoupon> records = orderCouponMapper.selectList(Wrappers.<OrderCoupon>lambdaQuery()
+                .in(OrderCoupon::getOrderId, orders.stream().map(Orders::getId).toList()));
+        if (records.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        Map<Long, UserCoupon> userCoupons = new HashMap<>();
+        for (UserCoupon uc : userCouponMapper.selectList(Wrappers.<UserCoupon>lambdaQuery()
+                .in(UserCoupon::getId, records.stream().map(OrderCoupon::getUserCouponId).distinct().toList()))) {
+            userCoupons.put(uc.getId(), uc);
+        }
+        Map<Long, Coupon> coupons = new HashMap<>();
+        List<Long> couponIds = userCoupons.values().stream().map(UserCoupon::getCouponId).distinct().toList();
+        if (!couponIds.isEmpty()) {
+            for (Coupon coupon : couponMapper.selectList(Wrappers.<Coupon>lambdaQuery()
+                    .in(Coupon::getId, couponIds))) {
+                coupons.put(coupon.getId(), coupon);
+            }
+        }
+        BigDecimal sum = BigDecimal.ZERO;
+        for (OrderCoupon record : records) {
+            UserCoupon uc = userCoupons.get(record.getUserCouponId());
+            Coupon coupon = uc == null ? null : coupons.get(uc.getCouponId());
+            if (coupon != null && coupon.getShopId() == null) {
+                sum = sum.add(record.getAmount() == null ? BigDecimal.ZERO : record.getAmount());
+            }
+        }
+        return sum;
     }
 
     private BigDecimal sum(List<Orders> orders,

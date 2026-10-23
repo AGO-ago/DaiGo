@@ -222,6 +222,14 @@ public class MerchantTradeServiceImpl implements MerchantTradeService {
 
         BigDecimal rate = resolveCommissionRate(shop);
         Map<Long, BigDecimal> platformDiscounts = loadPlatformDiscounts(orders);
+        // 周期内已退款金额（口径与平台结算单一致）
+        BigDecimal refundSum = orderRefundMapper.selectList(Wrappers.<OrderRefund>lambdaQuery()
+                        .eq(OrderRefund::getShopId, shop.getId())
+                        .eq(OrderRefund::getStatus, OrderRefund.STATUS_REFUNDED)
+                        .ge(OrderRefund::getHandleTime, start)
+                        .le(OrderRefund::getHandleTime, end))
+                .stream().map(r -> nvl(r.getAmount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         MerchantBillVO result = new MerchantBillVO();
         BigDecimal goodsSum = BigDecimal.ZERO;
@@ -269,7 +277,8 @@ public class MerchantTradeServiceImpl implements MerchantTradeService {
                 .goodsAmount(goodsSum)
                 .deliveryAmount(deliverySum)
                 .commissionAmount(commissionSum)
-                .netAmount(netSum)
+                .refundAmount(refundSum)
+                .netAmount(netSum.subtract(refundSum).setScale(2, RoundingMode.HALF_UP))
                 .build());
         return result;
     }

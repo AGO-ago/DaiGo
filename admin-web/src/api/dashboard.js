@@ -13,3 +13,10 @@ export function getSummary() {
 export function getTrend(days = 7) {
   return request.get('/admin/dashboard/trend', { params: { days } })
 }
+
+/**
+ * 近 N 天档口交易额 TOP10
+ */
+export function getShopTop(days = 7) {
+  return request.get('/admin/dashboard/shop-top', { params: { days } })
+}

@@ -2,6 +2,7 @@ package org.com.first.zhao_waimai.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.Result;
+import org.com.first.zhao_waimai.dto.DashboardShopTopVO;
 import org.com.first.zhao_waimai.dto.DashboardSummaryVO;
 import org.com.first.zhao_waimai.dto.DashboardTrendVO;
 import org.com.first.zhao_waimai.service.AdminDashboardService;
@@ -39,5 +40,14 @@ public class AdminDashboardController {
     public Result<List<DashboardTrendVO>> trend(@RequestParam(defaultValue = "7") int days) {
         AdminGuard.requireAdmin();
         return Result.ok(adminDashboardService.trend(days));
+    }
+
+    /**
+     * 近 N 天档口交易额 TOP10
+     */
+    @GetMapping("/shop-top")
+    public Result<List<DashboardShopTopVO>> shopTop(@RequestParam(defaultValue = "7") int days) {
+        AdminGuard.requireAdmin();
+        return Result.ok(adminDashboardService.shopTop(days));
     }
 }

@@ -27,6 +27,7 @@ public class MerchantBillVO {
         private BigDecimal goodsAmount;
         private BigDecimal deliveryAmount;
         private BigDecimal commissionAmount;
+        private BigDecimal refundAmount;
         private BigDecimal netAmount;
     }
 

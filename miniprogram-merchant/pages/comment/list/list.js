@@ -19,10 +19,13 @@ Page({
       .then((list) => {
         const rows = (list || []).map((c) => ({
           ...c,
+          bad: c.score <= 2,
           stars: '★★★★★'.slice(0, c.score) + '☆☆☆☆☆'.slice(0, 5 - c.score),
           showTime: c.createTime ? c.createTime.replace('T', ' ').slice(0, 16) : '',
           replyTimeText: c.replyTime ? c.replyTime.replace('T', ' ').slice(0, 16) : ''
         }))
+        // 差评置顶，其余按时间倒序（接口已倒序，sort 稳定）
+        rows.sort((a, b) => (b.bad - a.bad))
         const avg = rows.length
           ? (rows.reduce((sum, c) => sum + c.score, 0) / rows.length).toFixed(1)
           : '0.0'

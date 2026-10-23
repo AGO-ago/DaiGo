@@ -41,4 +41,7 @@ public class ShopUpdateDTO {
     /** 状态：0 休息 1 营业 */
     @NotNull(message = "营业状态不能为空")
     private Integer status;
+
+    /** 自动接单：0 否 1 是（需平台全局自动接单开启后生效） */
+    private Integer autoAccept;
 }

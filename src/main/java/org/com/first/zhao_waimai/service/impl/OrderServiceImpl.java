@@ -23,6 +23,7 @@ import org.com.first.zhao_waimai.entity.OrderItem;
 import org.com.first.zhao_waimai.entity.OrderComment;
 import org.com.first.zhao_waimai.entity.OrderRefund;
 import org.com.first.zhao_waimai.entity.Payment;
+import org.com.first.zhao_waimai.entity.PlatformConfig;
 import org.com.first.zhao_waimai.entity.SeckillActivity;
 import org.com.first.zhao_waimai.entity.Shop;
 import org.com.first.zhao_waimai.entity.UserAddress;
@@ -36,6 +37,7 @@ import org.com.first.zhao_waimai.mapper.OrderItemMapper;
 import org.com.first.zhao_waimai.mapper.OrderRefundMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
+import org.com.first.zhao_waimai.mapper.PlatformConfigMapper;
 import org.com.first.zhao_waimai.mapper.SeckillActivityMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.mapper.UserAddressMapper;
@@ -79,6 +81,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderCouponMapper orderCouponMapper;
     private final OrderRefundMapper orderRefundMapper;
     private final SeckillActivityMapper seckillActivityMapper;
+    private final PlatformConfigMapper platformConfigMapper;
 
     @Override
     public CheckoutResultDTO checkout(Long userId, CheckoutRequestDTO request) {
@@ -198,6 +201,40 @@ public class OrderServiceImpl implements OrderService {
                 .eq(Orders::getPaymentId, paymentId)
                 .eq(Orders::getStatus, 0)
                 .set(Orders::getStatus, 1));
+        // 平台与档口均开启自动接单时，直接进入备餐中
+        autoAcceptOrders(paymentId);
+    }
+
+    /**
+     * 自动接单：全局开关开启且档口自身开启时，子单 待接单 → 备餐中
+     */
+    private void autoAcceptOrders(Long paymentId) {
+        PlatformConfig config = platformConfigMapper.selectOne(Wrappers.<PlatformConfig>lambdaQuery()
+                .eq(PlatformConfig::getConfigKey, PlatformConfig.KEY_AUTO_ACCEPT)
+                .last("LIMIT 1"));
+        if (config == null || !"1".equals(config.getConfigValue())) {
+            return;
+        }
+        List<Orders> orders = ordersMapper.selectList(Wrappers.<Orders>lambdaQuery()
+                .eq(Orders::getPaymentId, paymentId)
+                .eq(Orders::getStatus, 1));
+        if (orders.isEmpty()) {
+            return;
+        }
+        Map<Long, Shop> shopMap = loadShops(orders.stream().map(Orders::getShopId).distinct().toList());
+        LocalDateTime now = LocalDateTime.now();
+        for (Orders order : orders) {
+            Shop shop = shopMap.get(order.getShopId());
+            if (shop == null || !Integer.valueOf(1).equals(shop.getAutoAccept())) {
+                continue;
+            }
+            ordersMapper.update(null, Wrappers.<Orders>lambdaUpdate()
+                    .eq(Orders::getId, order.getId())
+                    .eq(Orders::getStatus, 1)
+                    .set(Orders::getStatus, 2)
+                    .set(Orders::getAcceptTime, now)
+                    .set(Orders::getPrepareTime, now));
+        }
     }
 
     @Override
@@ -255,7 +292,8 @@ public class OrderServiceImpl implements OrderService {
         int updated = ordersMapper.update(null, Wrappers.<Orders>lambdaUpdate()
                 .eq(Orders::getId, orderId)
                 .eq(Orders::getStatus, 0)
-                .set(Orders::getStatus, 5));
+                .set(Orders::getStatus, 5)
+                .set(Orders::getCancelTime, LocalDateTime.now()));
         if (updated == 0) {
             throw new BusinessException(ErrorCode.BUSINESS_ERROR, "订单状态已变更，请刷新后重试");
         }

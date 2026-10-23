@@ -17,9 +17,9 @@
   </view>
 
   <!-- 通知条 -->
-  <view class="notice">
+  <view class="notice" wx:if="{{homeNotice}}">
     <text class="notice-icon">🔔</text>
-    <text class="notice-text">自动发送短信，请您留意查看短信并及时取餐哦！</text>
+    <text class="notice-text">{{homeNotice}}</text>
   </view>
 
   <!-- 今日抢购 -->

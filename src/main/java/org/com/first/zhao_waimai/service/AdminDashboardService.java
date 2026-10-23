@@ -1,5 +1,6 @@
 package org.com.first.zhao_waimai.service;
 
+import org.com.first.zhao_waimai.dto.DashboardShopTopVO;
 import org.com.first.zhao_waimai.dto.DashboardSummaryVO;
 import org.com.first.zhao_waimai.dto.DashboardTrendVO;
 
@@ -19,4 +20,9 @@ public interface AdminDashboardService {
      * 近 N 天交易趋势
      */
     List<DashboardTrendVO> trend(int days);
+
+    /**
+     * 近 N 天档口交易额 TOP10
+     */
+    List<DashboardShopTopVO> shopTop(int days);
 }

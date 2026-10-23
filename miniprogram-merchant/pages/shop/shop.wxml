@@ -55,6 +55,12 @@
         <text class="label">营业状态</text>
         <switch checked="{{form.status === 1}}" color="#ff5722" bindchange="onStatusChange" />
       </view>
+
+      <view class="field">
+        <text class="label">自动接单</text>
+        <switch checked="{{form.autoAccept === 1}}" color="#ff5722" bindchange="onAutoAcceptChange" />
+      </view>
+      <view class="field-tip">开启后新订单自动接单，需平台同时开启全局自动接单</view>
     </view>
 
     <view class="save {{saving ? 'disabled' : ''}}" bindtap="save">保存</view>

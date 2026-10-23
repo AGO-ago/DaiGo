@@ -18,7 +18,7 @@
       <div class="page-card chart-card">
         <div class="page-header">
           <h3 class="page-title">交易趋势</h3>
-          <el-radio-group v-model="days" size="small" @change="loadTrend">
+          <el-radio-group v-model="days" size="small">
             <el-radio-button :value="7">近 7 天</el-radio-button>
             <el-radio-button :value="14">近 14 天</el-radio-button>
             <el-radio-button :value="30">近 30 天</el-radio-button>
@@ -42,6 +42,22 @@
           </div>
         </div>
         <el-empty v-if="!summary" description="暂无数据" :image-size="60" />
+      </div>
+    </div>
+
+    <div class="page-card top-card">
+      <div class="page-header">
+        <h3 class="page-title">档口交易额 TOP10</h3>
+        <span class="refresh-tip">近 {{ days }} 天</span>
+      </div>
+      <div class="top-list">
+        <div v-for="(item, index) in shopTop" :key="item.shopId" class="top-item">
+          <span class="top-rank" :class="{ hot: index < 3 }">{{ index + 1 }}</span>
+          <span class="top-name">{{ item.shopName }}</span>
+          <span class="top-count">{{ item.orderCount }} 单</span>
+          <strong class="top-gmv">¥{{ money(item.gmv) }}</strong>
+        </div>
+        <el-empty v-if="!shopTop.length" description="暂无数据" :image-size="60" />
       </div>
     </div>
 
@@ -76,11 +92,12 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
-import { getSummary, getTrend } from '../../api/dashboard'
+import { getShopTop, getSummary, getTrend } from '../../api/dashboard'
 
 const router = useRouter()
 const loading = ref(false)
 const summary = ref(null)
+const shopTop = ref([])
 const days = ref(7)
 const chartRef = ref()
 const updatedAt = ref('')
@@ -208,10 +225,14 @@ const loadTrend = async () => {
 
 const resize = () => chart && chart.resize()
 
+const loadShopTop = async () => {
+  shopTop.value = (await getShopTop(days.value)) || []
+}
+
 const load = async () => {
   loading.value = true
   try {
-    await Promise.all([loadSummary(), loadTrend()])
+    await Promise.all([loadSummary(), loadTrend(), loadShopTop()])
     updatedAt.value = new Date().toLocaleTimeString('zh-CN', { hour12: false })
   } finally {
     loading.value = false
@@ -220,6 +241,7 @@ const load = async () => {
 
 watch(days, () => {
   loadTrend()
+  loadShopTop()
 })
 
 onMounted(() => {
@@ -331,6 +353,63 @@ onBeforeUnmount(() => {
 
 .overview-card {
   margin-top: 16px;
+}
+
+.top-card {
+  margin-top: 16px;
+}
+
+.top-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #f2f3f5;
+  font-size: 14px;
+}
+
+.top-item:last-child {
+  border-bottom: none;
+}
+
+.top-rank {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 12px;
+  color: #909399;
+  background: #f2f3f5;
+}
+
+.top-rank.hot {
+  color: #fff;
+  background: #ff6b35;
+}
+
+.top-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-count {
+  color: #909399;
+  font-size: 13px;
+}
+
+.top-gmv {
+  width: 110px;
+  text-align: right;
+  color: #ff6b35;
 }
 
 .refresh-tip {

@@ -51,23 +51,6 @@ public class MerchantController {
     }
 
     /**
-     * 可绑定档口列表（演示环境用于首次绑定）
-     */
-    @GetMapping("/shops/bindable")
-    public Result<List<Shop>> bindableShops() {
-        return Result.ok(merchantService.bindableShops());
-    }
-
-    /**
-     * 绑定档口
-     */
-    @PostMapping("/bind/{shopId}")
-    public Result<Void> bind(@PathVariable Long shopId) {
-        merchantService.bindShop(UserContext.getUserId(), shopId);
-        return Result.ok();
-    }
-
-    /**
      * 修改档口信息
      */
     @PutMapping("/shop")

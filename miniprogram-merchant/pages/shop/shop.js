@@ -14,7 +14,8 @@ Page({
       minOrderAmount: '',
       averageDeliveryTime: '',
       businessHours: '',
-      status: 1
+      status: 1,
+      autoAccept: 0
     },
     uploading: false,
     saving: false
@@ -48,7 +49,8 @@ Page({
             minOrderAmount: shop.minOrderAmount,
             averageDeliveryTime: shop.averageDeliveryTime,
             businessHours: shop.businessHours || '',
-            status: shop.status
+            status: shop.status,
+            autoAccept: shop.autoAccept || 0
           }
         })
       })
@@ -65,6 +67,10 @@ Page({
 
   onStatusChange(e) {
     this.setData({ 'form.status': e.detail.value ? 1 : 0 })
+  },
+
+  onAutoAcceptChange(e) {
+    this.setData({ 'form.autoAccept': e.detail.value ? 1 : 0 })
   },
 
   chooseLogo() {
@@ -114,7 +120,8 @@ Page({
       minOrderAmount: Number(form.minOrderAmount) || 0,
       averageDeliveryTime: Number(form.averageDeliveryTime) || 30,
       businessHours: form.businessHours,
-      status: form.status
+      status: form.status,
+      autoAccept: form.autoAccept
     }
     this.setData({ saving: true })
     put('/merchant/shop', payload)

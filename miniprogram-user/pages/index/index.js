@@ -8,6 +8,7 @@ Page({
     location: '选择收货地址',
     hotDishes: [],
     malls: [],
+    homeNotice: '',
     loading: true,
     countdown: '00:00:00',
     cartCount: 0,
@@ -44,11 +45,13 @@ Page({
   loadAll() {
     Promise.all([
       get('/mall/list', {}, false),
-      get('/seckill/list', {}, false)
-    ]).then(([malls, seckills]) => {
+      get('/seckill/list', {}, false),
+      get('/config/public', {}, false)
+    ]).then(([malls, seckills, config]) => {
       this.setData({
         malls: malls || [],
         hotDishes: (seckills || []).slice(0, 6),
+        homeNotice: (config && config.homeNotice) || '',
         loading: false
       })
     }).catch(() => {

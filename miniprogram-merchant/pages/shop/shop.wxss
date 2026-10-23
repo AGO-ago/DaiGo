@@ -82,6 +82,13 @@ page {
   color: #222;
 }
 
+.field-tip {
+  padding: 0 0 20rpx 220rpx;
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: #999;
+}
+
 .logo-box {
   width: 140rpx;
   height: 140rpx;

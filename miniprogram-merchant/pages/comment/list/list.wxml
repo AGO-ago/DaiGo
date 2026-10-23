@@ -4,10 +4,13 @@
     <view class="score-label">综合评分 · 共 {{list.length}} 条评价</view>
   </view>
 
-  <view class="comment" wx:for="{{list}}" wx:key="id">
+  <view class="comment {{item.bad ? 'bad' : ''}}" wx:for="{{list}}" wx:key="id">
     <view class="comment-head">
       <text class="user">{{item.userName}}</text>
-      <text class="stars">{{item.stars}}</text>
+      <view class="head-right">
+        <text class="bad-tag" wx:if="{{item.bad}}">差评</text>
+        <text class="stars {{item.bad ? 'stars-bad' : ''}}">{{item.stars}}</text>
+      </view>
     </view>
     <view class="content" wx:if="{{item.content}}">{{item.content}}</view>
     <view class="time">{{item.showTime}}</view>

@@ -101,37 +101,11 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public List<Shop> bindableShops() {
-        requireMerchantRole();
-        return shopMapper.selectList(Wrappers.<Shop>lambdaQuery()
-                .isNull(Shop::getMerchantUserId)
-                .orderByAsc(Shop::getId));
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void bindShop(Long userId, Long shopId) {
-        requireMerchantRole();
-        if (myShop(userId) != null) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "当前账号已绑定档口");
-        }
-        Shop shop = shopMapper.selectById(shopId);
-        if (shop == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND, "档口不存在");
-        }
-        // 条件更新，避免两个账号同时抢绑同一档口
-        int updated = shopMapper.update(null, Wrappers.<Shop>lambdaUpdate()
-                .eq(Shop::getId, shopId)
-                .isNull(Shop::getMerchantUserId)
-                .set(Shop::getMerchantUserId, userId));
-        if (updated == 0) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "该档口已被其他账号绑定");
-        }
-    }
-
-    @Override
     public void updateShop(Long userId, ShopUpdateDTO dto) {
         Shop shop = requireShop(userId);
+        if (dto.getAutoAccept() != null && dto.getAutoAccept() != 0 && dto.getAutoAccept() != 1) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "自动接单开关不合法");
+        }
         Shop update = new Shop();
         update.setId(shop.getId());
         update.setName(dto.getName());
@@ -142,6 +116,7 @@ public class MerchantServiceImpl implements MerchantService {
         update.setAverageDeliveryTime(dto.getAverageDeliveryTime());
         update.setBusinessHours(dto.getBusinessHours());
         update.setStatus(dto.getStatus());
+        update.setAutoAccept(dto.getAutoAccept());
         shopMapper.updateById(update);
     }
 

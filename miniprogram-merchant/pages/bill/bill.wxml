@@ -15,6 +15,7 @@
       <view class="sum-item"><text class="num">¥{{summary.goodsAmount}}</text><text class="label">商品金额</text></view>
       <view class="sum-item"><text class="num">¥{{summary.deliveryAmount}}</text><text class="label">配送费</text></view>
       <view class="sum-item"><text class="num">-¥{{summary.commissionAmount}}</text><text class="label">平台抽佣</text></view>
+      <view class="sum-item" wx:if="{{summary.hasRefund}}"><text class="num">-¥{{summary.refundAmount}}</text><text class="label">周期退款</text></view>
     </view>
   </view>
 
@@ -46,6 +47,7 @@
       <view class="bill-row"><text>订单数</text><text>{{item.orderCount}}</text></view>
       <view class="bill-row"><text>商品 / 配送</text><text>¥{{item.goodsAmountText}} / ¥{{item.deliveryAmountText}}</text></view>
       <view class="bill-row"><text>抽佣（{{item.commissionRateText}}）</text><text class="down">-¥{{item.commissionAmountText}}</text></view>
+      <view class="bill-row" wx:if="{{item.refundAmount > 0}}"><text>周期退款</text><text class="down">-¥{{item.refundAmountText}}</text></view>
       <view class="bill-row total"><text>应结金额</text><text>¥{{item.netAmountText}}</text></view>
       <view class="bill-row" wx:if="{{item.settleTimeText}}"><text>结算时间</text><text>{{item.settleTimeText}}</text></view>
     </view>

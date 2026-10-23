@@ -19,4 +19,9 @@ public interface AdminConfigService {
      * 批量保存配置项（键值对）
      */
     void update(Map<String, String> values);
+
+    /**
+     * 首页公告（未配置时返回空串）
+     */
+    String homeNotice();
 }

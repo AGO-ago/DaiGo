@@ -31,6 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/dish/**",
             "/search",
             "/seckill/**",
+            "/config/public",
             "/comment/shop/**"
     };
 

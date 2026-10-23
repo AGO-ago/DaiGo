@@ -57,6 +57,14 @@ public class AdminConfigServiceImpl implements AdminConfigService {
         });
     }
 
+    @Override
+    public String homeNotice() {
+        PlatformConfig config = platformConfigMapper.selectOne(Wrappers.<PlatformConfig>lambdaQuery()
+                .eq(PlatformConfig::getConfigKey, PlatformConfig.KEY_HOME_NOTICE)
+                .last("LIMIT 1"));
+        return config == null || config.getConfigValue() == null ? "" : config.getConfigValue();
+    }
+
     private void validate(String key, String value) {
         if (value == null) {
             return;

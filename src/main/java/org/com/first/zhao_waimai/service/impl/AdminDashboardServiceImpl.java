@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.BusinessException;
 import org.com.first.zhao_waimai.common.ErrorCode;
+import org.com.first.zhao_waimai.dto.DashboardShopTopVO;
 import org.com.first.zhao_waimai.dto.DashboardSummaryVO;
 import org.com.first.zhao_waimai.dto.DashboardTrendVO;
 import org.com.first.zhao_waimai.entity.MerchantApply;
@@ -130,6 +131,42 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                     .build());
         }
         return list;
+    }
+
+    @Override
+    public List<DashboardShopTopVO> shopTop(int days) {
+        AdminGuard.requireAdmin();
+        int span = Math.max(1, Math.min(days, MAX_TREND_DAYS));
+        LocalDate startDate = LocalDate.now().minusDays(span - 1L);
+        List<Orders> orders = ordersMapper.selectList(Wrappers.<Orders>lambdaQuery()
+                .ge(Orders::getCreateTime, startDate.atStartOfDay())
+                .in(Orders::getStatus, GMV_STATUS)
+                .select(Orders::getId, Orders::getShopId, Orders::getPayAmount));
+        if (orders.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, BigDecimal> amountMap = new LinkedHashMap<>();
+        Map<Long, Long> countMap = new LinkedHashMap<>();
+        for (Orders order : orders) {
+            Long shopId = order.getShopId();
+            BigDecimal amount = order.getPayAmount() == null ? BigDecimal.ZERO : order.getPayAmount();
+            amountMap.merge(shopId, amount, BigDecimal::add);
+            countMap.merge(shopId, 1L, Long::sum);
+        }
+        Map<Long, String> shopNames = new LinkedHashMap<>();
+        for (Shop shop : shopMapper.selectList(Wrappers.<Shop>lambdaQuery().in(Shop::getId, amountMap.keySet()))) {
+            shopNames.put(shop.getId(), shop.getName());
+        }
+        return amountMap.entrySet().stream()
+                .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                .limit(10)
+                .map(entry -> DashboardShopTopVO.builder()
+                        .shopId(entry.getKey())
+                        .shopName(shopNames.getOrDefault(entry.getKey(), "未知档口"))
+                        .gmv(entry.getValue().setScale(2, RoundingMode.HALF_UP))
+                        .orderCount(countMap.getOrDefault(entry.getKey(), 0L))
+                        .build())
+                .toList();
     }
 
     private BigDecimal sumAmount(List<Orders> orders) {

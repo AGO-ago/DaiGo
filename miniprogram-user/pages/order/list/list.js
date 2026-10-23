@@ -70,12 +70,17 @@ Page({
     if (!order || !order.items || !order.items.length) return
     const cart = wx.getStorageSync('cart') || []
     order.items.forEach((item) => {
-      const idx = cart.findIndex((i) => i.dishId === item.dishId)
+      const key = `${item.dishId}-${item.specId || 0}`
+      const idx = cart.findIndex((i) => i.key === key || (!i.key && i.dishId === item.dishId && !i.specId))
       if (idx > -1) {
         cart[idx].count += item.count
       } else {
         cart.push({
+          key,
           dishId: item.dishId,
+          specId: item.specId || null,
+          specName: item.specName || '',
+          specPrice: item.specPrice || 0,
           name: item.dishName,
           image: item.dishImage,
           price: item.price,

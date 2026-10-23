@@ -25,12 +25,6 @@ public interface MerchantService {
     /** 当前商家绑定的档口，未绑定时返回 null */
     Shop myShop(Long userId);
 
-    /** 可绑定的档口（演示环境：未被其他账号绑定的档口） */
-    List<Shop> bindableShops();
-
-    /** 绑定档口（一个商家账号仅能绑定一个档口） */
-    void bindShop(Long userId, Long shopId);
-
     /** 修改档口信息 */
     void updateShop(Long userId, ShopUpdateDTO dto);
 
