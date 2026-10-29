@@ -15,6 +15,7 @@ import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.mapper.UserMapper;
 import org.com.first.zhao_waimai.service.AdminShopService;
 import org.com.first.zhao_waimai.util.AdminGuard;
+import org.com.first.zhao_waimai.util.PasswordUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,10 +45,10 @@ public class AdminShopServiceImpl implements AdminShopService {
                 .orderByAsc(Shop::getId));
         List<Shop> shops = result.getRecords();
         Map<Long, String> mallNames = loadMallNames(shops);
-        Map<Long, String> userNames = loadUserNames(shops);
+        Map<Long, User> merchants = loadMerchants(shops);
         PageDTO<AdminShopVO> dto = new PageDTO<>();
         dto.setList(shops.stream().map(s -> toVO(s, mallNames.get(s.getMallId()),
-                userNames.get(s.getMerchantUserId()))).toList());
+                merchants.get(s.getMerchantUserId()))).toList());
         dto.setTotal(result.getTotal());
         dto.setPage(page);
         dto.setSize(size);
@@ -81,6 +82,25 @@ public class AdminShopServiceImpl implements AdminShopService {
         shopMapper.updateById(update);
     }
 
+    @Override
+    public void resetMerchantPassword(Long shopId, String newPassword) {
+        AdminGuard.requireAdmin();
+        Shop shop = requireShop(shopId);
+        if (shop.getMerchantUserId() == null) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "该档口尚未绑定商家账号");
+        }
+        User merchant = userMapper.selectById(shop.getMerchantUserId());
+        if (merchant == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "商家账号不存在");
+        }
+        String salt = PasswordUtil.generateSalt();
+        User update = new User();
+        update.setId(merchant.getId());
+        update.setSalt(salt);
+        update.setPassword(PasswordUtil.hash(newPassword, salt));
+        userMapper.updateById(update);
+    }
+
     private Shop requireShop(Long shopId) {
         Shop shop = shopMapper.selectById(shopId);
         if (shop == null) {
@@ -101,20 +121,20 @@ public class AdminShopServiceImpl implements AdminShopService {
         return map;
     }
 
-    private Map<Long, String> loadUserNames(List<Shop> shops) {
+    private Map<Long, User> loadMerchants(List<Shop> shops) {
         List<Long> ids = shops.stream().map(Shop::getMerchantUserId)
                 .filter(java.util.Objects::nonNull).distinct().toList();
-        Map<Long, String> map = new HashMap<>();
+        Map<Long, User> map = new HashMap<>();
         if (ids.isEmpty()) {
             return map;
         }
         for (User user : userMapper.selectList(Wrappers.<User>lambdaQuery().in(User::getId, ids))) {
-            map.put(user.getId(), user.getNickname());
+            map.put(user.getId(), user);
         }
         return map;
     }
 
-    private AdminShopVO toVO(Shop shop, String mallName, String merchantName) {
+    private AdminShopVO toVO(Shop shop, String mallName, User merchant) {
         AdminShopVO vo = new AdminShopVO();
         vo.setId(shop.getId());
         vo.setMallId(shop.getMallId());
@@ -131,7 +151,10 @@ public class AdminShopServiceImpl implements AdminShopService {
         vo.setAutoAccept(shop.getAutoAccept());
         vo.setCommissionRate(shop.getCommissionRate());
         vo.setMerchantUserId(shop.getMerchantUserId());
-        vo.setMerchantName(merchantName);
+        vo.setMerchantName(merchant == null ? null : merchant.getNickname());
+        vo.setMerchantPhone(merchant == null ? null : merchant.getPhone());
+        vo.setMerchantHasPassword(merchant != null && merchant.getPassword() != null
+                && !merchant.getPassword().isBlank());
         vo.setCreateTime(shop.getCreateTime());
         return vo;
     }

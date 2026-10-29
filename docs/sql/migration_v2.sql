@@ -204,9 +204,9 @@ ALTER TABLE `payment`
 -- -------------------------------------------------------------
 -- 3. 基础数据（幂等）
 -- -------------------------------------------------------------
--- 管理员：admin / admin123（仅本地联调，上线必须改密）
+-- 管理员：admin / 123456（仅本地联调，上线必须改密）
 INSERT INTO `admin` (`username`, `password`, `salt`, `real_name`, `role`, `status`)
-VALUES ('admin', 'cY/9f+6CcPS3xVhEJ9QDChsP5ImL3ISntW6mfelTILo=', 'a3qcHS4/QFFic4SVprfI2Q==', '平台管理员', 1, 1)
+VALUES ('admin', 'nj0magTRQq1sbA68dltFBCVlntl0TrawfzYWLs5rsZo=', 'a3qcHS4/QFFic4SVprfI2Q==', '平台管理员', 1, 1)
 ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
 
 -- 平台默认配置
@@ -215,7 +215,7 @@ INSERT INTO `platform_config` (`config_key`, `config_value`, `remark`) VALUES
 ('default_delivery_fee', '2.00', '默认配送费'),
 ('default_min_order_amount', '15.00', '默认起送价'),
 ('auto_accept', '0', '全局自动接单：0 关 1 开'),
-('home_notice', '欢迎使用橙盟美食城，下单立享优惠', '首页公告')
+('home_notice', '欢迎使用代go，下单立享优惠', '首页公告')
 ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
 
 -- -------------------------------------------------------------

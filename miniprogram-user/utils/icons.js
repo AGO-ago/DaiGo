@@ -8,6 +8,8 @@ const wrap = (body, color) =>
 
 const icons = {
   location: svg(wrap('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', '#333333')),
+  locationWhite: svg(wrap('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', '#ffffff')),
+  chevronWhite: svg(wrap('<path d="m9 18 6-6-6-6"/>', '#ffffff')),
   search: svg(wrap('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>', '#999999')),
   cart: svg(wrap('<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>', '#333333')),
   cartWhite: svg(wrap('<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>', '#ffffff')),

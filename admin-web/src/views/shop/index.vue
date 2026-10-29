@@ -30,9 +30,15 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="商家账号" width="140">
+      <el-table-column label="商家账号" width="190">
         <template #default="{ row }">
-          <span v-if="row.merchantUserId">{{ row.merchantName || '用户' + row.merchantUserId }}</span>
+          <template v-if="row.merchantUserId">
+            <div>{{ row.merchantName || '用户' + row.merchantUserId }}</div>
+            <div class="sub-text">{{ row.merchantPhone || '未绑定手机号' }}</div>
+            <el-tag :type="row.merchantHasPassword ? 'success' : 'info'" size="small">
+              {{ row.merchantHasPassword ? '网页密码已设置' : '未设置网页密码' }}
+            </el-tag>
+          </template>
           <el-tag v-else type="info" size="small">未绑定</el-tag>
         </template>
       </el-table-column>
@@ -59,9 +65,11 @@
       <el-table-column prop="createTime" label="创建时间" width="170">
         <template #default="{ row }">{{ formatTime(row.createTime) }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="130" fixed="right">
+      <el-table-column label="操作" width="170" fixed="right">
         <template #default="{ row }">
           <el-button link type="primary" @click="openCommission(row)">设置抽佣</el-button>
+          <el-button link type="warning" :disabled="!row.merchantUserId"
+                     @click="openPassword(row)">重置密码</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,13 +93,33 @@
         <el-button type="primary" :loading="saving" @click="saveCommission">保存</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="passwordVisible" title="重置商家网页登录密码" width="420px">
+      <el-form label-width="100px">
+        <el-form-item label="档口">
+          <span>{{ passwordRow?.name }}</span>
+        </el-form-item>
+        <el-form-item label="商家手机号">
+          <span>{{ passwordRow?.merchantPhone || '未绑定' }}</span>
+        </el-form-item>
+        <el-form-item label="新密码">
+          <el-input v-model="newPassword" type="password" show-password maxlength="20"
+                    placeholder="6-20 位" />
+        </el-form-item>
+      </el-form>
+      <p class="tip">重置后请告知商家，商家可用手机号 + 新密码登录商家网页端。</p>
+      <template #footer>
+        <el-button @click="passwordVisible = false">取消</el-button>
+        <el-button type="primary" :loading="saving" @click="savePassword">确定重置</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { listShops, updateShopStatus, updateShopCommission } from '../../api/shop'
+import { listShops, updateShopStatus, updateShopCommission, resetMerchantPassword } from '../../api/shop'
 import { listMalls } from '../../api/mall'
 import { imgUrl, money } from '../../utils/format'
 
@@ -107,6 +135,10 @@ const filters = reactive({ keyword: '', mallId: null, status: null })
 const commissionVisible = ref(false)
 const commissionRow = ref(null)
 const commissionPercent = ref(5)
+
+const passwordVisible = ref(false)
+const passwordRow = ref(null)
+const newPassword = ref('')
 
 const formatTime = (value) => (value ? String(value).replace('T', ' ').slice(0, 19) : '')
 
@@ -162,6 +194,28 @@ const saveCommission = async () => {
     await updateShopCommission(commissionRow.value.id, Number((commissionPercent.value / 100).toFixed(4)))
     ElMessage.success('抽佣比例已更新')
     commissionVisible.value = false
+    load()
+  } finally {
+    saving.value = false
+  }
+}
+
+const openPassword = (row) => {
+  passwordRow.value = row
+  newPassword.value = ''
+  passwordVisible.value = true
+}
+
+const savePassword = async () => {
+  if (!newPassword.value || newPassword.value.length < 6 || newPassword.value.length > 20) {
+    ElMessage.warning('密码长度需为 6-20 位')
+    return
+  }
+  saving.value = true
+  try {
+    await resetMerchantPassword(passwordRow.value.id, newPassword.value)
+    ElMessage.success('密码已重置')
+    passwordVisible.value = false
     load()
   } finally {
     saving.value = false

@@ -10,7 +10,7 @@ page {
   display: flex;
   align-items: center;
   padding: 40rpx 30rpx;
-  background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+  background: linear-gradient(135deg, #ff8a5c 0%, #ff5722 100%);
 }
 
 .avatar {
@@ -22,6 +22,65 @@ page {
   background: rgba(255, 255, 255, 0.85);
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.bind-card {
+  margin-top: 20rpx;
+}
+
+.bind-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.bind-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.phone-auth {
+  margin-top: 24rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 38rpx;
+}
+
+.bind-dev-link {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #ff5722;
+}
+
+.bind-dev {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.phone-input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #f7f7f7;
+  border-radius: 36rpx;
+}
+
+.phone-save {
+  padding: 0 32rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 36rpx;
 }
 
 .profile-info {

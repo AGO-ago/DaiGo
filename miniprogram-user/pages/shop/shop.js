@@ -1,4 +1,5 @@
 const { get, post, del } = require('../../utils/request')
+const locationUtil = require('../../utils/location')
 
 Page({
   data: {
@@ -45,26 +46,49 @@ Page({
 
   /** 加载美食城头部 + 全部档口，默认选中第一个并加载其菜单 */
   loadMall() {
-    Promise.all([
-      get(`/mall/${this.data.mallId}`, {}, false),
-      get(`/mall/${this.data.mallId}/shops`, {}, false)
-    ]).then(([mall, shops]) => {
-      const list = shops || []
-      this.setData({ mall, shops: list, loading: false })
-      if (mall && mall.name) {
-        wx.setNavigationBarTitle({ title: mall.name })
-      }
-      if (list.length) {
-        // 从首页/秒杀页带 shopId 进入时，直接选中该档口
-        let index = 0
-        if (this.targetShopId) {
-          const found = list.findIndex((s) => s.id === this.targetShopId)
-          if (found > -1) index = found
+    locationUtil.getLocation()
+      .catch(() => null)
+      .then((loc) => {
+        const params = loc ? { lat: loc.latitude, lng: loc.longitude } : {}
+        return Promise.all([
+          get(`/mall/${this.data.mallId}`, params, false),
+          get(`/mall/${this.data.mallId}/shops`, {}, false)
+        ])
+      })
+      .then(([mall, shops]) => {
+        const list = shops || []
+        this.setData({ mall, shops: list, loading: false })
+        if (mall && mall.name) {
+          wx.setNavigationBarTitle({ title: mall.name })
         }
-        this.selectShop(index)
-      }
-    }).catch(() => {
-      this.setData({ loading: false })
+        if (list.length) {
+          // 从首页/秒杀页带 shopId 进入时，直接选中该档口
+          let index = 0
+          if (this.targetShopId) {
+            const found = list.findIndex((s) => s.id === this.targetShopId)
+            if (found > -1) index = found
+          }
+          this.selectShop(index)
+        }
+      })
+      .catch(() => {
+        this.setData({ loading: false })
+      })
+  },
+
+  /** 一键导航到美食城门店 */
+  openMallLocation() {
+    const mall = this.data.mall
+    if (!mall || mall.latitude == null || mall.longitude == null) {
+      wx.showToast({ title: '门店暂未维护坐标', icon: 'none' })
+      return
+    }
+    wx.openLocation({
+      latitude: Number(mall.latitude),
+      longitude: Number(mall.longitude),
+      name: mall.name,
+      address: mall.address || '',
+      scale: 18
     })
   },
 

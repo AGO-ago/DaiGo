@@ -16,4 +16,7 @@ public interface AdminShopService {
 
     /** 设置抽佣比例（0-0.30） */
     void updateCommission(Long shopId, java.math.BigDecimal commissionRate);
+
+    /** 重置该档口绑定商家的网页登录密码 */
+    void resetMerchantPassword(Long shopId, String newPassword);
 }

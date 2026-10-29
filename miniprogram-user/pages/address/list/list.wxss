@@ -40,9 +40,20 @@ page {
 }
 
 .line3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 6rpx;
   font-size: 22rpx;
   color: #999;
+}
+
+.address {
+  color: #888;
+}
+
+.distance {
+  color: #ff5722;
 }
 
 .ops {
@@ -85,7 +96,7 @@ page {
   text-align: center;
   font-size: 28rpx;
   font-weight: 600;
-  color: #222;
-  background: #ffd54f;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
   border-radius: 40rpx;
 }

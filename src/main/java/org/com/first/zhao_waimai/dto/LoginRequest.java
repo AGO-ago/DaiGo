@@ -17,4 +17,13 @@ public class LoginRequest {
     /** 角色：1 用户 2 商家 */
     @NotNull(message = "role 不能为空")
     private Integer role;
+
+    /** 手机号（仅本地 mock 模式可直接传，生产由 phoneCode 换取） */
+    private String phone;
+
+    /** 微信 getPhoneNumber 返回的动态令牌 */
+    private String phoneCode;
+
+    /** 设备标识（仅本地 mock 模式用于稳定 openid，生产忽略） */
+    private String deviceId;
 }

@@ -40,6 +40,12 @@ page {
   color: #222;
 }
 
+.addr-detail {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #666;
+}
+
 .addr-sub {
   margin-top: 6rpx;
   font-size: 22rpx;
@@ -202,8 +208,8 @@ page {
   padding: 0 50rpx;
   font-size: 28rpx;
   font-weight: 600;
-  color: #222;
-  background: #ffd54f;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
   border-radius: 38rpx;
 }
 
@@ -304,6 +310,69 @@ page {
   text-align: center;
   background: #ffffff;
   border-radius: 24rpx 24rpx 0 0;
+}
+
+.phone-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #f6f6f6;
+}
+
+.phone-body {
+  padding: 30rpx 40rpx 40rpx;
+}
+
+.phone-tip {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+}
+
+.phone-auth {
+  margin-top: 28rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 40rpx;
+}
+
+.bind-dev-link {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #ff5722;
+}
+
+.bind-dev {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.phone-input {
+  flex: 1;
+  height: 76rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #ffffff;
+  border-radius: 38rpx;
+}
+
+.phone-save {
+  padding: 0 32rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 38rpx;
 }
 
 .panel-title {

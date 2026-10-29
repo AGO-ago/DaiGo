@@ -11,6 +11,17 @@
 
   <!-- 已绑定：编辑档口信息 -->
   <block wx:else>
+    <view class="card mall-card" wx:if="{{mall}}">
+      <view class="mall-row">
+        <view class="mall-info">
+          <view class="mall-name">所在美食城 · {{mall.name}}</view>
+          <view class="mall-addr">{{mall.address || '平台暂未维护详细地址'}}</view>
+        </view>
+        <view class="nav-btn" bindtap="navToMall">导航</view>
+      </view>
+      <view class="mall-tip">门店位置展示用户端下单后的取餐地址，由平台统一维护</view>
+    </view>
+
     <view class="card">
       <view class="field">
         <text class="label">档口 Logo</text>

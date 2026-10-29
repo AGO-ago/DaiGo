@@ -1,4 +1,5 @@
-const { get, put, del } = require('../../utils/request')
+const { get, put, del } = require('../../../utils/request')
+const locationUtil = require('../../../utils/location')
 
 Page({
   data: {
@@ -16,9 +17,17 @@ Page({
   },
 
   loadList() {
-    get('/user/address')
-      .then((list) => {
-        const data = list || []
+    Promise.all([
+      get('/user/address'),
+      locationUtil.getLocation().catch(() => null)
+    ])
+      .then(([list, loc]) => {
+        const data = (list || []).map((address) => ({
+          ...address,
+          distance: (loc && address.latitude && address.longitude)
+            ? locationUtil.distanceKm(loc.latitude, loc.longitude, address.latitude, address.longitude)
+            : null
+        }))
         this.setData({ list: data, loading: false })
         // 同步默认地址到本地，首页定位栏直接展示
         const def = data.find((a) => a.isDefault === 1)
@@ -63,7 +72,18 @@ Page({
       success: (res) => {
         if (!res.confirm) return
         del(`/user/address/${id}`)
-          .then(() => this.loadList())
+          .then(() => {
+            // 清理本地暂存的已失效地址，避免首页/结算展示旧地址
+            const selected = wx.getStorageSync('selectedAddress')
+            if (selected && selected.id === id) {
+              wx.removeStorageSync('selectedAddress')
+            }
+            const def = wx.getStorageSync('defaultAddress')
+            if (def && def.id === id) {
+              wx.removeStorageSync('defaultAddress')
+            }
+            this.loadList()
+          })
           .catch(() => {})
       }
     })

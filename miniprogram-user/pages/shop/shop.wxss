@@ -58,13 +58,30 @@ page {
   border-radius: 6rpx;
 }
 
-.mall-addr {
+.mall-addr-row {
+  display: flex;
+  align-items: center;
   margin-top: 8rpx;
+}
+
+.mall-addr {
+  flex: 1;
+  min-width: 0;
   font-size: 22rpx;
   color: #999;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.mall-nav {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  padding: 2rpx 12rpx;
+  font-size: 20rpx;
+  color: #ff5722;
+  background: #fff2ef;
+  border-radius: 20rpx;
 }
 
 /* 店家并排 */
@@ -147,9 +164,9 @@ page {
 }
 
 .mode-item.active {
-  color: #222;
+  color: #ffffff;
   font-weight: 600;
-  background: #ffd54f;
+  background: #ff5722;
   border-radius: 30rpx;
 }
 
@@ -379,7 +396,7 @@ page {
   text-align: center;
   font-size: 36rpx;
   color: #ffffff;
-  background: #38a3ff;
+  background: #ff5722;
   border-radius: 50%;
 }
 
@@ -456,8 +473,8 @@ page {
   text-align: center;
   font-size: 28rpx;
   font-weight: 600;
-  color: #222;
-  background: #ffd54f;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
   border-radius: 35rpx;
 }
 
@@ -715,7 +732,7 @@ page {
 
 .spec-op.plus {
   color: #ffffff;
-  background: #38a3ff;
+  background: #ff5722;
 }
 
 .spec-count {

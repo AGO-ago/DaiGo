@@ -33,6 +33,12 @@ public class User {
     /** 手机号 */
     private String phone;
 
+    /** 网页端登录密码（PBKDF2 哈希，未设置时为空） */
+    private String password;
+
+    /** 密码盐（Base64） */
+    private String salt;
+
     /** 状态：0 禁用 1 正常 */
     private Integer status;
 

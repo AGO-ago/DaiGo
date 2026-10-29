@@ -1,0 +1,91 @@
+:root {
+  --merchant-primary: #ff5722;
+  --merchant-primary-dark: #e64a19;
+  --merchant-primary-light: #fff3ef;
+  --merchant-bg: #f5f6fa;
+  --merchant-text: #303133;
+  --merchant-border: #ebeef5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'PingFang SC', 'Microsoft YaHei', Helvetica, Arial, sans-serif;
+  color: var(--merchant-text);
+  background: var(--merchant-bg);
+}
+
+.page-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.sub-text {
+  color: #909399;
+  font-size: 12px;
+}
+
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--merchant-primary);
+  --el-button-border-color: var(--merchant-primary);
+  --el-button-hover-bg-color: var(--merchant-primary-dark);
+  --el-button-hover-border-color: var(--merchant-primary-dark);
+  --el-button-active-bg-color: var(--merchant-primary-dark);
+  --el-button-active-border-color: var(--merchant-primary-dark);
+}
+
+.el-pagination {
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+.el-tabs__item.is-active {
+  color: var(--merchant-primary);
+}
+
+.el-tabs__active-bar {
+  background-color: var(--merchant-primary);
+}
+
+@media (max-width: 768px) {
+  .page-card {
+    padding: 14px;
+  }
+}

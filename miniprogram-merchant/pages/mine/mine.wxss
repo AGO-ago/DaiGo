@@ -60,6 +60,94 @@ page {
   border-radius: 16rpx;
 }
 
+.bind-card {
+  padding: 28rpx 24rpx;
+}
+
+.bind-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.bind-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.phone-auth {
+  margin-top: 24rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 38rpx;
+}
+
+.bind-dev-link {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #ff5722;
+}
+
+.bind-dev {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.phone-input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #f7f7f7;
+  border-radius: 36rpx;
+}
+
+.phone-save {
+  padding: 0 32rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 36rpx;
+}
+
+.pwd-tip {
+  padding: 12rpx 0 6rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.pwd-form {
+  padding: 12rpx 0 6rpx;
+}
+
+.pwd-input {
+  height: 80rpx;
+  margin-bottom: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #f7f7f7;
+  border-radius: 12rpx;
+}
+
+.pwd-btn {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #ffffff;
+  background: #ff5722;
+  border-radius: 40rpx;
+}
+
 .menu-row {
   display: flex;
   align-items: center;

@@ -40,6 +40,34 @@ page {
   justify-content: space-between;
 }
 
+.loc-row {
+  align-items: flex-start;
+}
+
+.loc-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.loc-value.placeholder {
+  color: #bbb;
+}
+
+.loc-op {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #ff5722;
+  flex-shrink: 0;
+}
+
+.loc-tip {
+  padding: 0 0 18rpx 170rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
 .footer {
   position: fixed;
   left: 0;
@@ -55,8 +83,8 @@ page {
   text-align: center;
   font-size: 28rpx;
   font-weight: 600;
-  color: #222;
-  background: #ffd54f;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
   border-radius: 40rpx;
 }
 

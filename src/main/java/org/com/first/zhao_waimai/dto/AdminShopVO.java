@@ -43,5 +43,11 @@ public class AdminShopVO {
 
     private String merchantName;
 
+    /** 商家登录手机号（未授权时为空） */
+    private String merchantPhone;
+
+    /** 商家是否已设置网页登录密码 */
+    private Boolean merchantHasPassword;
+
     private LocalDateTime createTime;
 }

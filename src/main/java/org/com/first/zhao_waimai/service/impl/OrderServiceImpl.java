@@ -26,6 +26,7 @@ import org.com.first.zhao_waimai.entity.Payment;
 import org.com.first.zhao_waimai.entity.PlatformConfig;
 import org.com.first.zhao_waimai.entity.SeckillActivity;
 import org.com.first.zhao_waimai.entity.Shop;
+import org.com.first.zhao_waimai.entity.User;
 import org.com.first.zhao_waimai.entity.UserAddress;
 import org.com.first.zhao_waimai.entity.UserCoupon;
 import org.com.first.zhao_waimai.mapper.CouponMapper;
@@ -42,6 +43,7 @@ import org.com.first.zhao_waimai.mapper.SeckillActivityMapper;
 import org.com.first.zhao_waimai.mapper.ShopMapper;
 import org.com.first.zhao_waimai.mapper.UserAddressMapper;
 import org.com.first.zhao_waimai.mapper.UserCouponMapper;
+import org.com.first.zhao_waimai.mapper.UserMapper;
 import org.com.first.zhao_waimai.service.OrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
     private static final DateTimeFormatter NO_FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final UserAddressMapper userAddressMapper;
+    private final UserMapper userMapper;
     private final DishMapper dishMapper;
     private final DishSpecMapper dishSpecMapper;
     private final ShopMapper shopMapper;
@@ -94,6 +97,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CheckoutResultDTO submit(Long userId, CheckoutRequestDTO request) {
+        User user = userMapper.selectById(userId);
+        if (user == null || user.getPhone() == null || user.getPhone().isBlank()) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR, "请先绑定手机号后再下单");
+        }
         UserAddress address = loadAddress(userId, request.getAddressId());
         List<CheckoutGroupDTO> groups = buildGroups(userId, request.getItems());
         AppliedCoupon applied = applyCoupon(userId, request.getUserCouponId(), groups);
@@ -700,20 +707,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 收货信息快照：联系人 电话 公司楼栋楼层工位
+     * 收货信息快照：联系人 电话 公司 楼栋 楼层 工位 地图详细地址
      */
     private String buildAddressSnapshot(UserAddress a) {
         StringBuilder sb = new StringBuilder();
         sb.append(a.getContact()).append(' ').append(a.getPhone());
-        if (a.getCompany() != null) {
-            sb.append(' ').append(a.getCompany());
-        }
-        sb.append(a.getBuilding()).append("栋");
-        if (a.getFloor() != null) {
-            sb.append(a.getFloor()).append("层");
-        }
-        if (a.getOffice() != null) {
-            sb.append(a.getOffice()).append("工位");
+        String[] parts = {a.getCompany(), a.getBuilding(), a.getFloor(), a.getOffice(), a.getAddress()};
+        for (String part : parts) {
+            if (part != null && !part.isBlank()) {
+                sb.append(' ').append(part.trim());
+            }
         }
         return sb.toString();
     }

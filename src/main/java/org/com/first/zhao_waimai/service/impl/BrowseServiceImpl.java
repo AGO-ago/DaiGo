@@ -28,9 +28,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 主数据浏览服务实现
@@ -68,7 +70,14 @@ public class BrowseServiceImpl implements BrowseService {
             shopMap.computeIfAbsent(shop.getMallId(), k -> new ArrayList<>()).add(shop);
         }
 
-        return malls.stream().map(m -> buildMallVO(m, shopMap.getOrDefault(m.getId(), List.of()), lat, lng)).toList();
+        List<MallVO> result = malls.stream()
+                .map(m -> buildMallVO(m, shopMap.getOrDefault(m.getId(), List.of()), lat, lng))
+                .collect(Collectors.toCollection(ArrayList::new));
+        // 传了定位时按距离由近到远排序，未维护坐标的排最后
+        if (lat != null && lng != null) {
+            result.sort(Comparator.comparing(MallVO::getDistance, Comparator.nullsLast(Comparator.naturalOrder())));
+        }
+        return result;
     }
 
     @Override
@@ -92,6 +101,8 @@ public class BrowseServiceImpl implements BrowseService {
                 .id(m.getId())
                 .name(m.getName())
                 .address(m.getAddress())
+                .latitude(m.getLatitude() == null ? null : m.getLatitude().doubleValue())
+                .longitude(m.getLongitude() == null ? null : m.getLongitude().doubleValue())
                 .coverImg(m.getCoverImg())
                 .businessHours(m.getBusinessHours())
                 .shopCount(mallShops.size())

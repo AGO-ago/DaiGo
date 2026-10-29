@@ -91,7 +91,7 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const userStore = useUserStore()
-  document.title = `${to.meta.title || '管理后台'} · 橙盟美食城`
+  document.title = `${to.meta.title || '管理后台'} · 代go`
   if (to.meta.public) {
     return userStore.token ? '/dashboard' : true
   }

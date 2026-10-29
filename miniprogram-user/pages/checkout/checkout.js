@@ -17,10 +17,17 @@ Page({
     couponVisible: false,
     selectedCouponId: null,
     selectedCouponName: '',
-    couponUsableCount: 0
+    couponUsableCount: 0,
+    // 手机号授权
+    user: null,
+    phoneVisible: false,
+    phoneInput: '',
+    showPhoneInput: false
   },
 
   onShow() {
+    const user = wx.getStorageSync('user')
+    this.setData({ user: user || null })
     // 全局选中的收货地址（首页定位栏/地址列表选择）优先，其次取默认地址
     const picked = wx.getStorageSync('selectedAddress')
     if (picked) {
@@ -163,6 +170,10 @@ Page({
 
   submit() {
     if (this.data.submitting) return
+    if (!this.data.user || !this.data.user.phone) {
+      this.setData({ phoneVisible: true })
+      return
+    }
     if (!this.data.address) {
       wx.showToast({ title: '请先选择收货地址', icon: 'none' })
       return
@@ -208,5 +219,47 @@ Page({
         }, 800)
       })
       .catch(() => this.setData({ submitting: false }))
+  },
+
+  closePhone() {
+    this.setData({ phoneVisible: false })
+  },
+
+  onGetPhone(e) {
+    const code = e.detail && e.detail.code
+    if (!code) {
+      wx.showToast({ title: '未授权手机号', icon: 'none' })
+      return
+    }
+    getApp().bindPhone({ phoneCode: code })
+      .then((user) => {
+        this.setData({ user, phoneVisible: false, showPhoneInput: false })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+        this.submit()
+      })
+      .catch(() => this.setData({ showPhoneInput: true }))
+  },
+
+  togglePhoneInput() {
+    this.setData({ showPhoneInput: !this.data.showPhoneInput })
+  },
+
+  onPhoneInput(e) {
+    this.setData({ phoneInput: e.detail.value })
+  },
+
+  onSavePhone() {
+    const phone = (this.data.phoneInput || '').trim()
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+    getApp().bindPhone({ phone })
+      .then((user) => {
+        this.setData({ user, phoneVisible: false, showPhoneInput: false, phoneInput: '' })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+        this.submit()
+      })
+      .catch(() => {})
   }
 })

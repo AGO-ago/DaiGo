@@ -3,6 +3,8 @@ package org.com.first.zhao_waimai.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 地址响应
  */
@@ -27,6 +29,15 @@ public class AddressResponse {
 
     /** 工位/房号 */
     private String office;
+
+    /** 地图选点详细地址 */
+    private String address;
+
+    /** 纬度 */
+    private BigDecimal latitude;
+
+    /** 经度 */
+    private BigDecimal longitude;
 
     /** 联系电话 */
     private String phone;

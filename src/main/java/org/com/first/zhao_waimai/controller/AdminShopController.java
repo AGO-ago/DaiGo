@@ -3,6 +3,7 @@ package org.com.first.zhao_waimai.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.com.first.zhao_waimai.common.Result;
+import org.com.first.zhao_waimai.dto.AdminResetPasswordRequest;
 import org.com.first.zhao_waimai.dto.AdminShopVO;
 import org.com.first.zhao_waimai.dto.PageDTO;
 import org.com.first.zhao_waimai.dto.ShopCommissionDTO;
@@ -48,6 +49,14 @@ public class AdminShopController {
                                          @Valid @RequestBody ShopCommissionDTO dto) {
         AdminGuard.requireAdmin();
         adminShopService.updateCommission(id, dto.getCommissionRate());
+        return Result.ok();
+    }
+
+    @PutMapping("/shop/{id}/merchant-password")
+    public Result<Void> resetMerchantPassword(@PathVariable Long id,
+                                              @Valid @RequestBody AdminResetPasswordRequest dto) {
+        AdminGuard.requireAdmin();
+        adminShopService.resetMerchantPassword(id, dto.getNewPassword());
         return Result.ok();
     }
 }

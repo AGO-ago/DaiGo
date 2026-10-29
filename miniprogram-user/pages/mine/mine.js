@@ -5,6 +5,8 @@ Page({
   data: {
     icons,
     user: null,
+    phoneInput: '',
+    showPhoneInput: false,
     orderEntries: [
       { key: '1', label: '待接单', icon: '📋' },
       { key: '2', label: '备餐中', icon: '🍳' },
@@ -25,6 +27,42 @@ Page({
         wx.showToast({ title: '登录成功', icon: 'success' })
       }
     })
+  },
+
+  onGetPhone(e) {
+    const code = e.detail && e.detail.code
+    if (!code) {
+      wx.showToast({ title: '未授权手机号', icon: 'none' })
+      return
+    }
+    app.bindPhone({ phoneCode: code })
+      .then((user) => {
+        this.setData({ user })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+      })
+      .catch(() => this.setData({ showPhoneInput: true }))
+  },
+
+  togglePhoneInput() {
+    this.setData({ showPhoneInput: !this.data.showPhoneInput })
+  },
+
+  onPhoneInput(e) {
+    this.setData({ phoneInput: e.detail.value })
+  },
+
+  onSavePhone() {
+    const phone = (this.data.phoneInput || '').trim()
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+    app.bindPhone({ phone })
+      .then((user) => {
+        this.setData({ user, showPhoneInput: false, phoneInput: '' })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+      })
+      .catch(() => {})
   },
 
   onLogout() {

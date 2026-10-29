@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -38,6 +39,15 @@ public class UserAddress {
 
     /** 工位/房号 */
     private String office;
+
+    /** 地图选点详细地址 */
+    private String address;
+
+    /** 纬度 */
+    private BigDecimal latitude;
+
+    /** 经度 */
+    private BigDecimal longitude;
 
     /** 联系电话 */
     private String phone;

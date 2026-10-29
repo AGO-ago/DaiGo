@@ -2,9 +2,9 @@
   <el-container class="layout">
     <el-aside width="220px" class="layout-aside">
       <div class="logo">
-        <span class="logo-icon">橙</span>
+        <span class="logo-icon">代</span>
         <div class="logo-text">
-          <strong>橙盟美食城</strong>
+          <strong>代go</strong>
           <small>平台管理后台</small>
         </div>
       </div>
@@ -17,7 +17,7 @@
       </el-menu>
     </el-aside>
 
-    <el-container>
+    <el-container class="layout-body">
       <el-header class="layout-header">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item :to="{ path: '/dashboard' }">首页</el-breadcrumb-item>
@@ -94,12 +94,20 @@ const handleCommand = async (command) => {
 <style scoped>
 .layout {
   height: 100%;
+  min-width: 0;
 }
 
 .layout-aside {
   background: #1f2d3d;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  overflow-x: hidden;
+}
+
+.layout-body {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .logo {
@@ -115,18 +123,32 @@ const handleCommand = async (command) => {
 .logo-icon {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #ff8a4c, #ff5a1f);
+  border-radius: 10px;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ff5a1f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .logo-text {
   display: flex;
   flex-direction: column;
   line-height: 1.3;
+}
+
+.logo-text strong {
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(120deg, #ffffff 30%, #ffd36e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .logo-text small {
@@ -168,6 +190,51 @@ const handleCommand = async (command) => {
 
 .layout-main {
   padding: 20px;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1200px) {
+  .layout-aside {
+    width: 180px !important;
+  }
+
+  .logo-text small {
+    display: none;
+  }
+
+  .layout-main {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 960px) {
+  .layout-aside {
+    width: 64px !important;
+  }
+
+  .logo {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .logo-text,
+  .layout-menu span {
+    display: none;
+  }
+
+  .layout-menu :deep(.el-menu-item) {
+    justify-content: center;
+    padding: 0 !important;
+  }
+
+  .layout-header {
+    padding: 0 16px;
+  }
+
+  .admin-name {
+    display: none;
+  }
 }
 </style>

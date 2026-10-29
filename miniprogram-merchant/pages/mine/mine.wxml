@@ -4,7 +4,7 @@
     <block wx:if="{{user}}">
       <view class="profile-info">
         <view class="nickname">{{shop ? shop.name : '未绑定档口'}}</view>
-        <view class="sub">账号 ID: {{user.userId}}</view>
+        <view class="sub">账号 ID: {{user.userId}}{{user.phone ? ' · ' + user.phone : ' · 未绑定手机号'}}</view>
       </view>
       <view class="logout" bindtap="onLogout">退出</view>
     </block>
@@ -15,6 +15,35 @@
       </view>
       <view class="login-btn" bindtap="onLogin">商家登录</view>
     </block>
+  </view>
+
+  <view class="card bind-card" wx:if="{{user && !user.phone}}">
+    <view class="bind-title">绑定手机号</view>
+    <view class="bind-tip">用于接收新订单提醒、账号找回</view>
+    <button class="phone-auth" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信一键绑定</button>
+    <view class="bind-dev" wx:if="{{showPhoneInput}}">
+      <input class="phone-input" type="number" maxlength="11" placeholder="输入手机号" value="{{phoneInput}}" bindinput="onPhoneInput" />
+      <view class="phone-save" bindtap="onSavePhone">保存</view>
+    </view>
+    <view class="bind-dev-link" wx:else bindtap="togglePhoneInput">本地联调：手动填写手机号</view>
+  </view>
+
+  <view class="card" wx:if="{{user}}">
+    <view class="menu-row" bindtap="openPassword">
+      <text class="menu-icon">🔐</text>
+      <text class="menu-label">网页登录密码</text>
+      <text class="menu-value">{{hasPassword ? '修改' : '去设置'}}</text>
+    </view>
+    <view class="pwd-tip">设置后可在电脑浏览器登录商家中心</view>
+    <view class="pwd-form" wx:if="{{showPwdForm}}">
+      <input wx:if="{{hasPassword}}" class="pwd-input" password placeholder="原密码" value="{{oldPassword}}"
+             data-field="oldPassword" bindinput="onPwdInput" />
+      <input class="pwd-input" password placeholder="新密码（6-20 位）" value="{{newPassword}}"
+             data-field="newPassword" bindinput="onPwdInput" />
+      <input class="pwd-input" password placeholder="确认新密码" value="{{confirmPassword}}"
+             data-field="confirmPassword" bindinput="onPwdInput" />
+      <view class="pwd-btn" bindtap="onSavePassword">保存密码</view>
+    </view>
   </view>
 
   <view class="card" wx:if="{{user}}">
@@ -55,5 +84,5 @@
     </view>
   </view>
 
-  <view class="version">美食城商家端 v1.2.0</view>
+  <view class="version">代go商家端 v1.3.0</view>
 </view>

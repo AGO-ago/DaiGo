@@ -21,6 +21,12 @@ public class MallVO {
     /** 地址 */
     private String address;
 
+    /** 纬度（用于地图导航） */
+    private Double latitude;
+
+    /** 经度（用于地图导航） */
+    private Double longitude;
+
     /** 封面图 URL */
     private String coverImg;
 

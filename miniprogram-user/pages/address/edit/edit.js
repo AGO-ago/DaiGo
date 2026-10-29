@@ -9,6 +9,9 @@ Page({
       building: '',
       floor: '',
       office: '',
+      address: '',
+      latitude: null,
+      longitude: null,
       phone: '',
       isDefault: false
     },
@@ -37,6 +40,9 @@ Page({
               building: address.building || '',
               floor: address.floor || '',
               office: address.office || '',
+              address: address.address || '',
+              latitude: address.latitude || null,
+              longitude: address.longitude || null,
               phone: address.phone || '',
               isDefault: address.isDefault === 1
             }
@@ -53,6 +59,62 @@ Page({
 
   onDefaultChange(e) {
     this.setData({ 'form.isDefault': e.detail.value })
+  },
+
+  /** 地图选点：自动回填详细地址、经纬度与地点名称 */
+  chooseMap() {
+    const { latitude, longitude } = this.data.form
+    wx.chooseLocation({
+      latitude: latitude || undefined,
+      longitude: longitude || undefined,
+      success: (res) => {
+        if (!res || (!res.name && !res.address)) {
+          return
+        }
+        const patch = {
+          'form.address': res.address || res.name,
+          'form.latitude': res.latitude,
+          'form.longitude': res.longitude
+        }
+        // 公司为空时用选点名称自动补全，减少手动输入
+        if (!this.data.form.company) {
+          patch['form.company'] = res.name || ''
+        }
+        this.setData(patch)
+      },
+      fail: (err) => {
+        if (err && err.errMsg && err.errMsg.indexOf('auth deny') > -1) {
+          wx.showModal({
+            title: '需要位置权限',
+            content: '请在设置中允许「位置信息」权限后重试',
+            confirmText: '去设置',
+            success: (modal) => {
+              if (modal.confirm) {
+                wx.openSetting()
+              }
+            }
+          })
+          return
+        }
+        wx.showToast({ title: '未选择位置', icon: 'none' })
+      }
+    })
+  },
+
+  /** 查看已选位置 */
+  previewMap() {
+    const { latitude, longitude, address, company } = this.data.form
+    if (!latitude || !longitude) {
+      wx.showToast({ title: '请先地图选点', icon: 'none' })
+      return
+    }
+    wx.openLocation({
+      latitude: Number(latitude),
+      longitude: Number(longitude),
+      name: company || '收货地址',
+      address,
+      scale: 18
+    })
   },
 
   save() {

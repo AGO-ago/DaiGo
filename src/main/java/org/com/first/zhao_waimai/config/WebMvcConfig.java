@@ -19,6 +19,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     /** 免登录放行路径（登录接口、公开浏览、接口文档、上传文件静态访问） */
     private static final String[] AUTH_WHITE_LIST = {
             "/auth/login",
+            "/auth/merchant/login",
             "/admin/auth/login",
             "/error",
             "/doc.html",

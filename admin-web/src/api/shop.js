@@ -14,3 +14,8 @@ export function updateShopStatus(id, status) {
 export function updateShopCommission(id, commissionRate) {
   return request.put(`/admin/shop/${id}/commission`, { commissionRate })
 }
+
+/** 重置商家网页登录密码 */
+export function resetMerchantPassword(id, newPassword) {
+  return request.put(`/admin/shop/${id}/merchant-password`, { newPassword })
+}

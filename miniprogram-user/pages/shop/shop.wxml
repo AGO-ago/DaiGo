@@ -9,7 +9,11 @@
         <text class="tag" wx:if="{{mall.distance !== null}}">{{mall.distance}}km</text>
         <text class="tag">营业资质 ›</text>
       </view>
-      <view class="mall-addr">{{mall.address}}</view>
+      <view class="mall-addr-row">
+        <text class="mall-addr">{{mall.address}}</text>
+        <text class="mall-nav" wx:if="{{mall.latitude && mall.longitude}}"
+              catchtap="openMallLocation">导航 ›</text>
+      </view>
     </view>
   </view>
 

@@ -176,8 +176,8 @@ const loadTrend = async () => {
   }
   chart.setOption({
     tooltip: { trigger: 'axis' },
-    legend: { data: ['交易额', '订单数'], top: 0, right: 0 },
-    grid: { left: 10, right: 20, top: 40, bottom: 10, containLabel: true },
+    legend: { data: ['交易额', '订单数'], top: 0, left: 0, itemGap: 24 },
+    grid: { left: 10, right: 24, top: 56, bottom: 10, containLabel: true },
     xAxis: {
       type: 'category',
       boundaryGap: false,
@@ -189,12 +189,16 @@ const loadTrend = async () => {
       {
         type: 'value',
         name: '交易额',
+        nameGap: 18,
+        nameTextStyle: { color: '#909399', align: 'left' },
         splitLine: { lineStyle: { color: '#f0f2f5' } },
         axisLabel: { color: '#909399' }
       },
       {
         type: 'value',
         name: '订单数',
+        nameGap: 18,
+        nameTextStyle: { color: '#909399', align: 'right' },
         minInterval: 1,
         splitLine: { show: false },
         axisLabel: { color: '#909399' }
@@ -261,7 +265,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
 }
 
@@ -309,7 +313,9 @@ onBeforeUnmount(() => {
 }
 
 .chart {
+  width: 100%;
   height: 320px;
+  min-width: 0;
 }
 
 .todo-card {
@@ -408,6 +414,7 @@ onBeforeUnmount(() => {
 
 .top-gmv {
   width: 110px;
+  flex-shrink: 0;
   text-align: right;
   color: #ff6b35;
 }
@@ -419,7 +426,7 @@ onBeforeUnmount(() => {
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
 }
 
@@ -440,12 +447,19 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1100px) {
-  .stat-grid,
-  .overview-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .dashboard-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-grid,
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-gmv {
+    width: 90px;
   }
 }
 </style>

@@ -5,7 +5,8 @@
       <view class="addr-main">
         <image class="addr-icon" src="{{icons.location}}" />
         <view class="addr-info">
-          <view class="addr-title">{{address.company}} {{address.building}}{{address.floor}}{{address.office}}</view>
+          <view class="addr-title">{{address.company}} {{address.building}} {{address.floor}} {{address.office}}</view>
+          <view class="addr-detail" wx:if="{{address.address}}">{{address.address}}</view>
           <view class="addr-sub">{{address.contact}} {{address.phone}}</view>
         </view>
         <image class="arrow" src="{{icons.chevron}}" />
@@ -90,6 +91,24 @@
       <text class="amount">¥{{preview ? preview.totalAmount : '0.00'}}</text>
     </view>
     <view class="submit {{submitting ? 'disabled' : ''}}" bindtap="submit">提交订单</view>
+  </view>
+
+  <!-- 手机号授权弹层 -->
+  <view class="mask" wx:if="{{phoneVisible}}" bindtap="closePhone"></view>
+  <view class="phone-panel" wx:if="{{phoneVisible}}">
+    <view class="panel-head">
+      <text class="panel-title">绑定手机号</text>
+      <text class="panel-close" bindtap="closePhone">✕</text>
+    </view>
+    <view class="phone-body">
+      <view class="phone-tip">为保障取餐通知与售后联系，请先绑定手机号</view>
+      <button class="phone-auth" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信一键绑定</button>
+      <view class="bind-dev" wx:if="{{showPhoneInput}}">
+        <input class="phone-input" type="number" maxlength="11" placeholder="输入手机号" value="{{phoneInput}}" bindinput="onPhoneInput" />
+        <view class="phone-save" bindtap="onSavePhone">保存</view>
+      </view>
+      <view class="bind-dev-link" wx:else bindtap="togglePhoneInput">本地联调：手动填写手机号</view>
+    </view>
   </view>
 
   <!-- 优惠券选择弹层 -->

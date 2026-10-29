@@ -13,9 +13,8 @@ App({
   },
 
   /**
-   * 静默登录（浏览接口需 token，统一在此换取）
-   * 测试号 + 后端 mock 模式：用稳定设备码换稳定 openid（同一设备始终同一用户）
-   * 上线切换真实登录时：改用 wx.login 返回的 res.code 作为登录凭证
+   * 静默登录：wx.login 换 openid，无需用户授权即可浏览
+   * 本地 mock 模式额外携带稳定 deviceId，保证同一设备账号不漂移
    */
   ensureLogin() {
     if (this.globalData.token || wx.getStorageSync('token')) {
@@ -24,34 +23,70 @@ App({
     if (this._loginPromise) {
       return this._loginPromise
     }
+    let deviceId = wx.getStorageSync('device_code')
+    if (!deviceId) {
+      deviceId = 'dev-' + Date.now() + '-' + Math.random().toString(36).slice(2)
+      wx.setStorageSync('device_code', deviceId)
+    }
     this._loginPromise = new Promise((resolve) => {
-      let deviceCode = wx.getStorageSync('device_code')
-      if (!deviceCode) {
-        deviceCode = 'dev-' + Date.now() + '-' + Math.random().toString(36).slice(2)
-        wx.setStorageSync('device_code', deviceCode)
-      }
-      wx.request({
-        url: this.globalData.baseUrl + '/auth/login',
-        method: 'POST',
-        data: { code: deviceCode, role: 1 },
-        success: (r) => {
-          const body = r.data || {}
-          if (body.code === 0 && body.data && body.data.token) {
-            this.globalData.token = body.data.token
-            wx.setStorageSync('token', body.data.token)
-            wx.setStorageSync('user', body.data)
-            resolve(true)
-          } else {
-            this._loginPromise = null
-            resolve(false)
-          }
-        },
-        fail: () => {
-          this._loginPromise = null
-          resolve(false)
-        }
+      wx.login({
+        success: (res) => this.requestLogin(res.code, deviceId, resolve),
+        fail: () => this.requestLogin('', deviceId, resolve)
       })
     })
     return this._loginPromise
+  },
+
+  requestLogin(code, deviceId, resolve) {
+    wx.request({
+      url: this.globalData.baseUrl + '/auth/login',
+      method: 'POST',
+      data: { code: code || deviceId, deviceId, role: 1 },
+      success: (r) => {
+        const body = r.data || {}
+        if (body.code === 0 && body.data && body.data.token) {
+          this.globalData.token = body.data.token
+          wx.setStorageSync('token', body.data.token)
+          wx.setStorageSync('user', body.data)
+          resolve(true)
+        } else {
+          this._loginPromise = null
+          resolve(false)
+        }
+      },
+      fail: () => {
+        this._loginPromise = null
+        resolve(false)
+      }
+    })
+  },
+
+  /**
+   * 绑定手机号：微信一键授权 phoneCode；本地联调可直接传 phone
+   */
+  bindPhone({ phone, phoneCode }) {
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: this.globalData.baseUrl + '/auth/phone',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + (this.globalData.token || wx.getStorageSync('token'))
+        },
+        data: { phone: phone || undefined, phoneCode: phoneCode || undefined },
+        success: (r) => {
+          const body = r.data || {}
+          if (body.code === 0) {
+            const user = wx.getStorageSync('user') || {}
+            const next = Object.assign({}, user, { phone: body.data })
+            wx.setStorageSync('user', next)
+            resolve(next)
+          } else {
+            reject(new Error(body.msg || '绑定失败'))
+          }
+        },
+        fail: reject
+      })
+    })
   }
 })

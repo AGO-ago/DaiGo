@@ -106,6 +106,9 @@ public class AddressServiceImpl implements AddressService {
         address.setBuilding(request.getBuilding());
         address.setFloor(request.getFloor());
         address.setOffice(request.getOffice());
+        address.setAddress(request.getAddress());
+        address.setLatitude(request.getLatitude());
+        address.setLongitude(request.getLongitude());
         address.setPhone(request.getPhone());
     }
 
@@ -117,6 +120,9 @@ public class AddressServiceImpl implements AddressService {
                 .building(address.getBuilding())
                 .floor(address.getFloor())
                 .office(address.getOffice())
+                .address(address.getAddress())
+                .latitude(address.getLatitude())
+                .longitude(address.getLongitude())
                 .phone(address.getPhone())
                 .isDefault(address.getIsDefault())
                 .build();

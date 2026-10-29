@@ -37,6 +37,14 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" maxlength="200" placeholder="详细地址" />
         </el-form-item>
+        <el-form-item label="定位坐标">
+          <el-input-number v-model="form.latitude" :precision="6" :controls="false" placeholder="纬度"
+                           style="width: 150px" />
+          <el-input-number v-model="form.longitude" :precision="6" :controls="false" placeholder="经度"
+                           style="width: 150px; margin-left: 10px" />
+          <el-button link type="primary" style="margin-left: 10px" @click="openCoordPicker">坐标拾取</el-button>
+          <div class="form-tip block">用于用户端距离排序与商家端一键导航，可留空</div>
+        </el-form-item>
         <el-form-item label="营业时间">
           <el-input v-model="form.businessHours" maxlength="64" placeholder="如 08:00-21:00" />
         </el-form-item>
@@ -82,6 +90,8 @@ const form = reactive({
   id: null,
   name: '',
   address: '',
+  latitude: null,
+  longitude: null,
   businessHours: '',
   coverImg: '',
   status: 1
@@ -105,10 +115,16 @@ const resetForm = () => {
     id: null,
     name: '',
     address: '',
+    latitude: null,
+    longitude: null,
     businessHours: '',
     coverImg: '',
     status: 1
   })
+}
+
+const openCoordPicker = () => {
+  window.open('https://lbs.amap.com/tools/picker', '_blank')
 }
 
 const openCreate = () => {
@@ -122,6 +138,8 @@ const openEdit = (row) => {
     id: row.id,
     name: row.name,
     address: row.address,
+    latitude: row.latitude ?? null,
+    longitude: row.longitude ?? null,
     businessHours: row.businessHours,
     coverImg: row.coverImg,
     status: row.status
@@ -209,5 +227,16 @@ onMounted(load)
 
 .cover-input {
   width: 100%;
+}
+
+.form-tip {
+  color: #909399;
+  font-size: 12px;
+}
+
+.form-tip.block {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.6;
 }
 </style>

@@ -6,7 +6,11 @@
         <text class="default-tag" wx:if="{{item.isDefault === 1}}">默认</text>
       </view>
       <view class="line2">{{item.building}} {{item.floor}} {{item.office}}</view>
-      <view class="line3">{{item.contact}} {{item.phone}}</view>
+      <view class="line2 address" wx:if="{{item.address}}">{{item.address}}</view>
+      <view class="line3">
+        <text>{{item.contact}} {{item.phone}}</text>
+        <text class="distance" wx:if="{{item.distance !== null}}">距你 {{item.distance}}km</text>
+      </view>
     </view>
     <view class="ops">
       <text class="op" wx:if="{{item.isDefault !== 1}}" data-id="{{item.id}}" catchtap="setDefault">设为默认</text>

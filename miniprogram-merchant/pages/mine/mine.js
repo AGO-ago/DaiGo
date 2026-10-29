@@ -7,7 +7,14 @@ Page({
     shop: null,
     apply: null,
     remindOn: true,
-    loadingShop: false
+    loadingShop: false,
+    phoneInput: '',
+    showPhoneInput: false,
+    hasPassword: false,
+    showPwdForm: false,
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   },
 
   onShow() {
@@ -18,7 +25,55 @@ Page({
     })
     if (user) {
       this.loadShop()
+      this.loadPasswordStatus()
     }
+  },
+
+  loadPasswordStatus() {
+    get('/auth/merchant/password/status')
+      .then((hasPassword) => this.setData({ hasPassword: !!hasPassword }))
+      .catch(() => {})
+  },
+
+  openPassword() {
+    if (!this.data.user) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      return
+    }
+    this.setData({ showPwdForm: !this.data.showPwdForm })
+  },
+
+  onPwdInput(e) {
+    const field = e.currentTarget.dataset.field
+    this.setData({ [field]: e.detail.value })
+  },
+
+  onSavePassword() {
+    const { hasPassword, oldPassword, newPassword, confirmPassword } = this.data
+    if (hasPassword && !oldPassword) {
+      wx.showToast({ title: '请输入原密码', icon: 'none' })
+      return
+    }
+    if (!/^.{6,20}$/.test(newPassword)) {
+      wx.showToast({ title: '新密码需 6-20 位', icon: 'none' })
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      wx.showToast({ title: '两次输入的新密码不一致', icon: 'none' })
+      return
+    }
+    post('/auth/merchant/password', { oldPassword, newPassword })
+      .then(() => {
+        this.setData({
+          hasPassword: true,
+          showPwdForm: false,
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+        wx.showToast({ title: '密码已保存', icon: 'success' })
+      })
+      .catch(() => {})
   },
 
   loadShop() {
@@ -41,19 +96,48 @@ Page({
 
   onLogin() {
     const that = this
-    wx.login({
-      success(res) {
-        post('/auth/login', { code: res.code, role: 2 }, false)
-          .then((data) => {
-            app.globalData.token = data.token
-            wx.setStorageSync('token', data.token)
-            wx.setStorageSync('user', data)
-            that.setData({ user: data })
-            that.loadShop()
-          })
-          .catch(() => {})
-      }
-    })
+    app.login()
+      .then((data) => {
+        that.setData({ user: data })
+        that.loadShop()
+      })
+      .catch(() => {})
+  },
+
+  onGetPhone(e) {
+    const code = e.detail && e.detail.code
+    if (!code) {
+      wx.showToast({ title: '未授权手机号', icon: 'none' })
+      return
+    }
+    app.bindPhone({ phoneCode: code })
+      .then((user) => {
+        this.setData({ user })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+      })
+      .catch(() => this.setData({ showPhoneInput: true }))
+  },
+
+  togglePhoneInput() {
+    this.setData({ showPhoneInput: !this.data.showPhoneInput })
+  },
+
+  onPhoneInput(e) {
+    this.setData({ phoneInput: e.detail.value })
+  },
+
+  onSavePhone() {
+    const phone = (this.data.phoneInput || '').trim()
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+      return
+    }
+    app.bindPhone({ phone })
+      .then((user) => {
+        this.setData({ user, showPhoneInput: false, phoneInput: '' })
+        wx.showToast({ title: '绑定成功', icon: 'success' })
+      })
+      .catch(() => {})
   },
 
   goShop() {

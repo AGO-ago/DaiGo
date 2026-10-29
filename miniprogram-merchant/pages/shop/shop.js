@@ -6,6 +6,7 @@ Page({
     loading: true,
     bound: false,
     shop: null,
+    mall: null,
     form: {
       name: '',
       logo: '',
@@ -53,8 +54,32 @@ Page({
             autoAccept: shop.autoAccept || 0
           }
         })
+        if (shop.mallId) {
+          this.loadMall(shop.mallId)
+        }
       })
       .catch(() => this.setData({ loading: false }))
+  },
+
+  loadMall(mallId) {
+    get(`/mall/${mallId}`)
+      .then((mall) => this.setData({ mall: mall || null }))
+      .catch(() => {})
+  },
+
+  navToMall() {
+    const mall = this.data.mall
+    if (!mall || mall.latitude == null || mall.longitude == null) {
+      wx.showToast({ title: '门店暂未维护坐标', icon: 'none' })
+      return
+    }
+    wx.openLocation({
+      latitude: Number(mall.latitude),
+      longitude: Number(mall.longitude),
+      name: mall.name,
+      address: mall.address || '',
+      scale: 18
+    })
   },
 
   goApply() {

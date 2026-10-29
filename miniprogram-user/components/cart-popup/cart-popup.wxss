@@ -127,8 +127,8 @@
 
 .op.plus {
   color: #ffffff;
-  background: #38a3ff;
-  border-color: #38a3ff;
+  background: #ff5722;
+  border-color: #ff5722;
 }
 
 .num {
@@ -173,8 +173,8 @@
   padding: 0 46rpx;
   font-size: 28rpx;
   font-weight: 600;
-  color: #222;
-  background: #ffd54f;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
   border-radius: 38rpx;
 }
 

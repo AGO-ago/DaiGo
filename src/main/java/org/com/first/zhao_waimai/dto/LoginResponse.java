@@ -27,4 +27,10 @@ public class LoginResponse {
 
     /** 角色：1 用户 2 商家 */
     private Integer role;
+
+    /** 商家绑定的档口 id（网页端使用，其他角色为空） */
+    private Long shopId;
+
+    /** 商家绑定的档口名称（网页端使用，其他角色为空） */
+    private String shopName;
 }

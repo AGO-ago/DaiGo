@@ -57,6 +57,53 @@ page {
   border-radius: 16rpx;
 }
 
+.mall-card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+}
+
+.mall-row {
+  display: flex;
+  align-items: center;
+}
+
+.mall-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mall-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.mall-addr {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: #777;
+}
+
+.nav-btn {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+  padding: 0 28rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 24rpx;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff8a5c, #ff5722);
+  border-radius: 30rpx;
+}
+
+.mall-tip {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
 .field {
   display: flex;
   align-items: center;

@@ -1,24 +1,26 @@
 const { get } = require('../../utils/request')
 const icons = require('../../utils/icons')
+const locationUtil = require('../../utils/location')
 
 Page({
   data: {
     icons,
     // 收货位置（可在地址列表中选择）
-    location: '选择收货地址',
-    hotDishes: [],
+    location: '定位中…',
+    latitude: null,
+    longitude: null,
     malls: [],
     homeNotice: '',
     loading: true,
-    countdown: '00:00:00',
     cartCount: 0,
-    cartVisible: false
+    cartVisible: false,
+    statusBarHeight: 20
   },
 
   onLoad() {
-    this.loadLocation()
-    this.loadAll()
-    this.startCountdown()
+    const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+    this.setData({ statusBarHeight: info.statusBarHeight || 20 })
+    this.initLocation().then(() => this.loadAll())
   },
 
   onShow() {
@@ -29,28 +31,41 @@ Page({
     }
   },
 
-  onUnload() {
-    if (this.timer) {
-      clearInterval(this.timer)
-    }
+  /** 自动定位：成功后按距离排序展示美食城，失败则回退为手选地址 */
+  initLocation() {
+    return locationUtil.getLocation()
+      .then((loc) => {
+        this.setData({ latitude: loc.latitude, longitude: loc.longitude })
+        this.loadLocation()
+      })
+      .catch(() => {
+        this.loadLocation()
+      })
   },
 
   loadLocation() {
     const address = wx.getStorageSync('selectedAddress') || wx.getStorageSync('defaultAddress')
     if (address) {
-      this.setData({ location: address.company || '选择收货地址' })
+      this.setData({ location: address.company || address.address || '选择收货地址' })
+    } else if (this.data.latitude) {
+      this.setData({ location: '当前定位' })
+    } else {
+      this.setData({ location: '选择收货地址' })
     }
   },
 
   loadAll() {
+    const params = {}
+    if (this.data.latitude && this.data.longitude) {
+      params.lat = this.data.latitude
+      params.lng = this.data.longitude
+    }
     Promise.all([
-      get('/mall/list', {}, false),
-      get('/seckill/list', {}, false),
+      get('/mall/list', params, false),
       get('/config/public', {}, false)
-    ]).then(([malls, seckills, config]) => {
+    ]).then(([malls, config]) => {
       this.setData({
         malls: malls || [],
-        hotDishes: (seckills || []).slice(0, 6),
         homeNotice: (config && config.homeNotice) || '',
         loading: false
       })
@@ -62,21 +77,6 @@ Page({
   refreshCart() {
     const cart = wx.getStorageSync('cart') || []
     this.setData({ cartCount: cart.reduce((s, i) => s + i.count, 0) })
-  },
-
-  /** 今日抢购倒计时（每天 24:00 结束） */
-  startCountdown() {
-    const tick = () => {
-      const now = new Date()
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
-      let left = Math.max(0, Math.floor((end - now) / 1000))
-      const h = String(Math.floor(left / 3600)).padStart(2, '0')
-      const m = String(Math.floor((left % 3600) / 60)).padStart(2, '0')
-      const s = String(left % 60).padStart(2, '0')
-      this.setData({ countdown: `${h}:${m}:${s}` })
-    }
-    tick()
-    this.timer = setInterval(tick, 1000)
   },
 
   /** 选择收货地址（写字楼/公司） */
@@ -102,11 +102,6 @@ Page({
     wx.navigateTo({
       url: `/pages/shop/shop?mallId=${mallId}&shopId=${shopId}&shopName=${encodeURIComponent(shopName)}`
     })
-  },
-
-  /** 今日抢购 - 更多 */
-  goSeckill() {
-    wx.navigateTo({ url: '/pages/seckill/seckill' })
   },
 
   openCart() {

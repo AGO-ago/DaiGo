@@ -1,8 +1,11 @@
 <template>
   <div class="login-page">
     <div class="login-brand">
-      <div class="brand-badge">橙盟</div>
-      <h1>橙盟美食城管理后台</h1>
+      <div class="brand-row">
+        <div class="brand-mark">代</div>
+        <div class="brand-name">代<span class="brand-en">go</span></div>
+      </div>
+      <h1>平台管理后台</h1>
       <p>档口入驻审核 · 订单监控 · 营销活动 · 结算管理</p>
     </div>
 
@@ -21,7 +24,7 @@
           登录
         </el-button>
       </el-form>
-      <p class="login-hint">本地联调账号：admin / admin123</p>
+      <p class="login-hint">本地联调账号：admin / 123456</p>
     </div>
   </div>
 </template>
@@ -79,28 +82,55 @@ const submit = async () => {
   color: #fff;
 }
 
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: #ff5a1f;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+}
+
+.brand-name {
+  font-size: 44px;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.brand-en {
+  font-size: 48px;
+  color: #ffe27a;
+}
+
 .login-brand h1 {
-  font-size: 34px;
-  margin: 18px 0 12px;
+  font-size: 28px;
+  margin: 20px 0 10px;
+  font-style: italic;
+  font-weight: 800;
   letter-spacing: 1px;
+  background: linear-gradient(120deg, #ffffff 20%, #ffd36e 60%, #ff8a4c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .login-brand p {
   color: rgba(255, 255, 255, 0.72);
   margin: 0;
-}
-
-.brand-badge {
-  display: inline-flex;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffb37a, #ff6b35);
-  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.35);
 }
 
 .login-card {

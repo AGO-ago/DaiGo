@@ -1,11 +1,12 @@
 <view class="page">
   <!-- 用户信息 -->
   <view class="profile">
-    <view class="avatar">🍜</view>
+    <image class="avatar" wx:if="{{user && user.avatar}}" src="{{user.avatar}}" mode="aspectFill" />
+    <view class="avatar" wx:else>🍜</view>
     <block wx:if="{{user}}">
       <view class="profile-info">
-        <view class="nickname">微信用户</view>
-        <view class="sub">ID: {{user.userId}}</view>
+        <view class="nickname">{{user.nickname || '微信用户'}}</view>
+        <view class="sub">{{user.phone || '未绑定手机号'}} · ID: {{user.userId}}</view>
       </view>
       <view class="logout" bindtap="onLogout">退出</view>
     </block>
@@ -16,6 +17,18 @@
       </view>
       <view class="login-btn" bindtap="onLogin">登录</view>
     </block>
+  </view>
+
+  <!-- 手机号绑定 -->
+  <view class="card bind-card" wx:if="{{user && !user.phone}}">
+    <view class="bind-title">绑定手机号</view>
+    <view class="bind-tip">用于下单、接收取餐通知与账号找回</view>
+    <button class="phone-auth" open-type="getPhoneNumber" bindgetphonenumber="onGetPhone">微信一键绑定</button>
+    <view class="bind-dev" wx:if="{{showPhoneInput}}">
+      <input class="phone-input" type="number" maxlength="11" placeholder="输入手机号" value="{{phoneInput}}" bindinput="onPhoneInput" />
+      <view class="phone-save" bindtap="onSavePhone">保存</view>
+    </view>
+    <view class="bind-dev-link" wx:else bindtap="togglePhoneInput">本地联调：手动填写手机号</view>
   </view>
 
   <!-- 我的订单 -->
@@ -62,5 +75,5 @@
     </view>
   </view>
 
-  <view class="version">赵外卖 · 校园美食城 v1.0.0</view>
+  <view class="version">代go · 校园美食城 v1.0.0</view>
 </view>

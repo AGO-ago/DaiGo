@@ -3,6 +3,8 @@ package org.com.first.zhao_waimai.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 地址保存请求（新增/修改共用）
  */
@@ -26,6 +28,15 @@ public class AddressRequest {
 
     /** 工位/房号 */
     private String office;
+
+    /** 地图选点详细地址 */
+    private String address;
+
+    /** 纬度（地图选点） */
+    private BigDecimal latitude;
+
+    /** 经度（地图选点） */
+    private BigDecimal longitude;
 
     /** 联系电话 */
     @NotBlank(message = "联系电话不能为空")

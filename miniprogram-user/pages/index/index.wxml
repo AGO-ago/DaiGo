@@ -1,18 +1,32 @@
 <view class="page">
-  <!-- 顶部定位 + 搜索 -->
-  <view class="topbar">
-    <view class="loc" bindtap="chooseLocation">
-      <image class="loc-icon" src="{{icons.location}}" />
-      <text class="loc-text">{{location}}</text>
-      <image class="loc-chevron" src="{{icons.chevron}}" />
+  <!-- 品牌栏（固定左上角） -->
+  <view class="brand-bar" style="padding-top: {{statusBarHeight}}px">
+    <view class="brand-mark">代</view>
+    <view class="brand-name">代<text class="brand-en">go</text></view>
+  </view>
+  <view style="height: {{statusBarHeight}}px"></view>
+  <view class="brand-space"></view>
+
+  <!-- 头图：定位 + 搜索 -->
+  <view class="hero">
+    <!-- 定位 + 购物车 -->
+    <view class="topbar">
+      <view class="loc" bindtap="chooseLocation">
+        <image class="loc-icon" src="{{icons.locationWhite}}" />
+        <text class="loc-text">{{location}}</text>
+        <image class="loc-chevron" src="{{icons.chevronWhite}}" />
+      </view>
+      <view class="cart-wrap" bindtap="openCart">
+        <image class="cart-entry" src="{{icons.cartWhite}}" />
+        <text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text>
+      </view>
     </view>
-    <view class="search-box" bindtap="goSearch">
+
+    <!-- 搜索 -->
+    <view class="search-row" bindtap="goSearch">
       <image class="search-icon" src="{{icons.search}}" />
       <text class="search-placeholder">搜索店铺、美食</text>
-    </view>
-    <view class="cart-wrap" bindtap="openCart">
-      <image class="cart-entry" src="{{icons.cart}}" />
-      <text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text>
+      <view class="search-btn">搜索</view>
     </view>
   </view>
 
@@ -20,28 +34,6 @@
   <view class="notice" wx:if="{{homeNotice}}">
     <text class="notice-icon">🔔</text>
     <text class="notice-text">{{homeNotice}}</text>
-  </view>
-
-  <!-- 今日抢购 -->
-  <view class="section" wx:if="{{hotDishes.length}}">
-    <view class="section-head">
-      <view class="section-title">
-        <text class="hot-title">今日抢购</text>
-        <text class="hot-timer">距结束 {{countdown}}</text>
-      </view>
-      <text class="more" bindtap="goSeckill">更多 ›</text>
-    </view>
-    <scroll-view class="hot-scroll" scroll-x enable-flex>
-      <view class="hot-card" wx:for="{{hotDishes}}" wx:key="id">
-        <image class="hot-img" src="{{item.image}}" mode="aspectFill" />
-        <view class="hot-name">{{item.name}}</view>
-        <view class="hot-price-row">
-          <text class="hot-price">¥{{item.price}}</text>
-          <text class="hot-origin" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
-          <text class="hot-badge">抢</text>
-        </view>
-      </view>
-    </scroll-view>
   </view>
 
   <!-- 美食城列表 -->
