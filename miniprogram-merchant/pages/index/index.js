@@ -26,9 +26,16 @@ Page({
     this.startPolling()
     if (user) {
       this.refresh()
-    } else {
-      this.setData({ loading: false })
+      return
     }
+    // 未登录：自动静默登录（测试号下 wx.login 失败也会降级重试）
+    app.login()
+      .then((data) => {
+        this.setData({ user: data })
+        this.startPolling()
+        this.refresh()
+      })
+      .catch(() => this.setData({ loading: false }))
   },
 
   onHide() {
@@ -40,13 +47,19 @@ Page({
   },
 
   onLogin() {
+    wx.showLoading({ title: '登录中', mask: true })
     app.login()
       .then((data) => {
+        wx.hideLoading()
         this.setData({ user: data })
         this.startPolling()
         this.refresh()
+        wx.showToast({ title: '登录成功', icon: 'success' })
       })
-      .catch(() => {})
+      .catch((err) => {
+        wx.hideLoading()
+        wx.showToast({ title: (err && (err.msg || err.errMsg)) || '登录失败，请检查后端服务', icon: 'none' })
+      })
   },
 
   refresh() {

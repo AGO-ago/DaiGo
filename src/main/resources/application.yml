@@ -34,6 +34,18 @@ knife4j:
   setting:
     language: zh_cn
 
+# 健康检查：/api/actuator/health（存活/就绪探针可用）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+
 # 业务自定义配置（密钥/密码只在 local 或环境变量，禁止明文提交）
 zhao-waimai:
   jwt:
@@ -46,3 +58,6 @@ zhao-waimai:
   upload:
     dir: ${ZHAO_UPLOAD_DIR:./uploads}
     allow-exts: jpg,jpeg,png,webp,gif
+  # 跨域白名单（逗号分隔，支持 [*] 端口通配）；生产改成具体域名
+  cors:
+    allowed-origin-patterns: ${ZHAO_CORS_ORIGINS:http://localhost:[*],http://127.0.0.1:[*]}

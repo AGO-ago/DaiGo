@@ -7,6 +7,9 @@ Page({
     user: null,
     phoneInput: '',
     showPhoneInput: false,
+    // 平台公开配置（客服电话/营业时间）
+    supportPhone: '',
+    businessHours: '',
     orderEntries: [
       { key: '1', label: '待接单', icon: '📋' },
       { key: '2', label: '备餐中', icon: '🍳' },
@@ -17,7 +20,12 @@ Page({
 
   onShow() {
     const user = wx.getStorageSync('user')
-    this.setData({ user: user || null })
+    const config = app.globalData.config || wx.getStorageSync('platform_config') || {}
+    this.setData({
+      user: user || null,
+      supportPhone: config.supportPhone || '',
+      businessHours: config.businessHours || ''
+    })
   },
 
   onLogin() {
@@ -103,6 +111,7 @@ Page({
   },
 
   contactService() {
-    wx.makePhoneCall({ phoneNumber: '4000000000' }).catch(() => {})
+    const phone = this.data.supportPhone || app.globalData.config.supportPhone || '4000000000'
+    wx.makePhoneCall({ phoneNumber: phone }).catch(() => {})
   }
 })

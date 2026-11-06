@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    /** 免登录放行路径（登录接口、公开浏览、接口文档、上传文件静态访问） */
+    /** 免登录放行路径（登录接口、公开浏览、接口文档、健康检查、上传文件静态访问） */
     private static final String[] AUTH_WHITE_LIST = {
             "/auth/login",
             "/auth/merchant/login",
@@ -27,6 +27,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/uploads/**",
+            "/file/placeholder",
+            "/actuator/**",
             "/mall/**",
             "/shop/**",
             "/dish/**",
@@ -36,11 +38,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/comment/shop/**"
     };
 
+    /** 需要限流的写入口（防撞库/防刷） */
+    private static final String[] RATE_LIMIT_PATHS = {
+            "/auth/login",
+            "/auth/merchant/login",
+            "/admin/auth/login"
+    };
+
     private final AuthInterceptor authInterceptor;
+    private final RateLimitInterceptor rateLimitInterceptor;
     private final UploadProperties uploadProperties;
+    private final CorsProperties corsProperties;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 限流先于鉴权，避免恶意请求打穿到业务层
+        registry.addInterceptor(rateLimitInterceptor).addPathPatterns(RATE_LIMIT_PATHS);
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(AUTH_WHITE_LIST);
@@ -55,10 +68,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // 白名单从配置读取（默认本机任意端口），避免 allowedOriginPatterns("*") + 携带凭证的隐患
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOriginPatterns(corsProperties.getAllowedOriginPatterns().toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

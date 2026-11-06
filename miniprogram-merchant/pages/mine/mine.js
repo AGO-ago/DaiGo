@@ -26,7 +26,16 @@ Page({
     if (user) {
       this.loadShop()
       this.loadPasswordStatus()
+      return
     }
+    // 未登录：自动静默登录（测试号下 wx.login 失败也会降级重试）
+    app.login()
+      .then((data) => {
+        this.setData({ user: data })
+        this.loadShop()
+        this.loadPasswordStatus()
+      })
+      .catch(() => {})
   },
 
   loadPasswordStatus() {
@@ -95,13 +104,19 @@ Page({
   },
 
   onLogin() {
-    const that = this
+    wx.showLoading({ title: '登录中', mask: true })
     app.login()
       .then((data) => {
-        that.setData({ user: data })
-        that.loadShop()
+        wx.hideLoading()
+        this.setData({ user: data })
+        this.loadShop()
+        this.loadPasswordStatus()
+        wx.showToast({ title: '登录成功', icon: 'success' })
       })
-      .catch(() => {})
+      .catch((err) => {
+        wx.hideLoading()
+        wx.showToast({ title: (err && (err.msg || err.errMsg)) || '登录失败，请检查后端服务', icon: 'none' })
+      })
   },
 
   onGetPhone(e) {

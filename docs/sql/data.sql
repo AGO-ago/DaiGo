@@ -74,7 +74,16 @@ INSERT INTO `shop` (`id`, `mall_id`, `name`, `logo`, `phone`, `delivery_fee`, `m
  '13800004001', 2.50, 28.00, 40, '10:30-20:00', 1),
 (12, 4, '大风车拌饭',
  'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Korean%20bibimbap%20rice%20bowl%20shop%20logo%20realistic&image_size=square',
- '13800004002', 2.00, 16.00, 30, '10:30-20:00', 1);
+ '13800004002', 2.00, 16.00, 30, '10:30-20:00', 1),
+(13, 3, '炭火烧烤',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Chinese%20bbq%20skewer%20night%20stall%20logo%20orange%20realistic&image_size=square',
+ '13800003004', 2.00, 20.00, 35, '16:00-01:00', 1),
+(14, 3, '潮汕砂锅粥',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Chaoshan%20congee%20clay%20pot%20restaurant%20logo%20warm%20realistic&image_size=square',
+ '13800003005', 2.50, 18.00, 30, '10:00-21:00', 1),
+(15, 3, '鲜榨果饮',
+ 'https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=fresh%20juice%20bar%20logo%20green%20orange%20realistic&image_size=square',
+ '13800003006', 1.00, 10.00, 15, '09:00-22:00', 1);
 
 -- -------------------------------------------------------------
 -- 分类
@@ -174,7 +183,11 @@ INSERT INTO `platform_config` (`config_key`, `config_value`, `remark`) VALUES
 ('default_delivery_fee', '2.00', '默认配送费'),
 ('default_min_order_amount', '15.00', '默认起送价'),
 ('auto_accept', '0', '全局自动接单：0 关 1 开'),
-('home_notice', '欢迎使用代go，下单立享优惠', '首页公告')
+('home_notice', '', '首页公告'),
+('support_phone', '4000000000', '客服电话（用户端“联系客服”拨打）'),
+('business_hours', '09:00-22:00', '营业时间，格式 HH:mm-HH:mm'),
+('order_pay_timeout_minutes', '15', '待支付超时自动取消（分钟，1-120）'),
+('comment_days_limit', '7', '订单完成后可评价时限（天，1-30）')
 ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
 
 INSERT INTO `merchant_apply` (`user_id`, `shop_name`, `mall_id`, `contact`, `phone`, `business_hours`, `status`, `create_time`)
@@ -194,3 +207,14 @@ WHERE NOT EXISTS (SELECT 1 FROM `dish_spec` WHERE `dish_id` = 1 AND `name` = '�
 INSERT INTO `seckill_activity` (`dish_id`, `shop_id`, `seckill_price`, `start_time`, `end_time`, `stock`, `sold_count`, `limit_per_user`, `status`)
 SELECT 1, 1, 9.90, DATE_SUB(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 7 DAY), 100, 0, 1, 1 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `seckill_activity` WHERE `dish_id` = 1 AND `status` = 1);
+
+-- 演示图片兜底：外网图片生成服务（console.enterprise.trae.cn）已不可用，
+-- 统一改用后端本地占位图接口 /file/placeholder，按名称首字生成色块，避免整页裂图
+UPDATE `mall` SET `cover_img` = 'http://localhost:8080/api/file/placeholder?text=%E7%BE%8E%E9%A3%9F%E5%9F%8E'
+WHERE `cover_img` LIKE '%console.enterprise.trae.cn%';
+
+UPDATE `shop` SET `logo` = CONCAT('http://localhost:8080/api/file/placeholder?text=', SUBSTRING(`name`, 1, 2))
+WHERE `logo` LIKE '%console.enterprise.trae.cn%' OR `logo` IS NULL OR `logo` = '';
+
+UPDATE `dish` SET `image` = CONCAT('http://localhost:8080/api/file/placeholder?text=', SUBSTRING(`name`, 1, 2))
+WHERE `image` LIKE '%console.enterprise.trae.cn%' OR `image` IS NULL OR `image` = '';

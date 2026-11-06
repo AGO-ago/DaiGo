@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.com.first.zhao_waimai.entity.OrderCoupon;
 import org.com.first.zhao_waimai.entity.Orders;
 import org.com.first.zhao_waimai.entity.Payment;
+import org.com.first.zhao_waimai.entity.PlatformConfig;
 import org.com.first.zhao_waimai.entity.UserCoupon;
 import org.com.first.zhao_waimai.mapper.OrderCouponMapper;
 import org.com.first.zhao_waimai.mapper.OrdersMapper;
 import org.com.first.zhao_waimai.mapper.PaymentMapper;
 import org.com.first.zhao_waimai.mapper.UserCouponMapper;
+import org.com.first.zhao_waimai.service.PlatformConfigService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,24 +21,28 @@ import java.util.List;
 
 /**
  * 超时未支付订单自动取消（每分钟扫描一次）
- * 规则：创建超过 15 分钟仍为待支付的支付单及子单，统一置为已取消，并退回本单使用的优惠券
+ * 规则：创建超过平台配置 order_pay_timeout_minutes（默认 15 分钟）仍为待支付的支付单及子单，
+ * 统一置为已取消，并退回本单使用的优惠券
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OrderTimeoutTask {
 
-    /** 待支付超时分钟数 */
-    private static final int TIMEOUT_MINUTES = 15;
+    /** 待支付超时默认分钟数（平台配置缺失时使用） */
+    private static final int DEFAULT_TIMEOUT_MINUTES = 15;
 
     private final PaymentMapper paymentMapper;
     private final OrdersMapper ordersMapper;
     private final OrderCouponMapper orderCouponMapper;
     private final UserCouponMapper userCouponMapper;
+    private final PlatformConfigService platformConfigService;
 
     @Scheduled(fixedDelay = 60_000)
     public void cancelTimeoutPayments() {
-        LocalDateTime deadline = LocalDateTime.now().minusMinutes(TIMEOUT_MINUTES);
+        int timeoutMinutes = Math.max(1,
+                platformConfigService.getInt(PlatformConfig.KEY_PAY_TIMEOUT_MINUTES, DEFAULT_TIMEOUT_MINUTES));
+        LocalDateTime deadline = LocalDateTime.now().minusMinutes(timeoutMinutes);
         List<Payment> expired = paymentMapper.selectList(Wrappers.<Payment>lambdaQuery()
                 .eq(Payment::getStatus, 0)
                 .lt(Payment::getCreateTime, deadline)

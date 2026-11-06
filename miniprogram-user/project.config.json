@@ -6,7 +6,7 @@
   "setting": {
     "urlCheck": false,
     "es6": true,
-    "enhance": true,
+    "enhance": false,
     "postcss": true,
     "minified": true,
     "newFeature": true,
@@ -45,5 +45,6 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "libVersion": "3.17.5"
 }

@@ -13,7 +13,8 @@
     "pages/coupon/mine/mine",
     "pages/address/list/list",
     "pages/address/edit/edit",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/group/group"
   ],
   "window": {
     "navigationBarBackgroundColor": "#ff5722",
@@ -48,6 +49,14 @@
     ]
   },
   "style": "v2",
+  "networkTimeout": {
+    "request": 15000,
+    "connectSocket": 15000,
+    "uploadFile": 30000,
+    "downloadFile": 30000
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "__usePrivacyCheck__": true,
   "permission": {
     "scope.userLocation": {
       "desc": "用于定位当前位置，推荐附近美食城并计算配送距离"

@@ -1,12 +1,12 @@
 {
   "description": "代go - 商家端小程序",
-  "appid": "wxe7ce65f778de7603",
+  "appid": "touristappid",
   "projectname": "miniprogram-merchant",
   "compileType": "miniprogram",
   "setting": {
     "urlCheck": false,
     "es6": true,
-    "enhance": true,
+    "enhance": false,
     "postcss": true,
     "minified": true,
     "newFeature": true,
@@ -45,5 +45,6 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "libVersion": "3.17.5"
 }

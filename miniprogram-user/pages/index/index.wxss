@@ -89,6 +89,12 @@ page {
   text-overflow: ellipsis;
 }
 
+/* 无定位且无收货地址时提示可点击重试 */
+.loc-text.fail {
+  color: #ffefc2;
+  text-decoration: underline;
+}
+
 .loc-chevron {
   width: 22rpx;
   height: 22rpx;
@@ -331,4 +337,59 @@ page {
 
 .bottom-space {
   height: 40rpx;
+}
+
+/* 搜索下方微信群卡片 */
+.group-entry {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
+  padding: 20rpx 18rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 22rpx rgba(180, 50, 0, 0.18);
+}
+
+.group-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.group-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #222222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10rpx;
+}
+
+.group-tag {
+  margin: 0 10rpx 6rpx 0;
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+  color: #b4711f;
+  background: #fff3dc;
+  border-radius: 6rpx;
+}
+
+.group-tag.hot {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff7a45, #ff4d24);
+}
+
+.group-chevron {
+  flex-shrink: 0;
+  width: 16rpx;
+  height: 16rpx;
+  margin-left: 10rpx;
+  border-top: 3rpx solid #cccccc;
+  border-right: 3rpx solid #cccccc;
+  transform: rotate(45deg);
 }

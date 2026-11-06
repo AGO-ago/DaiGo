@@ -25,8 +25,8 @@ Page({
         const data = (list || []).map((address) => ({
           ...address,
           distance: (loc && address.latitude && address.longitude)
-            ? locationUtil.distanceKm(loc.latitude, loc.longitude, address.latitude, address.longitude)
-            : null
+            ? locationUtil.formatDistance(locationUtil.distanceKm(loc.latitude, loc.longitude, address.latitude, address.longitude))
+            : ''
         }))
         this.setData({ list: data, loading: false })
         // 同步默认地址到本地，首页定位栏直接展示

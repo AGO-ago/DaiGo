@@ -38,6 +38,10 @@ public class ShopUpdateDTO {
     @Size(max = 64, message = "营业时间过长")
     private String businessHours;
 
+    /** 营业执照图片 URL（商户资质，非必填） */
+    @Size(max = 500, message = "营业执照地址过长")
+    private String licenseImg;
+
     /** 状态：0 休息 1 营业 */
     @NotNull(message = "营业状态不能为空")
     private Integer status;

@@ -5,7 +5,20 @@
       <div class="status-card approved">
         <div class="status-title">已入驻</div>
         <div class="status-desc">当前账号已绑定档口「{{ shop.name }}」，可直接经营。</div>
-        <el-button type="primary" @click="router.push('/shop')">进入店铺设置</el-button>
+        <el-descriptions :column="2" border class="apply-desc">
+          <el-descriptions-item label="所属美食城">{{ mallName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="联系电话">{{ shop.phone || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="营业时间">{{ shop.businessHours || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="营业状态">{{ shop.status === 1 ? '营业中' : '休息中' }}</el-descriptions-item>
+          <el-descriptions-item label="营业执照" :span="2">
+            <el-image v-if="shop.licenseImg" :src="imgUrl(shop.licenseImg)" fit="contain"
+                      :preview-src-list="[imgUrl(shop.licenseImg)]" preview-teleported class="license-img" />
+            <span v-else class="license-empty">未上传，点下方按钮前往店铺设置补充</span>
+          </el-descriptions-item>
+        </el-descriptions>
+        <el-button type="primary" @click="router.push('/shop')">
+          {{ shop.licenseImg ? '进入店铺设置' : '去上传营业执照' }}
+        </el-button>
       </div>
     </div>
 
@@ -83,7 +96,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import ImageUpload from '../../components/ImageUpload.vue'
 import { getMyApply, getMyShop, listMalls, submitApply } from '../../api/merchant'
-import { formatTime } from '../../utils/format'
+import { formatTime, imgUrl } from '../../utils/format'
 
 const router = useRouter()
 
@@ -144,6 +157,14 @@ const applyStatusClass = computed(() => {
     return 'rejected'
   }
   return 'approved'
+})
+
+const mallName = computed(() => {
+  if (!shop.value) {
+    return ''
+  }
+  const matched = malls.value.find((mall) => mall.id === shop.value.mallId)
+  return matched ? matched.name : ''
 })
 
 const load = async () => {
@@ -248,6 +269,19 @@ onMounted(load)
 .apply-desc {
   background: #fff;
   border-radius: 8px;
+}
+
+.license-img {
+  width: 120px;
+  height: 90px;
+  border-radius: 6px;
+  border: 1px solid #ebeef5;
+  background: #fafafa;
+}
+
+.license-empty {
+  color: #e6a23c;
+  font-size: 13px;
 }
 
 .status-actions {

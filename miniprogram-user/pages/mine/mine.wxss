@@ -190,6 +190,12 @@ page {
   height: 32rpx;
 }
 
+.menu-value {
+  margin-right: 10rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
 .version {
   margin-top: 60rpx;
   text-align: center;

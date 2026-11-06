@@ -1,0 +1,35 @@
+<view class="page">
+  <!-- 顶部福利横幅 -->
+  <view class="banner">
+    <view class="banner-glow"></view>
+    <view class="banner-title">加群领福利</view>
+    <view class="banner-sub">群里多重福利 等你来</view>
+    <view class="banner-emoji">🧧</view>
+  </view>
+
+  <!-- 群列表 -->
+  <view class="group-list">
+    <view class="group-card" wx:for="{{groups}}" wx:key="id">
+      <view class="group-head" data-id="{{item.id}}" bindtap="toggle">
+        <view class="group-info">
+          <view class="group-name">{{item.name}}</view>
+          <view class="tag-row" wx:if="{{item.tags && item.tags.length}}">
+            <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+        </view>
+        <view class="arrow {{activeId === item.id ? 'up' : ''}}"></view>
+      </view>
+
+      <view class="group-body" wx:if="{{activeId === item.id}}">
+        <view class="qr-frame">
+          <image class="qr" src="{{item.qr}}" mode="aspectFit" show-menu-by-longpress
+                 data-qr="{{item.qr}}" bindtap="previewQr" />
+        </view>
+        <view class="qr-btn" data-qr="{{item.qr}}" bindtap="previewQr">长按二维码入群</view>
+        <view class="qr-tip">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <view class="group-note">长按二维码即可识别入群，二维码过期请联系门店客服重新获取</view>
+  </view>
+</view>

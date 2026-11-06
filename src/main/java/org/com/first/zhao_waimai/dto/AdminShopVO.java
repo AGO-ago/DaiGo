@@ -35,6 +35,9 @@ public class AdminShopVO {
 
     private String announcement;
 
+    /** 营业执照图片 URL（商户资质） */
+    private String licenseImg;
+
     private Integer autoAccept;
 
     private BigDecimal commissionRate;

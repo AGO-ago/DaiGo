@@ -46,6 +46,10 @@
             <el-button v-if="mall && mall.latitude != null && mall.longitude != null"
                        link type="primary" class="mall-map-btn" @click="openMallMap">地图查看</el-button>
           </el-form-item>
+          <el-form-item label="营业执照">
+            <ImageUpload v-model="form.licenseImg" />
+            <div class="form-tip block">商户资质，供平台审核与合规存档；入驻后仍可随时更新</div>
+          </el-form-item>
           <el-form-item label="档口公告">
             <el-input :model-value="shop.announcement || ''" type="textarea" :rows="2" disabled
                       placeholder="暂无公告" />
@@ -86,6 +90,7 @@ const form = reactive({
   name: '',
   logo: '',
   phone: '',
+  licenseImg: '',
   deliveryFee: 0,
   minOrderAmount: 0,
   averageDeliveryTime: 30,
@@ -112,6 +117,7 @@ const load = async () => {
         name: shop.value.name || '',
         logo: shop.value.logo || '',
         phone: shop.value.phone || '',
+        licenseImg: shop.value.licenseImg || '',
         deliveryFee: Number(shop.value.deliveryFee) || 0,
         minOrderAmount: Number(shop.value.minOrderAmount) || 0,
         averageDeliveryTime: shop.value.averageDeliveryTime || 30,
@@ -143,6 +149,7 @@ const save = async () => {
       name: form.name.trim(),
       logo: form.logo,
       phone: form.phone,
+      licenseImg: form.licenseImg,
       deliveryFee: form.deliveryFee,
       minOrderAmount: form.minOrderAmount,
       averageDeliveryTime: form.averageDeliveryTime,

@@ -71,9 +71,11 @@
     <view class="menu-row" bindtap="contactService">
       <image class="menu-icon" src="{{icons.service}}" />
       <text class="menu-label">联系客服</text>
+      <text class="menu-value">{{supportPhone}}</text>
       <image class="menu-arrow" src="{{icons.chevron}}" />
     </view>
   </view>
 
+  <view class="version">服务时间 {{businessHours || '09:00-22:00'}}</view>
   <view class="version">代go · 校园美食城 v1.0.0</view>
 </view>

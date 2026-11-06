@@ -9,7 +9,7 @@
       <view class="line2 address" wx:if="{{item.address}}">{{item.address}}</view>
       <view class="line3">
         <text>{{item.contact}} {{item.phone}}</text>
-        <text class="distance" wx:if="{{item.distance !== null}}">距你 {{item.distance}}km</text>
+        <text class="distance" wx:if="{{item.distance}}">距你 {{item.distance}}</text>
       </view>
     </view>
     <view class="ops">

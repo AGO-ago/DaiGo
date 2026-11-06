@@ -52,6 +52,9 @@ public class Shop {
     /** 档口公告 */
     private String announcement;
 
+    /** 营业执照图片 URL（商户资质） */
+    private String licenseImg;
+
     /** 自动接单：0 否 1 是 */
     private Integer autoAccept;
 

@@ -115,6 +115,7 @@ public class MerchantServiceImpl implements MerchantService {
         update.setMinOrderAmount(dto.getMinOrderAmount());
         update.setAverageDeliveryTime(dto.getAverageDeliveryTime());
         update.setBusinessHours(dto.getBusinessHours());
+        update.setLicenseImg(dto.getLicenseImg());
         update.setStatus(dto.getStatus());
         update.setAutoAccept(dto.getAutoAccept());
         shopMapper.updateById(update);

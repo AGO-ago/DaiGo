@@ -1,4 +1,5 @@
 const { get, post, put } = require('../../../utils/request')
+const locationUtil = require('../../../utils/location')
 
 Page({
   data: {
@@ -61,16 +62,16 @@ Page({
     this.setData({ 'form.isDefault': e.detail.value })
   },
 
-  /** 地图选点：自动回填详细地址、经纬度与地点名称 */
+  /** 地图选点：优先以已选坐标为中心，未选时以当前定位为中心 */
   chooseMap() {
     const { latitude, longitude } = this.data.form
-    wx.chooseLocation({
-      latitude: latitude || undefined,
-      longitude: longitude || undefined,
-      success: (res) => {
-        if (!res || (!res.name && !res.address)) {
-          return
-        }
+    const center = (latitude && longitude)
+      ? Promise.resolve({ latitude, longitude })
+      : locationUtil.getLocation().catch(() => null)
+    center
+      .then((loc) => locationUtil.chooseOnMap(loc || {}))
+      .then((res) => {
+        if (!res || (!res.name && !res.address)) return
         const patch = {
           'form.address': res.address || res.name,
           'form.latitude': res.latitude,
@@ -81,24 +82,7 @@ Page({
           patch['form.company'] = res.name || ''
         }
         this.setData(patch)
-      },
-      fail: (err) => {
-        if (err && err.errMsg && err.errMsg.indexOf('auth deny') > -1) {
-          wx.showModal({
-            title: '需要位置权限',
-            content: '请在设置中允许「位置信息」权限后重试',
-            confirmText: '去设置',
-            success: (modal) => {
-              if (modal.confirm) {
-                wx.openSetting()
-              }
-            }
-          })
-          return
-        }
-        wx.showToast({ title: '未选择位置', icon: 'none' })
-      }
-    })
+      })
   },
 
   /** 查看已选位置 */
@@ -108,13 +92,7 @@ Page({
       wx.showToast({ title: '请先地图选点', icon: 'none' })
       return
     }
-    wx.openLocation({
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-      name: company || '收货地址',
-      address,
-      scale: 18
-    })
+    locationUtil.openMap(latitude, longitude, company || '收货地址', address)
   },
 
   save() {

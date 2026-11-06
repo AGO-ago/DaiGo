@@ -46,6 +46,7 @@ CREATE TABLE `shop` (
   `business_hours`        VARCHAR(64)            DEFAULT NULL COMMENT '营业时间',
   `status`                TINYINT       NOT NULL DEFAULT 1 COMMENT '状态：0 休息 1 营业',
   `announcement`          VARCHAR(200)           DEFAULT NULL COMMENT '档口公告',
+  `license_img`           VARCHAR(500)           DEFAULT NULL COMMENT '营业执照图片 URL',
   `auto_accept`           TINYINT       NOT NULL DEFAULT 0 COMMENT '自动接单：0 否 1 是',
   `commission_rate`       DECIMAL(5,4)           DEFAULT NULL COMMENT '抽佣比例，空取平台默认',
   `merchant_user_id`      BIGINT                 DEFAULT NULL COMMENT '绑定商家账号 id（平台开通后写入）',

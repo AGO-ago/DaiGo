@@ -52,5 +52,12 @@
     ]
   },
   "style": "v2",
+  "networkTimeout": {
+    "request": 15000,
+    "connectSocket": 15000,
+    "uploadFile": 30000,
+    "downloadFile": 30000
+  },
+  "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json"
 }

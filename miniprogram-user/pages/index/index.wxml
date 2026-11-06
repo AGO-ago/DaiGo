@@ -13,7 +13,7 @@
     <view class="topbar">
       <view class="loc" bindtap="chooseLocation">
         <image class="loc-icon" src="{{icons.locationWhite}}" />
-        <text class="loc-text">{{location}}</text>
+        <text class="loc-text {{locateFail ? 'fail' : ''}}">{{location}}</text>
         <image class="loc-chevron" src="{{icons.chevronWhite}}" />
       </view>
       <view class="cart-wrap" bindtap="openCart">
@@ -27,6 +27,17 @@
       <image class="search-icon" src="{{icons.search}}" />
       <text class="search-placeholder">搜索店铺、美食</text>
       <view class="search-btn">搜索</view>
+    </view>
+
+    <!-- 搜索下方：微信群卡片 -->
+    <view class="group-entry" bindtap="goGroup">
+      <view class="group-text">
+        <text class="group-title">{{featuredGroup.name}}</text>
+        <view class="group-tags" wx:if="{{featuredGroup.tags && featuredGroup.tags.length}}">
+          <text class="group-tag {{index === 0 ? 'hot' : ''}}" wx:for="{{featuredGroup.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+      </view>
+      <view class="group-chevron"></view>
     </view>
   </view>
 
@@ -51,7 +62,7 @@
           <view class="mall-name">{{item.name}}</view>
           <view class="mall-meta">
             <text class="mall-shop-count">{{item.shopCount}}个档口</text>
-            <text class="mall-distance" wx:if="{{item.distance !== null}}">{{item.distance}}km</text>
+            <text class="mall-distance" wx:if="{{item.distanceText}}">距你 {{item.distanceText}}</text>
           </view>
           <view class="mall-addr">{{item.address}}</view>
         </view>

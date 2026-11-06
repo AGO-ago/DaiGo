@@ -27,6 +27,14 @@ public class PlatformConfig {
     public static final String KEY_AUTO_ACCEPT = "auto_accept";
     /** 首页公告 */
     public static final String KEY_HOME_NOTICE = "home_notice";
+    /** 客服电话 */
+    public static final String KEY_SUPPORT_PHONE = "support_phone";
+    /** 营业时间（HH:mm-HH:mm） */
+    public static final String KEY_BUSINESS_HOURS = "business_hours";
+    /** 待支付超时自动取消（分钟） */
+    public static final String KEY_PAY_TIMEOUT_MINUTES = "order_pay_timeout_minutes";
+    /** 订单评价时限（天） */
+    public static final String KEY_COMMENT_DAYS = "comment_days_limit";
 
     /** 主键 */
     @TableId(type = IdType.AUTO)

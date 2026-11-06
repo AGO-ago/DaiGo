@@ -141,6 +141,7 @@ public class AdminShopServiceImpl implements AdminShopService {
         vo.setMallName(mallName);
         vo.setName(shop.getName());
         vo.setLogo(shop.getLogo());
+        vo.setLicenseImg(shop.getLicenseImg());
         vo.setPhone(shop.getPhone());
         vo.setDeliveryFee(shop.getDeliveryFee());
         vo.setMinOrderAmount(shop.getMinOrderAmount());

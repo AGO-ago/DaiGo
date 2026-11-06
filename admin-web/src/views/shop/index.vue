@@ -42,6 +42,13 @@
           <el-tag v-else type="info" size="small">未绑定</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="营业执照" width="110">
+        <template #default="{ row }">
+          <el-image v-if="row.licenseImg" :src="imgUrl(row.licenseImg)" fit="contain" class="license"
+                    :preview-src-list="[imgUrl(row.licenseImg)]" preview-teleported />
+          <el-tag v-else type="warning" size="small">未上传</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="phone" label="联系电话" width="130" />
       <el-table-column label="配送/起送" width="130">
         <template #default="{ row }">
@@ -239,6 +246,14 @@ onMounted(async () => {
   width: 40px;
   height: 40px;
   border-radius: 8px;
+}
+
+.license {
+  width: 72px;
+  height: 48px;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  background: #fafafa;
 }
 
 .shop-name {
